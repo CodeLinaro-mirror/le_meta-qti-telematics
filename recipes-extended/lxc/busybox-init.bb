@@ -1,4 +1,4 @@
-PV = "1.35.0"
+PV = "1.36.1"
 require ${COREBASE}/meta/recipes-core/busybox/busybox_${PV}.bb
 
 S = "${WORKDIR}/busybox-${PV}"
