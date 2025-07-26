@@ -1,3 +1,5 @@
+BASEMACHINE ?= "sa535m"
+
 DEFAULTTUNE = "armv8-2a-crypto"
 require conf/machine/include/arm/arch-armv8-2a.inc
 
@@ -16,7 +18,7 @@ KERNEL_DTB_NAMES = "dtb.img"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x80000000"
 
-KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/data/firmware/image,/lib/firmware/updates net.ifnames=0"
+KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/data/firmware/image,/lib/firmware/image net.ifnames=0"
 
 #TODO
 #MACHINE_EXTRA_RRECOMMENDS:append:qcom-custom-bsp = " \
@@ -25,8 +27,6 @@ KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 android
 
 PREFERRED_PROVIDER_virtual/partconf = ""
 PREFERRED_PROVIDER_virtual/bootbins = ""
-
-MACHINE_SUPPORTS_INIT_RAMDISK = "true"
 
 # MACHINE_FEATURES ##
 # qti-adsp:               Machine supports QTI adsp solution

@@ -13,11 +13,6 @@ IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume cache-volume persist-v
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-tele-lxc', 'lxcrootfs-volume', '', d)}"
 
-CORE_IMAGE_EXTRA_INSTALL += "\
-                            ${MLIBPREFIX}systemd-machine-units-ubi \
-                            ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', '${MLIBPREFIX}recovery-ab', '', d)} \
-                            "
-
 DEPENDS += "\
              squashfs-tools-native \
 "

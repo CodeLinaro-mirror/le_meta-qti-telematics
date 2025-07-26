@@ -112,10 +112,10 @@ fakeroot do_ramdisk_create() {
         else
             cp ${IMAGE_ROOTFS}/bin/busybox bin/
             cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
-            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/fstab etc/
-            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/inittab etc/
-            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/profile etc/
-            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/rcS etc/init.d
+            cp ${COREBASE}/meta/recipes-core/base-files/base-files/fstab etc/
+            cp ${COREBASE}/meta/recipes-core/busybox/files/inittab etc/
+            cp ${COREBASE}/meta/recipes-core/base-files/base-files/profile etc/
+            cp ${COREBASE}/meta/recipes-core/busybox/files/rcS etc/init.d
             # Run rcS script only if busybox is init manager in ramdisk.
             # In other cases, ramdisk will be used in early boot but no init in busybox.
             if ${@oe.utils.conditional('INIT_RAMDISK', 'True', 'true', 'false', d)}; then
@@ -174,7 +174,7 @@ fakeroot do_ramdisk_create() {
             if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
                 cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init-toybox vmrd-init
             else
-                cp ${COREBASE}/meta-qti-auto/recipes-products/images/include/vmrd-init .
+                cp ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/vmrd-init .
             fi
             chmod 744 vmrd-init
             ln -s vmrd-init init
@@ -204,9 +204,9 @@ fakeroot do_ramdisk_create() {
                 ln -s csmrd-init init
             elif ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
                 if ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'true', 'false', d)}; then
-                    install -m 744 ${COREBASE}/meta-qti-auto/recipes-products/images/include/ramdisk-init-emmc.sh init
+                    install -m 744 ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/ramdisk-init-emmc.sh init
                 else
-                    install -m 744 ${COREBASE}/meta-qti-auto/recipes-products/images/include/ramdisk-init.sh init
+                    install -m 744 ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/ramdisk-init.sh init
                 fi
 
                 # Creating actual rootfs dir mountpoint for initramfs
@@ -334,7 +334,7 @@ fakeroot do_ramdisk_create() {
             cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
             # remove the initrd-fde.gz file if exist
             rm -rf ${IMGDEPLOYDIR}/${PN}-initrd-fde.gz
-            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10 5.15 6.6', 'true', 'false', d)}; then
+            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
                 # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
                 bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-fde -u 0 -g 0 ${RAMDISKDIRFDE}
                 gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-fde
@@ -357,7 +357,7 @@ fakeroot do_ramdisk_create() {
         cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
         # remove the initrd.gz file if exist
         rm -rf ${IMGDEPLOYDIR}/${PN}-initrd.gz
-        if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10 5.15 6.6', 'true', 'false', d)}; then
+        if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
             # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
             bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd -u 0 -g 0 ${RAMDISKDIR}
             gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd
@@ -374,7 +374,7 @@ fakeroot do_ramdisk_create() {
             cp -rf ${RAMDISKDIR}/* ./
 
             if  ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
-               install -m 744 ${COREBASE}/meta-qti-auto/recipes-products/images/include/ramdisk-init-debug.sh init
+               install -m 744 ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/ramdisk-init-debug.sh init
             fi
 
             # gen_initramfs_list.sh expects to be run from kernel directory
@@ -382,7 +382,7 @@ fakeroot do_ramdisk_create() {
             # remove the initrd-overlay.gz file if exist
             rm -rf ${IMGDEPLOYDIR}/${PN}-initrd-debug.gz
 
-            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10 5.15 6.6', 'true', 'false', d)}; then
+            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
 
                  # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
                  bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-debug -u 0 -g 0 ${RAMDISKDIRDEBUG}

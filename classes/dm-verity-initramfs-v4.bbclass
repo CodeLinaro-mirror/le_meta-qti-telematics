@@ -8,7 +8,7 @@
 CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs dm-verity-none"
 
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
-KERNEL_CMD_PARAMS += "root=/dev/ram rootfstype=ramfs init=/sbin/init"
+KERNEL_CMDLINE_EXTRA += "root=/dev/ram rootfstype=ramfs init=/sbin/init"
 
 INITRAMFS_IMAGE ?= ''
 RAMDISK ?= "${IMGDEPLOYDIR}/${PN}-initrd.gz"
@@ -25,7 +25,7 @@ RAMDISK_DEBUG_PATH = "${IMGDEPLOYDIR}/${PN}-initrd-debug.gz"
 BOOTIMAGE_DEBUG_TARGET = "boot-debug.img"
 OVERLAY_ENABLED ?= "False"
 
-MKBOOTUTIL = '${@oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkbootimg-native", "mkbootimg-gki-native", "scripts/mkbootimg.py", "mkbootimg", d)}'
+MKBOOTUTIL = "kernel/kernel_platform/tools/mkbootimg/mkbootimg.py"
 
 python do_makeboot () {
     import subprocess
@@ -41,10 +41,10 @@ python do_makeboot () {
         # header version setting expects dtb to be passed seprately but not appended to kernel
         xtra_parms += " --dtb " + d.getVar('DEPLOY_DIR_IMAGE', True) + "/dtbs/" + d.getVar('KERNEL_DTB_NAMES').strip()
 
-    mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + "/" + d.getVar('MKBOOTUTIL')
+    mkboot_bin_path = d.getVar('WORKSPACE', True) + "/" + d.getVar('MKBOOTUTIL')
     ramdisk_path    = d.getVar('RAMDISK_PATH')
     zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
-    cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + "\""
+    cmdline         = "\"" + d.getVar('KERNEL_CMDLINE_EXTRA', True) + "\""
     pagesize        = d.getVar('PAGE_SIZE', True)
     base            = d.getVar('KERNEL_BASE', True)
     output          = d.getVar('BOOTIMAGE_TARGET', True)

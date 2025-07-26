@@ -21,6 +21,8 @@ PACKAGECONFIG:remove = " \
     kmod \
 "
 
+FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
+
 do_configure:append() {
     # Disable autostart of systemd-network-generator.service
     sed -i -e "s/enable systemd-network-generator.service/disable systemd-network-generator.service/g" ${S}/presets/90-systemd.preset
