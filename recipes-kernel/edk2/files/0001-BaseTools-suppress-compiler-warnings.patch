@@ -1,0 +1,29 @@
+From 285d6e1d89ddaa448039eb858d3fa33ce0bd6785 Mon Sep 17 00:00:00 2001
+From: Puneet Yatnal <puneety@qti.qualcomm.com>
+Date: Sun, 31 Aug 2025 08:14:10 +0000
+Subject: [PATCH] BaseTools: suppress compiler warnings to fix compile abort
+ issue.
+
+As warning here was treated as error which will abort whole build
+flow, so suppress the compile error to bypass.
+
+Change-Id: Ibd70830d41db122c4f9dcc1aa9dab5184a3aba89
+Signed-off-by: Puneet Yatnal <puneety@qti.qualcomm.com>
+---
+ BaseTools/Source/C/Makefiles/header.makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/BaseTools/Source/C/Makefiles/header.makefile b/BaseTools/Source/C/Makefiles/header.makefile
+index 40604b3794..8c13bb8d25 100644
+--- a/BaseTools/Source/C/Makefiles/header.makefile
++++ b/BaseTools/Source/C/Makefiles/header.makefile
+@@ -75,6 +75,9 @@
+ BUILD_CFLAGS = -MD -fshort-wchar -fno-strict-aliasing -fwrapv \
+ -fno-delete-null-pointer-checks -Wall -Werror \
+ -Wno-deprecated-declarations \
++-Wno-error="vla-parameter" \
++-Wno-error=stringop-overflow \
++-Wno-error=stringop-truncation \
+ -Wno-unused-result -nostdlib -g
+ ifeq ($(BUILD_NATIVE_AARCH64), true)
+ BUILD_CFLAGS += -Wno-error="vla-parameter"
