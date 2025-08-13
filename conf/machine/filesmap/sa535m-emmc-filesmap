@@ -1,0 +1,27 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# filename              partition
+
+NON-HLOS.bin            /dev/block/bootdevice/by-name/modem
+xbl_ac_config.mbn       /dev/block/bootdevice/by-name/xbl_ac_config
+hyp_ac_config.mbn       /dev/block/bootdevice/by-name/hyp_ac_config
+shrm.el                 /dev/block/bootdevice/by-name/shrm
+aop.mbn                 /dev/block/bootdevice/by-name/aop
+aop_devcfg.mbn          /dev/block/bootdevice/by-name/aop_devcfg
+xbl_s.melf              /dev/block/bootdevice/by-name/xbl
+devcfg.mbn              /dev/block/bootdevice/by-name/tz_devcfg
+tz_ac_config.mbn        /dev/block/bootdevice/by-name/tz_ac_config
+xbl_config.elf          /dev/block/bootdevice/by-name/xbl_config
+xbl_ramdump.elf         /dev/block/bootdevice/by-name/xbl_ramdump
+hypvm.mbn               /dev/block/bootdevice/by-name/qhee
+uefi.elf                /dev/block/bootdevice/by-name/uefi
+boot.img                /dev/block/bootdevice/by-name/boot
+fw_ipa_gsi_7.0_a.elf    /dev/block/bootdevice/by-name/ipa_fw
+qupv3fw.elf             /dev/block/bootdevice/by-name/qupfw
+km41.mbn                /dev/block/bootdevice/by-name/keymaster
+sysfs.img               /dev/block/bootdevice/by-name/system
+cpucp.elf               /dev/block/bootdevice/by-name/cpucp
+cpucp_dtbs.elf          /dev/block/bootdevice/by-name/cpucp_dtb
+apdp.mbn                /dev/block/bootdevice/by-name/apdp
+abl.elf                 /dev/block/bootdevice/by-name/abl
