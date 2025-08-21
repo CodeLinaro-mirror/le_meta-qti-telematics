@@ -1,6 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI += "file://y2038-syslog.patch"
-
 CACHED_CONFIGUREVARS += " \
      libc_cv_ssp_strong=yes \
      libc_cv_ssp=yes \
