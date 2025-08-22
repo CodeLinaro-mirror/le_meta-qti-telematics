@@ -51,4 +51,4 @@ PREFERRED_PROVIDER_virtual/bootbins = ""
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
 
-MACHINE_FEATURES += "qti-sensors qti-location"
+MACHINE_FEATURES += "qti-sensors qti-location qti-audio"
