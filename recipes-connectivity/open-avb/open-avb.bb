@@ -52,7 +52,7 @@ do_install() {
     install -d ${D}/${includedir}
     install -m 0644 ${S}/lib/libgptp/gptp_helper.h ${D}${includedir}
 
-    if (test "x${GPTP_AUTO_START_ENABLE}" == "xYES"); then
+    if [ "x${GPTP_AUTO_START_ENABLE}" = "xYES" ]; then
        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
           install -d ${D}${systemd_unitdir}/system/
           install -m 0644 ${WORKDIR}/gptp-daemon.service -D ${D}${systemd_unitdir}/system/gptp-daemon.service
