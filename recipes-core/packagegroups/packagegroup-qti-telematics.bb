@@ -53,6 +53,19 @@ RDEPENDS:packagegroup-qti-telematics-sensors = "\
 RDEPENDS:packagegroup-qti-telematics-utils = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', 'qdloader', d)} \
     ${@oe.utils.conditional('CRONIE', 'True', 'cronie', '', d)} \
+    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'devmem2 ', '', d)} \
+    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'net-tools', '', d)} \
+    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'leproperties', '', d)} \
+    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'procrank', '', d)} \
+    ethtool \
+    mtd-utils \
+    chrony \
+    chronyc \
+    ethtool \
+    iproute2 \
+    procps \
+    logcat \
+    logd \
     "
 
 RDEPENDS:packagegroup-qti-telematics-vnw = "\
@@ -61,6 +74,7 @@ RDEPENDS:packagegroup-qti-telematics-vnw = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', 'start-scripts-init-can can-utils', d)} \
     ${@bb.utils.contains('MACHINE', 'sa515m', 'vnw-eth-switch', '', d)} \
     ${@oe.utils.conditional('QTI_CAN', 'True', 'qti-can-kernel', '', d)} \
+    can-utils \
     "
 
 RDEPENDS:packagegroup-qti-telematics-mvm = "\

@@ -11,23 +11,22 @@ inherit python3native qramdisk dm-verity-initramfs-v4
 REQUIRED_DISTRO_FEATURES = "systemd"
 
 CORE_IMAGE_BASE_INSTALL += " \
-    can-utils \
-    chrony \
-    chronyc \
-    ethtool \
-    iproute2 \
-    leproperties \
-    mtd-utils \
+    kernel-modules \
     packagegroup-qti-telematics \
-    procrank \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', '${MLPREFIX}packagegroup-qti-location', '', d)} \
-    systemd-machine-units-ext4 \
+    packagegroup-qti-core \
+    packagegroup-qti-ss-mgr \
+    packagegroup-qcom-securemsm \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', 'packagegroup-qti-data', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'systemd-machine-units-ext4', '', d)} \
+    packagegroup-qcom-ppat \
+    binder \
 "
 
 IMAGE_FSTYPES:remove = "ostree"
 
 python () {
-	bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
+        bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
 }
 
 do_merge_dtbs() {
