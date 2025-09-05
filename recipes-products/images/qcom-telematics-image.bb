@@ -24,7 +24,9 @@ CORE_IMAGE_BASE_INSTALL += " \
     packagegroup-qcom-ppat \
     binder \
     packagegroup-qti-telsdk \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
 "
+
 IMAGE_FSTYPES:remove = "ostree"
 
 ROOTFS_POSTPROCESS_COMMAND += "do_create_rootdir"
