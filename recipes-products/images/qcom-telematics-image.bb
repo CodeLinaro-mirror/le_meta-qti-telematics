@@ -20,6 +20,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     mtd-utils \
     packagegroup-qti-telematics \
     procrank \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', '${MLPREFIX}packagegroup-qti-location', '', d)} \
     systemd-machine-units-ext4 \
 "
 
