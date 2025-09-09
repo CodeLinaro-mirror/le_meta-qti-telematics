@@ -5,8 +5,8 @@ DESCRIPTION = "This establishes someip communication between clients and sensor 
 PR = "r1"
 
 LICENSE = "BSD-3-Clause-Clear"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta-qti-bsp/files/common-licenses/\
-${LICENSE};md5=3771d4920bd6cdb8cbdf1e8344489ee0"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
+${LICENSE};md5=7a434440b651f4a472ca93716d01033a"
 
 DEPENDS = "glib-2.0 libcutils common-api-c++ vsomeip common-api-c++-someip"
 FILESPATH =+ "${WORKSPACE}:"
