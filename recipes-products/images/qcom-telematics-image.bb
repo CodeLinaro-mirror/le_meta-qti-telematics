@@ -11,11 +11,6 @@ inherit python3native qramdisk dm-verity-initramfs-v4
 REQUIRED_DISTRO_FEATURES = "systemd"
 
 CORE_IMAGE_BASE_INSTALL += " \
-    var-persist-mount \
-    qcom-resize-partitions \
-"
-
-CORE_IMAGE_BASE_INSTALL += " \
     can-utils \
     chrony \
     chronyc \
@@ -25,6 +20,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     mtd-utils \
     packagegroup-qti-telematics \
     procrank \
+    systemd-machine-units-ext4 \
 "
 
 IMAGE_FSTYPES:remove = "ostree"
