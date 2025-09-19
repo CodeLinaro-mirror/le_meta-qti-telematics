@@ -20,6 +20,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'systemd-machine-units-ext4', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'systemd-machine-units-ubi', '', d)} \
     packagegroup-qcom-ppat \
     binder \
     packagegroup-qti-telsdk \
