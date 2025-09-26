@@ -5,10 +5,10 @@ USERADD_PARAM:${PN} ?= 	" \
 			-u 1000 -U system; \
 			-u 1001 -U radio; \
 			-u 1004 -g input input; \
-			-G diag,system -u 1005 -g audio audio; \
+			-G system -u 1005 -g audio audio; \
 			-u 1036 -U logd; \
 			-u 2000 -U adb; \
-			-G diag,inet,system,leprop -u 3011 -U sensors; \
+			-G system,leprop -u 3011 -U sensors; \
 			-u 9999 -U nobody; \
 			-u 4021 -U locclient; \
 			-G system,locclient -u 1021 -U gps; \

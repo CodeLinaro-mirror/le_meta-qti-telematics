@@ -554,6 +554,7 @@ MountSystem () {
     # Check if it is UBI partition
     if ${Bdd} if=/dev/mtd${DEV_NUM} count=1 bs=4 2>/dev/null | ${Bgrep} 'UBI#' > /dev/null; then
 
+        LOGD "ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM}"
         ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM}
         WaitDevReady "-e" "/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}/volumes_count"
         if [ $? -ne ${STATUS_OK} ]; then
@@ -562,20 +563,29 @@ MountSystem () {
         fi
 
         # Get the boot system volume number
-        GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
-        if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
-            LOGD "Cannot get ${DM_SYST_NAME} volume."
-            return ${STATUS_ERR}
-        fi
-        SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+        #GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
+        #if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
+        #    LOGD "Cannot get ${DM_SYST_NAME} volume."
+        #    return ${STATUS_ERR}
+        #fi
+        #SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
 
-        if [ "${SYS_IMAGE_VOL}" == "" ]; then
-            LOGD "Cannot get ${DM_SYST_NAME} volume."
-            return ${STATUS_ERR}
-        fi
+        #if [ "${SYS_IMAGE_VOL}" == "" ]; then
+        #    LOGD "Cannot get ${DM_SYST_NAME} volume."
+        #    return ${STATUS_ERR}
+        #fi
 
-        char_device=/dev/ubi${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
-        block_device=/dev/ubiblock${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
+        #char_device=/dev/ubi${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
+        #block_device=/dev/ubiblock${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
+        char_device=/dev/ubi0_0
+        block_device=/dev/ubiblock0_0
+        LOGD "busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro"
+        busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
+        if [ $? -ne ${STATUS_OK} ]; then
+             LOGD "Error: mount ubifs ${char_device} failed"
+             return ${STATUS_ERR}
+        fi
+	return ${STATUS_OK}
 
         # Check if the image type is squashfs in UBI volume
         if ${Bdd} if=${char_device}\

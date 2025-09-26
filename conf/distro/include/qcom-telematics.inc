@@ -16,7 +16,7 @@ DISTRO_NAME = "QTI Linux Telematics distro."
 # dm-verity:       Support block integrity check on system image
 # selinux:         Use selinux for mandatory access control.
 
-DISTRO_FEATURES:append = " selinux dm-verity"
+DISTRO_FEATURES:append = "selinux"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution
@@ -37,7 +37,7 @@ DISTRO_FEATURES:append = " selinux dm-verity"
 IMAGE_CLASSES += "features_check"
 
 # Include in native DISTRO_FEATURES if present in the target DISTRO_FEATURES.
-DISTRO_FEATURES_FILTER_NATIVE += " selinux"
+DISTRO_FEATURES_FILTER_NATIVE += "selinux"
 
 # Set selinux in enforcing state by default
 DEFAULT_ENFORCING ?= "disabled"

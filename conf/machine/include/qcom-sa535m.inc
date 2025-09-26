@@ -11,6 +11,7 @@ DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr reboo
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-targeted"
 PREFERRED_VERSION_linux-qcom-custom = "6.6"
+PREFERRED_VERSION_thermal-engine = "14.0"
 
 # Fixes for boot image dtb appending
 BOOT_HEADER_VERSION = "2"
@@ -18,7 +19,7 @@ KERNEL_DTB_NAMES = "dtb.img"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x80000000"
 
-KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/data/firmware/image,/lib/firmware/image net.ifnames=0"
+KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/lib/firmware/image net.ifnames=0"
 
 # Bootloader configuration
 EXTRA_IMAGEDEPENDS += "edk2"
@@ -30,6 +31,8 @@ EXTRA_IMAGEDEPENDS += "edk2"
 
 PREFERRED_PROVIDER_virtual/partconf = ""
 PREFERRED_PROVIDER_virtual/bootbins = ""
+
+MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 
 # MACHINE_FEATURES ##
 # qti-adsp:               Machine supports QTI adsp solution
@@ -51,4 +54,30 @@ PREFERRED_PROVIDER_virtual/bootbins = ""
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
 
-MACHINE_FEATURES += "qti-sensors qti-location qti-audio"
+MACHINE_FEATURES += "qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4"
+
+MACHINE_MNT_POINTS = " \
+    /firmware \
+"    
+EXTRA_USERS_PARAMS += "usermod -p \
+    '\$6\$fixed\$ehhrBJycOdAtiIuyucGkTk3lphxtYcRODdJVNS8T1kdONi5tWAFnzMcfOXlfH42wBNE5wmTyiNEopIKxG0U5r/' \
+    -d /home/root root \
+"
+
+BBMASK += " \
+meta-qti-sepolicy/recipes-security/selinux/checkpolicy_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/libselinux-python_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/libselinux_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/libsemanage_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/libsepol_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/mcstrans_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/policycoreutils_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/restorecond_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/secilc_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/selinux-dbus_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/selinux-gui_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/selinux-python_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/selinux-sandbox_3.3.bbappend \
+meta-qti-sepolicy/recipes-security/selinux/semodule-utils_3.3.bbappend \
+meta-qti-core-prop/recipes-products/images/machine-image.bbappend \
+"

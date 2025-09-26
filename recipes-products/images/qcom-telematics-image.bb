@@ -2,7 +2,7 @@ SUMMARY = "Auto Telematics Base Image"
 
 LICENSE = "BSD-3-Clause-Clear"
 
-IMAGE_FEATURES += "allow-root-login post-install-logging enable-adbd"
+IMAGE_FEATURES += "allow-root-login post-install-logging"
 
 inherit core-image features_check extrausers image-adbd
 inherit python3native qramdisk dm-verity-initramfs-v4
@@ -22,17 +22,27 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'systemd-machine-units-ext4', '', d)} \
     packagegroup-qcom-ppat \
     binder \
-    packagegroup-qti-telsdk \
 "
-
 IMAGE_FSTYPES:remove = "ostree"
 
+ROOTFS_POSTPROCESS_COMMAND += "do_create_rootdir"
+
+do_create_rootdir() {
+    mkdir -p ${IMAGE_ROOTFS}/home/root
+}
+
+IMAGE_FEATURES:append:sa535m = " \
+        ${@oe.utils.conditional('DEBUG_BUILD', '1', 'empty-root-password serial-autologin-root', '', d )} \
+"
+
+EMMC_BOOT = "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'True', 'False', d)}"
+
 python () {
-        bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
+	bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
 }
 
 do_merge_dtbs() {
-    cat ${DEPLOY_DIR_IMAGE}/combined-dtb.dtb > ${DEPLOY_DIR_IMAGE}/dtbs/dtb.img
+	cat ${DEPLOY_DIR_IMAGE}/combined-dtb.dtb > ${DEPLOY_DIR_IMAGE}/dtbs/dtb.img
 }
 
 do_merge_dtbs[depends] += "virtual/kernel:do_deploy"
@@ -49,10 +59,35 @@ do_deploy_fixup[deptask] = "do_image_complete"
 
 do_deploy_fixup[nostamp] = "1"
 
-do_deploy_fixup:append() {
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubi
-    install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubifs
-    install -m 0644 ${BOOTIMGDEPLOYDIR}/qcom-telematics-image/boot.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/boot.img
+do_deploy_fixup () {
+    if [ "${EMMC_BOOT}" = "True" ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m-emmc.rootfs.ext4 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.img
+        install -m 0644 ${BOOTIMGDEPLOYDIR}/qcom-telematics-image/boot.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/boot.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/vmlinux
+	install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/abl.elf
+    else
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubi
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubifs
+        install -m 0644 ${BOOTIMGDEPLOYDIR}/qcom-telematics-image/boot.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/boot.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/vmlinux
+	install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/abl.elf
+    fi
+}
+
+ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition; "
+
+add_target_and_symlink() {
+    echo "${MACHINE}" > ${IMAGE_ROOTFS}/target
+    install -d ${IMAGE_ROOTFS}/lib/firmware
+    ln -sf /firmware/image ${IMAGE_ROOTFS}/lib/firmware/image
+}
+
+# Update usb composition
+USBCOMPOSITION ??= "90DB"
+update_usb_composition() {
+    if [ -e ${IMAGE_ROOTFS}/etc/usb/boot_hsusb_comp ]; then
+        echo ${USBCOMPOSITION} > ${IMAGE_ROOTFS}/etc/usb/boot_hsusb_comp
+    fi
 }
 
 addtask do_deploy_fixup after do_image_complete before do_build
