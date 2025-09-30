@@ -20,6 +20,9 @@ KERNEL_BASE = "0x80000000"
 
 KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/data/firmware/image,/lib/firmware/image net.ifnames=0"
 
+# Bootloader configuration
+EXTRA_IMAGEDEPENDS += "edk2"
+
 #TODO
 #MACHINE_EXTRA_RRECOMMENDS:append:qcom-custom-bsp = " \
 #    qcom-subsystem-ramdump \
