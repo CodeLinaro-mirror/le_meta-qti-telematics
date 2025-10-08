@@ -25,6 +25,7 @@ CRONIE:sa525m-fotavm = "False"
 
 QTI_CAN ?= "False"
 QTI_CAN:sa510m= "True"
+QTI_CAN:sa535m= "True"
 
 PROVIDES = "${PACKAGES}"
 PACKAGES = ' \
@@ -73,7 +74,7 @@ RDEPENDS:packagegroup-qti-telematics-vnw = "\
     ${@oe.utils.conditional('PTPVIRT', 'True', 'ptp-virtual', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', 'start-scripts-init-can can-utils', d)} \
     ${@bb.utils.contains('MACHINE', 'sa515m', 'vnw-eth-switch', '', d)} \
-    ${@oe.utils.conditional('QTI_CAN', 'True', 'qti-can-kernel', '', d)} \
+    ${@oe.utils.conditional('QTI_CAN', 'True', 'qti-can-kernel can-kernel-devicetree', '', d)} \
     can-utils \
     "
 

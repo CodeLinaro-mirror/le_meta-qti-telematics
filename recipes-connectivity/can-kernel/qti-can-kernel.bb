@@ -4,7 +4,7 @@ DESCRIPTION = "CAN driver to interact with Calypso FW"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/${LICENSE};md5=801f80980d171dd6425610833a22dbe6"
 
-DEPENDS = "virtual/kernel linux-msm-headers"
+DEPENDS = "virtual/kernel linux-kernel-qcom-headers"
 
 PR = "r0"
 
@@ -14,26 +14,15 @@ SRC_URI = "file://vendor/qcom/opensource/qti-can-kernel/"
 S = "${WORKDIR}/vendor/qcom/opensource/qti-can-kernel"
 EXT_MODULES = "${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")}"
 
-inherit linux-kernel-base deploy
+inherit linux-kernel-base deploy module pkgconfig
 
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
-do_compile[depends]   += "virtual/kernel:do_shared_workdir"
-do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
 
 do_compile() {
-    cd ${KERNEL_PLATFORM_PATH}
-    ENABLE_DDK_BUILD=${ENABLE_DDK_BUILD} \
-    TARGET_BOARD_PLATFORM=${TARGET_BOARD_PLATFORM} \
-    KBUILD_OPTIONS+="TARGET_SUPPORT=${BASEMACHINE}" \
-    BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
-    EXT_MODULES=${EXT_MODULES} \
-    KERNEL_KIT=${KERNEL_PREBUILT_PATH} \
-    OUT_DIR=${KERNEL_OUT_PATH} \
-    MODULE_OUT=${WORKDIR}/vendor/qcom/opensource/qti-can-kernel \
-    KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
-    ./build/build_module.sh ${EXTRA_OEMAKE}
+    cd ${S}
+    oe_runmake -C ${STAGING_KERNEL_DIR} M=${S} modules
 }
 
 do_install() {
