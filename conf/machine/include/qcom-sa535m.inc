@@ -9,7 +9,7 @@ require conf/machine/include/qcom-base.inc
 # Additional Kernel cmdline parameters for debug builds
 DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr reboot=panic_warm page_owner=on qcom_scm.download_mode=1 slub_debug=FZP,zs_handle,zspage;FZPU','',d)}"
 
-PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
+PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-targeted"
 PREFERRED_VERSION_linux-qcom-custom = "6.6"
 
 # Fixes for boot image dtb appending
