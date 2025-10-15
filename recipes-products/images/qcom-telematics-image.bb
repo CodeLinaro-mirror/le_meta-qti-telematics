@@ -22,6 +22,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'systemd-machine-units-ext4', '', d)} \
     packagegroup-qcom-ppat \
     binder \
+    packagegroup-qti-telsdk \
 "
 IMAGE_FSTYPES:remove = "ostree"
 
