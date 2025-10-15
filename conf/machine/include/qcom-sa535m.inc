@@ -80,4 +80,5 @@ meta-qti-sepolicy/recipes-security/selinux/selinux-python_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/selinux-sandbox_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/semodule-utils_3.3.bbappend \
 meta-qti-core-prop/recipes-products/images/machine-image.bbappend \
+meta-qti-internal/recipes-products/packagegroups/packagegroup-qcom-wifi.bbappend \
 "

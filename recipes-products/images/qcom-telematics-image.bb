@@ -59,7 +59,7 @@ do_deploy_fixup[dirs] = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}"
 do_deploy_fixup[cleandirs] = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}"
 do_deploy_fixup[depends] += "dtb-qcom-image:do_image_complete"
 do_deploy_fixup[depends] += "virtual/kernel:do_deploy"
-do_deploy_fixup[deptask] = "do_image_complete"
+do_deploy_fixup[deptask] += "do_image_complete"
 
 do_deploy_fixup[nostamp] = "1"
 
@@ -94,4 +94,4 @@ update_usb_composition() {
     fi
 }
 
-addtask do_deploy_fixup after do_image_complete before do_build
+addtask do_deploy_fixup after do_makeboot after do_image_complete before do_build
