@@ -28,6 +28,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     packagegroup-qti-telsdk \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
+    diag-reboot-app \
 "
 
 DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'ext4-utils-native', '', d)}"
