@@ -25,6 +25,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     binder \
     packagegroup-qti-telsdk \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
 "
 
 IMAGE_FSTYPES:remove = "ostree"
