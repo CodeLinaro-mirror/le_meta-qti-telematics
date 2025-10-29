@@ -1,2 +1,3 @@
 ACTION=="add", KERNEL=="ptp0", SUBSYSTEM=="ptp", OWNER="vnw", GROUP="vnw", MODE="0660"
+ACTION=="add", KERNEL=="ptp1", SUBSYSTEM=="ptp", OWNER="vnw", GROUP="vnw", MODE="0660"
 ACTION=="add", KERNEL=="gptp", SUBSYSTEM=="gptp", OWNER="vnw", GROUP="vnw", MODE="0660"
