@@ -58,7 +58,12 @@ MACHINE_FEATURES += "qti-sensors qti-location qti-audio qti-data-modem dm-verity
 
 MACHINE_MNT_POINTS = " \
     /firmware \
-"    
+    /data \
+    /cache \
+    /persist \
+    /systemrw \
+"
+
 EXTRA_USERS_PARAMS += "usermod -p \
     '\$6\$fixed\$ehhrBJycOdAtiIuyucGkTk3lphxtYcRODdJVNS8T1kdONi5tWAFnzMcfOXlfH42wBNE5wmTyiNEopIKxG0U5r/' \
     -d /home/root root \

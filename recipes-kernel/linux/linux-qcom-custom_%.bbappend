@@ -18,7 +18,6 @@ do_install:prepend() {
 do_deploy:append() {
     install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
     install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
-    install -d ${DEPLOY_DIR_IMAGE}/dtbs/
 
     # Copy initramfs scripts again for deploy stage
     cp -a ${S}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts

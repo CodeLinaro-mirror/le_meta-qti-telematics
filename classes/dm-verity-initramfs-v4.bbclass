@@ -111,7 +111,7 @@ do_sign_system_squashfs () {
 do_sign_system_squashfs[depends] += "avbtool-native:do_install"
 
 #EXT4 files
-SYSTEMIMAGE_EXT4_TARGET = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/system.img"
+SYSTEMIMAGE_EXT4_TARGET = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/sysfs.img"
 
 # Sign the system image
 do_sign_system_ext4 () {

@@ -7,6 +7,10 @@ IMAGE_FEATURES += "allow-root-login post-install-logging"
 inherit core-image features_check extrausers image-adbd
 inherit python3native qramdisk dm-verity-initramfs-v4
 
+QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', 'qimage-ext4', '', d)}"
+
+inherit ${QIMGCLASSES}
+
 # let's make sure we have a good image..
 REQUIRED_DISTRO_FEATURES = "systemd"
 
@@ -18,8 +22,6 @@ CORE_IMAGE_BASE_INSTALL += " \
     packagegroup-qcom-securemsm \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', 'packagegroup-qti-data', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'systemd-machine-units-ext4', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'systemd-machine-units-ubi', '', d)} \
     packagegroup-qcom-ppat \
     binder \
@@ -27,6 +29,8 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
 "
+
+DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'ext4-utils-native', '', d)}"
 
 IMAGE_FSTYPES:remove = "ostree"
 
@@ -47,6 +51,7 @@ python () {
 }
 
 do_merge_dtbs() {
+        install -d ${DEPLOY_DIR_IMAGE}/dtbs/
 	cat ${DEPLOY_DIR_IMAGE}/combined-dtb.dtb > ${DEPLOY_DIR_IMAGE}/dtbs/dtb.img
 }
 
@@ -66,10 +71,15 @@ do_deploy_fixup[nostamp] = "1"
 
 do_deploy_fixup () {
     if [ "${EMMC_BOOT}" = "True" ]; then
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m-emmc.rootfs.ext4 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/sysfs.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.img
         install -m 0644 ${BOOTIMGDEPLOYDIR}/qcom-telematics-image/boot.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/boot.img
         install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/vmlinux
 	install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/abl.elf
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/userdata.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/userdata.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/userdata.map ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/userdata.map
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/persist.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/persist.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/cache.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/cache.img
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/systemrw.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/systemrw.img
     else
         install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubi
         install -m 0644 ${DEPLOY_DIR_IMAGE}/qcom-telematics-image-sa535m.rootfs.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.ubifs

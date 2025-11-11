@@ -17,6 +17,7 @@ QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/cache', 'qimage-cache-e
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/persist', 'qimage-persist-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/systemrw', 'qimage-systemrw-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/lib/modules', 'qimage-vdlkm-ext4', '', d)}"
+QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/data', 'qimage-userdata', '', d)}"
 
 inherit ${QIMGEXT4CLASSES}
 
@@ -24,7 +25,6 @@ CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-b
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ext4"
 
-do_image_ext4[noexec] = "1"
 # Default Image names
 SYSTEMIMAGE_TARGET ?= "system.img"
 SYSTEMIMAGE_UNSPARSE_TARGET ?= "system.img.unsparse"
@@ -130,8 +130,8 @@ create_symlink_modules_dir() {
 }
 
 do_makesystem[prefuncs] += "create_rootfs_ext4"
-do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
-do_makesystem[prefuncs] += "create_symlink_modules_dir"
+#do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
+#do_makesystem[prefuncs] += "create_symlink_modules_dir"
 
 # To successfully flash generated images on device, need to ensure combined size of
 # unsparsed image and verity fec metadata is with in actual rootfs size. As there is
@@ -180,12 +180,16 @@ do_makesystem() {
 
     cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
 
+    if [ ! -d "${IMGDEPLOYDIR}/${IMAGE_BASENAME}" ]; then
+        mkdir -p "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+    fi
+
     if ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-none', 'false', 'true', d)} ; then
-    # Generate unsparsed image, append hash and fec data to the image and then sparse the image
-        for count in {99..1}
+    # Generate unsparsed image, append hash and fec data to the image and then sparse the imag0e
+        for count in $(seq 99 -1 1)
         do
             adjustedSystemSize=$(echo $(adjust_system_size_for_verity "${count}" ))
-            echo adjustedSystemSize: $adjustedSystemSize
+            echo "adjustedSystemSize: ${adjustedSystemSize}"
             ImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_UNSPARSE_TARGET}"
             make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                         -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
@@ -217,6 +221,8 @@ do_makesystem() {
             # Convert to sparse image
             sparseImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
             img2simg ${ImgPath} ${sparseImgPath}
+            cp ${ImgPath} ${IMGDEPLOYDIR}/
+            cp ${sparseImgPath} ${IMGDEPLOYDIR}/
             break
         done
 
@@ -224,13 +230,13 @@ do_makesystem() {
     # Directly generate sparsed image
             sparseImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
             make_ext4fs -s -C ${WORKDIR}/rootfs-fsconfig.conf \
-                        -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
                         -a / -b 4096 -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \
                         ${IMAGE_EXT4_SELINUX_OPTIONS} \
                         ${sparseImgPath} ${IMAGE_ROOTFS_EXT4} /dev/null
+            cp ${sparseImgPath} ${IMGDEPLOYDIR}/
     fi
 
-        echo "image is good to use..."
+    echo "image is good to use..."
 }
 addtask do_makesystem after do_image before do_image_complete
 
