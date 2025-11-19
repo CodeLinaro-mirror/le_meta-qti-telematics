@@ -12,6 +12,7 @@ SRC_URI:append += " \
     file://${BASEMACHINE}/ \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'file://mtd.rules', '',d)} \
     file://platform.rules \
+    file://platform.conf \
 "
 
 PACKAGECONFIG:remove = " \
@@ -72,6 +73,9 @@ do_install:append() {
             sed -i 's/SUBSYSTEM!="block|ubi", GOTO="persistent_storage_end"/SUBSYSTEM!="block", GOTO="persistent_storage_end"/g' \
                 ${D}/usr/lib/udev/rules.d/60-persistent-storage.rules
         fi
+
+        install -m 0644 ${WORKDIR}/platform.conf -D ${D}${sysconfdir}/tmpfiles.d/platform.conf
+
     fi
 }
 
