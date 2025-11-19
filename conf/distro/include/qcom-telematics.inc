@@ -16,7 +16,7 @@ DISTRO_NAME = "QTI Linux Telematics distro."
 # dm-verity:       Support block integrity check on system image
 # selinux:         Use selinux for mandatory access control.
 
-DISTRO_FEATURES:append = "selinux"
+DISTRO_FEATURES += "selinux qti-ab-boot"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution

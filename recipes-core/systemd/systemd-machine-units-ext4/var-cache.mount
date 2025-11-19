@@ -24,16 +24,17 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-# Changes from Qualcomm Technologies, Inc. are provided under the following license: 
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# Changes from Qualcomm Technologies, Inc. are provided under the following license:
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 [Unit]
+Description=Mount cache on /var/cache
 After=sysinit.target
 DefaultDependencies=no
 
 [Mount]
 What=/dev/disk/by-partlabel/cache
-Where=/cache
+Where=/var/cache
 Type=ext4
 Options=noatime,data=ordered,noauto_da_alloc,discard,noexec,nodev,nosuid,noauto,x-systemd.automount,rootcontext=system_u:object_r:cache_t:s0

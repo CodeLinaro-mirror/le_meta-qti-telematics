@@ -5,13 +5,13 @@ SYSTEM_IMAGE_ROOTFS_SIZE   = "${@get_size_in_bytes(d.getVar('SYSTEM_SIZE_EXT4') 
 DEPENDS += "cryptsetup-native"
 
 # if A/B support is supported, generate OTA pkg by default.
-GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '1', '', d)}"
+#GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '1', '', d)}"
 
 # List all mount points
 MNT_POINTS = "${MACHINE_MNT_POINTS} ${GENERATED_MACHINE_MNT_POINTS}"
 
 QIMGEXT4CLASSES  = ""
-QIMGEXT4CLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-ext4', '', d)}"
+#QIMGEXT4CLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/cache', 'qimage-cache-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/persist', 'qimage-persist-ext4', '', d)}"
@@ -21,7 +21,7 @@ QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/data', 'qimage-userdata
 
 inherit ${QIMGEXT4CLASSES}
 
-CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' ${MLIBPREFIX}recovery-ab', '', d)}"
+#CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' ${MLIBPREFIX}recovery-ab', '', d)}"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ext4"
 
@@ -68,6 +68,15 @@ IMAGE_ROOTFS_EXT4 = "${WORKDIR}/rootfs-ext4"
 
 MACHINE_FSCONFIG_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/fsconfig' % p for p in '${BBPATH}'.split(':'))}}"
 MACHINE_FSCONFIG_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FSCONFIG_CONF'), d.getVar('MACHINE_FSCONFIG_CONF_SEARCH_PATH')) or ''}"
+ROOTFS_POSTPROCESS_COMMAND += "create_systemrw_dir; create_persist_dir "
+
+create_systemrw_dir() {
+    mkdir -p ${IMAGE_ROOTFS}/systemrw
+}
+
+create_persist_dir() {
+    mkdir -p ${IMAGE_ROOTFS}/var/persist
+}
 
 create_symlink_systemd_ext4_mount_rootfs() {
     # Symlink ext4 mount files to systemd targets

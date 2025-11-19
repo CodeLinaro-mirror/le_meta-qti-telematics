@@ -37,6 +37,7 @@ DefaultDependencies=no
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 PassEnvironment="SLOT_SUFFIX"
 ExecStart= sh /etc/initscripts/firmware-ubi-mount.sh
 Nice=-20

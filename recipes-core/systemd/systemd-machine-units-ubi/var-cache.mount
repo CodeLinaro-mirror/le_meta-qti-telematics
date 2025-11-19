@@ -1,0 +1,12 @@
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[Unit]
+Description=Mount cachefs on /var/cache
+Before=local-fs.target
+
+[Mount]
+Type=ubifs
+What=ubi0:cachefs
+Where=/var/cache
+Options=bulk_read,rw

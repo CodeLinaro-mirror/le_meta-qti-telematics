@@ -11,7 +11,7 @@ do_install:append () {
     install -d 0644 ${D}${systemd_unitdir}
     install -d 0644 ${D}${systemd_unitdir}/system
     install -d 0644 ${D}${systemd_unitdir}/system/local-fs.target.requires
-    install -d 0644 ${D}${systemd_unitdir}/system/local-fs.target.wants
+    install -d 0755 ${D}${systemd_unitdir}/system/local-fs.target.wants
     install -d 0644 ${D}${systemd_unitdir}/system/sysinit.target.wants
     install -d 0644 ${D}${systemd_unitdir}/system/multi-user.target.wants
 
@@ -24,13 +24,18 @@ add_mount_files () {
         mountname="${entry:1}"
         # Replace "/" with "-" for systemd to understand mount unit.
         mountname=${mountname//'/'/"-"}
-        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "lib-modules" ]]; then
-            install -m 0644 ${S}/${mountname}-mount.service ${D}${systemd_unitdir}/system/${mountname}-mount.service
-            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}-mount.service
-	elif [ "${IMAGETYPE}" == "ext4" ]; then
-                    install -m 0644 ${S}/${mountname}.mount ${D}${systemd_unitdir}/system/${mountname}.mount
-		    ln -sf ${systemd_unitdir}/system/${mountname}.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}.mount
-        fi
+        if [[ "${IMAGETYPE}" == "ubi"  || "${IMAGETYPE}" == "ext4"  || "{IMAGETYPE}" == "squashfs" ]] ; then
+		if [[ "$mountname" == "firmware" ]]; then
+			install -m 0644 ${S}/${mountname}-mount.service ${D}${systemd_unitdir}/system/${mountname}-mount.service
+			ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}-mount.service
+		elif [[ "$mountname" == "cache"  ||  "$mountname" == "persist" ]] ; then
+			install -m 0644 ${S}/var-${mountname}.mount -D ${D}${systemd_unitdir}/system/var-${mountname}.mount
+			ln -sf ${systemd_unitdir}/system/var-${mountname}.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/var-${mountname}.mount
+		elif [[ "$mountname" == "systemrw"  || "$mountname" == "data" ]]; then
+			install -m 0644 ${S}/${mountname}.mount -D ${D}${systemd_unitdir}/system/${mountname}.mount
+			ln -sf ${systemd_unitdir}/system/${mountname}.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}.mount
+		fi
+	fi
     done
 }
 

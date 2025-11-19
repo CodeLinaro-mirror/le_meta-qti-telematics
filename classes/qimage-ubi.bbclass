@@ -6,20 +6,23 @@ GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-bo
 QIMGUBICLASSES  = ""
 # To be implemented
 QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ubi', '', d)}"
-QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-ab-boot', 'ab-ota-ubi', '', d)}"
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi vm-bootsys-volume vm-systemrw-volume"
+IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi modem-volume"
 
 CORE_IMAGE_EXTRA_INSTALL += "${MLIBPREFIX}systemd-machine-units-ubi"
-CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' ${MLIBPREFIX}recovery-ab', '', d)}"
 
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
 SYSTEMIMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'sysfs.ubifs', d)}"
 USERIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/userfs.ubifs"
 USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
 
-CV2X_EXTRA_IMAGE_ROOTFS ?= "${WORKDIR}/cv2x_extra-ubi"
+CACHEIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/cache.ubifs"
+CACHEIMAGE_ROOTFS ?= "${WORKDIR}/cache"
+PERSISTIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/persist.ubifs"
+PERSISTIMAGE_ROOTFS ?= "${WORKDIR}/persist"
+SYSTEMRWIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/systemrw.ubifs"
+SYSTEMRWIMAGE_ROOTFS ?= "${WORKDIR}/systemrw"
 
 VMIMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VMIMAGE_UBIFS_TARGET ?= "vm-bootsys.ubifs"
@@ -33,12 +36,18 @@ UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_vm.cfg"
 # Ensure SELinux file context variable is defined
 SELINUX_FILE_CONTEXTS ?= ""
 SELINUX_FILE_CONTEXTS_DATA ?= ""
+SELINUX_FILE_CONTEXTS_SYSTEMRW ?= ""
 SELINUX_IMG_UBI_S = "${@['--selinux=${SELINUX_FILE_CONTEXTS}', ''][d.getVar('SELINUX_FILE_CONTEXTS') == '']}"
 SELINUX_IMG_UBI_S_DATA = "${@['--selinux=${SELINUX_FILE_CONTEXTS_DATA}', ''][d.getVar('SELINUX_FILE_CONTEXTS_DATA') == '']}"
 IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_UBI_S}', '', d)}"
 IMAGE_UBIFS_SELINUX_OPTIONS_DATA = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_UBI_S_DATA}', '', d)}"
+SELINUX_IMG_UBI_S_SYSTEMRW = "${@['--selinux=${SELINUX_FILE_CONTEXTS_SYSTEMRW}', ''][d.getVar('SELINUX_FILE_CONTEXTS_SYSTEMRW') == '']}"
+IMAGE_UBIFS_SELINUX_OPTIONS_SYSTEMRW = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_UBI_S_SYSTEMRW}', '', d)}"
 
 MKUBIFS_USERFS_ARGS ?= "-m 4096 -e 253952 -c 2146 -F"
+MKUBIFS_PERSIST_ARGS ?= "-m 4096 -e 253952 -c 24 -F"
+MKUBIFS_SYSTEMRW_ARGS ?= "-m 4096 -e 253952 -c 25 -F"
+MKUBIFS_CACHE_ARGS ?= "-m 4096 -e 253952 -c 25 -F"
 
 do_image_ubi[noexec] = "1"
 do_image_ubifs[noexec] = "1"
@@ -48,9 +57,10 @@ do_image_multiubi[noexec] = "1"
 ### Generate sysfs.ubi #########################
 ################################################
 SYSTEM_VOLUME_SIZE_G ??= "200MiB"
-MODEM_VOLUME_SIZE ??= "110MiB"
+MODEM_VOLUME_SIZE ??= "125MiB"
 ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM_VOLUME_SIZE_G}', '${SYSTEM_VOLUME_SIZE}', d)}"
 IMAGE_ROOTFS_UBI = "${WORKDIR}/rootfs-ubi"
+ROOTFS_POSTPROCESS_COMMAND += "create_systemrw_dir; create_persist_dir "
 
 create_symlink_userfs[cleandirs] = "${USERIMAGE_ROOTFS}"
 create_symlink_userfs() {
@@ -72,11 +82,13 @@ create_symlink_userfs() {
     mv ${IMAGE_ROOTFS_UBI}/data/* ${USERIMAGE_ROOTFS}
 }
 
-create_cv2x_extra_image_rootfs[cleandirs] = "${CV2X_EXTRA_IMAGE_ROOTFS}"
-create_cv2x_extra_image_rootfs() {
-    # Move cv2x_extra files from rootfs to cv2x_extra folder,
-    # create the folder if it doesn't exist.
-    mv ${IMAGE_ROOTFS_UBI}/cv2x_extra/* ${CV2X_EXTRA_IMAGE_ROOTFS} || mkdir -p ${IMAGE_ROOTFS_UBI}/cv2x_extra
+create_systemrw_dir() {
+    mkdir -p ${IMAGE_ROOTFS}/systemrw
+}
+
+
+create_persist_dir() {
+    mkdir -p ${IMAGE_ROOTFS}/var/persist
 }
 
 create_symlink_systemd_ubi_mount_rootfs() {
@@ -84,20 +96,18 @@ create_symlink_systemd_ubi_mount_rootfs() {
     for entry in ${MACHINE_MNT_POINTS}; do
         mountname="${entry:1}"
         if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" || "$mountname" == "lxcrootfs" ]] ; then
-            cp -f ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount.service
             ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
         else
-            cp ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}.mount
             if [ "$mountname" = "systemrw" ]; then
                 mkdir -p ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw.mount.d
                 cp ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw.mount.d/systemrw.conf
             fi
-            if [[ "$mountname" == "$userfsdatadir" ]] ; then
+            if [[ "$mountname" == "data" ]] ; then
                 ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
             elif [[ "$mountname" == "cache" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
             elif [[ "$mountname" == "persist" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
             else
                 ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
             fi
@@ -135,8 +145,6 @@ create_symlink_systemd_ubi_mount_rootfs() {
    sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
    sed -i '/Before=sysinit.target/d' ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
 
-   # Copy sdcard mount rules
-   cp ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions.rules
 }
 
 VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
@@ -348,13 +356,20 @@ do_makesystem_ubi[prefuncs] += "create_rootfs_ubi"
 do_makesystem_ubi[prefuncs] += "create_symlink_userfs"
 do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
-do_makesystem_ubi[prefuncs] += "create_cv2x_extra_image_rootfs"
 do_makesystem_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_ubi() {
     mkfs.ubifs -r ${IMAGE_ROOTFS_UBI} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
     mkfs.ubifs -r ${USERIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USERIMAGE_UBIFS_TARGET} ${MKUBIFS_USERFS_ARGS}
+    install -d ${CACHEIMAGE_ROOTFS}
+    install -d ${PERSISTIMAGE_ROOTFS}
+    install -d ${SYSTEMRWIMAGE_ROOTFS}
+    mkfs.ubifs -r ${CACHEIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${CACHEIMAGE_UBIFS_TARGET} ${MKUBIFS_CACHE_ARGS}
+    mkfs.ubifs -r ${PERSISTIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${PERSISTIMAGE_UBIFS_TARGET} ${MKUBIFS_PERSIST_ARGS}
+    mkfs.ubifs -r ${SYSTEMRWIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_SYSTEMRW} -o ${SYSTEMRWIMAGE_UBIFS_TARGET} ${MKUBIFS_SYSTEMRW_ARGS}
+
+
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 

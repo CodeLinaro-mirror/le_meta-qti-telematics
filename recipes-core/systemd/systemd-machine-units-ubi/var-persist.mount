@@ -1,0 +1,11 @@
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[Unit]
+Description=Mount persist on /var/persist
+Before=sysinit.target
+
+[Mount]
+Type=ubifs
+What=ubi0:persist
+Where=/var/persist

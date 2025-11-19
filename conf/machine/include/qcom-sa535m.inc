@@ -54,7 +54,7 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
 
-MACHINE_FEATURES += "qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth"
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth"
 
 MACHINE_MNT_POINTS = " \
     /firmware \
@@ -63,7 +63,6 @@ MACHINE_MNT_POINTS = " \
     /persist \
     /systemrw \
 "
-
 EXTRA_USERS_PARAMS += "usermod -p \
     '\$6\$fixed\$ehhrBJycOdAtiIuyucGkTk3lphxtYcRODdJVNS8T1kdONi5tWAFnzMcfOXlfH42wBNE5wmTyiNEopIKxG0U5r/' \
     -d /home/root root \
