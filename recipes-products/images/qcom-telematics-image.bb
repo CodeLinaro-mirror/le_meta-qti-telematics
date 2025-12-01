@@ -7,7 +7,7 @@ IMAGE_FEATURES += "allow-root-login post-install-logging"
 inherit core-image features_check extrausers image-adbd
 inherit python3native qramdisk dm-verity-initramfs-v4
 
-QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', 'qimage-ext4', '', d)}"
+QIMGCLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'qimage-ext4', '', d)}"
 
 inherit ${QIMGCLASSES}
 
