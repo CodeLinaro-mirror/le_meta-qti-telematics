@@ -25,7 +25,6 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'systemd-machine-units-ubi', '', d)} \
     packagegroup-qcom-ppat \
     binder \
-    qcom-subsystem-ramdump \
     packagegroup-qti-telsdk \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
