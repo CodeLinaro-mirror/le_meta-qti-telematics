@@ -6,6 +6,7 @@ IMAGE_FEATURES += "allow-root-login post-install-logging"
 
 inherit core-image features_check extrausers image-adbd
 inherit python3native qramdisk dm-verity-initramfs-v4
+inherit  ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux-image', '', d)}
 
 QIMGCLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'qimage-ext4', '', d)}"
 
