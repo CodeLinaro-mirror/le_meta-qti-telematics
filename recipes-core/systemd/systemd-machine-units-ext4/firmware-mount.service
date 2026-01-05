@@ -25,17 +25,21 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 # Changes from Qualcomm Technologies, Inc. are provided under the following license:
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 [Unit]
+Description=Mount firmware partition to /firmware mount point
+SourcePath=/etc/initscripts/firmware-ext4-mount.sh
 Before=local-fs.target
-ConditionDirectoryNotEmpty=!/firmware
+DefaultDependencies=no
 
-[Mount]
-What=/dev/disk/by-partlabel/firmware
-Where=/firmware
-Options=noexec,nodev,ro,context=system_u:object_r:firmware_t:s0
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+PassEnvironment="SLOT_SUFFIX"
+ExecStart=/etc/initscripts/firmware-ext4-mount.sh
+Nice=-20
 
 [Install]
 WantedBy=local-fs.target
