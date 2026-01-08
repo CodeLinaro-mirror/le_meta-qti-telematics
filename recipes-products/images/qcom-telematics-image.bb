@@ -49,6 +49,7 @@ do_create_rootdir() {
     mkdir -p ${IMAGE_ROOTFS}/home/root
 }
 
+IMAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', ' initscripts-automount-sdcard', '', d)}"
 IMAGE_FEATURES:append:sa535m = " \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'empty-root-password serial-autologin-root', '', d )} \
 "
