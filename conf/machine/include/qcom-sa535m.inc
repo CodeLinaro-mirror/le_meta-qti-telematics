@@ -7,7 +7,8 @@ SOC_FAMILY = "sa535m"
 require conf/machine/include/qcom-base.inc
 
 # Additional Kernel cmdline parameters for debug builds
-DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr reboot=panic_warm page_owner=on qcom_scm.download_mode=1 slub_debug=FZP,zs_handle,zspage;FZPU','',d)}"
+SERIAL_CONSOLES = "115200;ttyMSM0"
+DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr reboot=panic_warm page_owner=on qcom_scm.download_mode=1 slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
 PREFERRED_VERSION_linux-qcom-custom = "6.6"
