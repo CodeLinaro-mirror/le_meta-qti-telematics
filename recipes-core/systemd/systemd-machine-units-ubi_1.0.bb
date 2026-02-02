@@ -12,6 +12,7 @@ FILESPATH =+ "${WORKSPACE}:systemd-machine-uints-ubi"
 
 SRC_URI += "file://firmware-mount.service"
 SRC_URI += "file://firmware-ubi-mount.sh"
+SRC_URI += "file://non-hlos-squash.sh"
 SRC_URI += "file://var-persist.mount"
 SRC_URI += "file://data.mount"
 SRC_URI += "file://systemrw.mount"
@@ -27,7 +28,9 @@ do_install() {
     install -d ${D}${sysconfdir}/initscripts
     install -d 0644 ${D}${systemd_unitdir}/system
     install -d 0755 ${D}${systemd_unitdir}/system/local-fs.target.wants
-    install -m 0644 ${WORKDIR}/firmware-ubi-mount.sh ${D}${sysconfdir}/initscripts/firmware-ubi-mount.sh
+#Uncomment if ubi filesystem needs to be enabled
+#    install -m 0644 ${WORKDIR}/firmware-ubi-mount.sh ${D}${sysconfdir}/initscripts/firmware-mount.sh
+    install -m 0644 ${WORKDIR}/non-hlos-squash.sh ${D}${sysconfdir}/initscripts/firmware-mount.sh
     install -m 0744 ${S}/systemrw.conf ${D}${systemd_system_unitdir}/systemrw-ubi.conf
     install -m 0644 ${WORKDIR}/var-volatile.mount \
             ${D}${systemd_unitdir}/system/var-volatile.mount

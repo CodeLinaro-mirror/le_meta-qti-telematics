@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted (subject to the limitations in the
@@ -563,29 +563,20 @@ MountSystem () {
         fi
 
         # Get the boot system volume number
-        #GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
-        #if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
-        #    LOGD "Cannot get ${DM_SYST_NAME} volume."
-        #    return ${STATUS_ERR}
-        #fi
-        #SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
-
-        #if [ "${SYS_IMAGE_VOL}" == "" ]; then
-        #    LOGD "Cannot get ${DM_SYST_NAME} volume."
-        #    return ${STATUS_ERR}
-        #fi
-
-        #char_device=/dev/ubi${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
-        #block_device=/dev/ubiblock${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
-        char_device=/dev/ubi0_0
-        block_device=/dev/ubiblock0_0
-        LOGD "busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro"
-        busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
-        if [ $? -ne ${STATUS_OK} ]; then
-             LOGD "Error: mount ubifs ${char_device} failed"
-             return ${STATUS_ERR}
+        GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
+        if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
+            LOGD "Cannot get ${DM_SYST_NAME} volume."
+            return ${STATUS_ERR}
         fi
-	return ${STATUS_OK}
+        SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+
+        if [ "${SYS_IMAGE_VOL}" == "" ]; then
+            LOGD "Cannot get ${DM_SYST_NAME} volume."
+            return ${STATUS_ERR}
+        fi
+
+        char_device=/dev/ubi${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
+        block_device=/dev/ubiblock${SYS_UBI_DEV_NUM}_${SYS_IMAGE_VOL}
 
         # Check if the image type is squashfs in UBI volume
         if ${Bdd} if=${char_device}\

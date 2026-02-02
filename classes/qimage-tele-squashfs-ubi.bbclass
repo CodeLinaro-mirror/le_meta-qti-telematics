@@ -5,7 +5,9 @@ MLIBPREFIX ?= ""
 QIMGUBICLASSES  = ""
 # To be implemented
 
-QIMGUBICLASSES += "${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-recovery qti-ab-boot qti-nad-core', 'ota-ubi', '', d)}"
+#QIMGUBICLASSES += "${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-recovery qti-ab-boot qti-nad-core', 'ota-ubi', '', d)}"
+
+QIMGUBICLASSES += "${@bb.utils.contains_any('MACHINE_FEATURES', 'nand-boot', 'qimage-ubi', '', d)}"
 
 inherit ${QIMGUBICLASSES}
 
@@ -13,6 +15,7 @@ IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume cache-volume persist-v
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-tele-lxc', 'lxcrootfs-volume', '', d)}"
 
+CORE_IMAGE_EXTRA_INSTALL += "${MLIBPREFIX}systemd-machine-units-ubi"
 DEPENDS += "\
              squashfs-tools-native \
 "
@@ -29,8 +32,11 @@ MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 LXCRFSIMAGE_UBIFS_TARGET ?= "${DEPLOY_DIR_IMAGE}/lxcrootfs.ubifs"
 LXCRFSIMAGE_SQUASHFS_TARGET ?= "${DEPLOY_DIR_IMAGE}/lxcrootfs.squash"
 
-CV2X_EXTRA_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/cv2x_extra.ubifs"
-CV2X_EXTRA_ROOTFS ?= "${WORKDIR}/cv2x_extra"
+
+CACHE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/cache.ubifs"
+CACHE_IMAGE_ROOTFS ?= "${WORKDIR}/cache"
+PERSIST_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/persist.ubifs"
+PERSIST_IMAGE_ROOTFS ?= "${WORKDIR}/persist"
 
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
@@ -56,6 +62,7 @@ TELAF_RO_IMAGE_PATH ?= "${DEPLOY_DIR_IMAGE}/telaf-images/telaf_ro"
 TELAF_RO_SELINUX_FILE_CONTEXTS ?= "${DEPLOY_DIR_IMAGE}/telaf-images/security/selinux/sepolicy/files/file_contexts"
 
 # Ensure SELinux file context variable is defined
+
 SELINUX_FILE_CONTEXTS ?= ""
 SELINUX_FILE_CONTEXTS_DATA ?= ""
 SELINUX_FILE_CONTEXTS_SYSTEMRW ?= ""
@@ -68,6 +75,8 @@ IMAGE_UBIFS_SELINUX_OPTIONS_SYSTEMRW = "${@bb.utils.contains('DISTRO_FEATURES', 
 
 MKUBIFS_SYSTEMRW_ARGS ?= "-m 4096 -e 253952 -c 25 -F"
 MKUBIFS_USERFS_ARGS ?= "-m 4096 -e 253952 -c 2146 -F"
+MKUBIFS_CACHE_ARGS ?= "-m 4096 -e 253952 -c 25 -F"
+MKUBIFS_PERSIST_ARGS ?= "-m 4096 -e 253952 -c 24 -F"
 
 OVERLAY_ENABLED ?= "False"
 
@@ -86,6 +95,14 @@ IMAGE_ROOTFS_UBIFS_UBI = "${WORKDIR}/rootfs-ubifs-ubi"
 create_tele_systemrw[cleandirs] = "${SYSTEMRW_ROOTFS}"
 # Nothing to do, empty volume
 create_tele_systemrw[noexec] = "1"
+
+create_cache[cleandirs] = "${CACHE_IMAGE_ROOTFS}"
+# Nothing to do, empty volume
+create_cache[noexec] = "1"
+
+create_persist[cleandirs] = "${PERSIST_IMAGE_ROOTFS}"
+# Nothing to do, empty volume
+create_persist[noexec] = "1"
 
 create_symlink_tele_userfs[cleandirs] = "${USER_IMAGE_ROOTFS}"
 create_symlink_tele_userfs() {
@@ -118,43 +135,7 @@ create_symlink_tele_userfs() {
     mv ${IMAGE_ROOTFS_SQUASHFS_UBI}/data/* ${USER_IMAGE_ROOTFS}
 }
 
-create_cv2x_extra_rootfs[cleandirs] = "${CV2X_EXTRA_ROOTFS}"
-create_cv2x_extra_rootfs() {
-    # Move cv2x_extra files from rootfs to cv2x_extra folder,
-    # create the folder if it doesn't exist.
-    mv ${IMAGE_ROOTFS_SQUASHFS_UBI}/cv2x_extra/* ${CV2X_EXTRA_ROOTFS} || mkdir -p ${IMAGE_ROOTFS_SQUASHFS_UBI}/cv2x_extra
-}
-
-create_symlink_systemd_ubi_mount_tele_rootfs() {
-    # Symlink ubi mount files to systemd targets
-    for entry in ${MACHINE_MNT_POINTS}; do
-        mountname="${entry:1}"
-        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" || "$mountname" == "lxcrootfs" ]] ; then
-            cp -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-mount.service
-            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
-            if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
-                if [ -e ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/non-hlos-squash.sh ]; then
-                    rm -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/firmware-ubi-mount.sh
-                    mv -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/non-hlos-squash.sh ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/firmware-ubi-mount.sh
-                fi
-            fi
-        else
-            cp ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}.mount
-            if [ "$mountname" = "systemrw" ]; then
-                mkdir -p ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/systemrw.mount.d
-                cp ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/systemrw.mount.d/systemrw.conf
-            fi
-            if [[ "$mountname" == "$userfsdatadir" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
-            elif [[ "$mountname" == "cache" || "$mountname" == "cv2x_extra" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
-            elif [[ "$mountname" == "persist" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
-            else
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
-            fi
-        fi
-    done
+cleanup_squashfs_rootfs() {
 
     #remove additional ext4 symlinks if present
     rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/local-fs-pre.target.requires/systemd-fsck*
@@ -187,8 +168,6 @@ create_symlink_systemd_ubi_mount_tele_rootfs() {
    sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
    sed -i '/Before=sysinit.target/d' ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
 
-   # Copy sdcard mount rules
-   cp ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/udev/rules.d/mountpartitions.rules
 }
 
 # Need to copy ubinize.cfg file in the deploy directory
@@ -846,11 +825,12 @@ python create_rootfs_tele_ubifs () {
 
 do_makesystem_tele_ubi[prefuncs] += "create_rootfs_tele_ubi"
 do_makesystem_tele_ubi[prefuncs] += "create_symlink_tele_userfs"
-do_makesystem_tele_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_tele_rootfs"
+do_makesystem_tele_ubi[prefuncs] += "cleanup_squashfs_rootfs"
 do_makesystem_tele_ubi[prefuncs] += "do_create_ubinize_tele_config"
-do_makesystem_tele_ubi[prefuncs] += "create_cv2x_extra_rootfs"
 do_makesystem_tele_ubi[prefuncs] += "create_rootfs_tele_ubifs"
 do_makesystem_tele_ubi[prefuncs] += "create_tele_systemrw"
+do_makesystem_tele_ubi[prefuncs] += "create_cache"
+do_makesystem_tele_ubi[prefuncs] += "create_persist"
 do_makesystem_tele_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubi_tools', '', d)}"
 do_makesystem_tele_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_makesystem_tele_ubi[dirs] += "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
@@ -881,13 +861,15 @@ fakeroot do_makesystem_tele_ubi() {
 
    mkfs.ubifs -r ${SYSTEMRW_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_SYSTEMRW} -o ${SYSTEMRW_UBIFS_TARGET} ${MKUBIFS_SYSTEMRW_ARGS}
    mkfs.ubifs -r ${USER_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USER_IMAGE_UBIFS_TARGET} ${MKUBIFS_USERFS_ARGS}
-   mkfs.ubifs -r ${CV2X_EXTRA_ROOTFS} -o ${CV2X_EXTRA_UBIFS_TARGET} ${MKUBIFS_ARGS}
+   mkfs.ubifs -r ${CACHE_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${CACHE_UBIFS_TARGET} ${MKUBIFS_CACHE_ARGS}
+   mkfs.ubifs -r ${PERSIST_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${PERSIST_UBIFS_TARGET} ${MKUBIFS_PERSIST_ARGS}
    if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
        if [ -d ${MODEM_IMAGE_DIR} ]; then
            mkfs.ubifs -r ${MODEM_IMAGE_DIR} --selinux=${SELINUX_CONTEXT_MODEM} -o ${MODEM_UBIFS_IMAGE} ${MKUBIFS_ARGS}
        fi
    fi
    mkfs.ubifs -r ${IMAGE_ROOTFS_UBIFS_UBI} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEM_IMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+
    ubinize -o ${SYSTEM_IMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_SYSTEM_CFG}
 }
 
@@ -1035,7 +1017,7 @@ do_verity_ubinize() {
 }
 do_makesystem_gluebi[prefuncs] += "create_rootfs_tele_ubi"
 do_makesystem_gluebi[prefuncs] += "create_symlink_tele_userfs"
-do_makesystem_gluebi[prefuncs] += "create_symlink_systemd_ubi_mount_tele_rootfs"
+do_makesystem_gluebi[prefuncs] += "cleanup_squashfs_rootfs"
 do_makesystem_gluebi[prefuncs] += "do_create_ubinize_tele_config"
 do_makesystem_gluebi[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'adjust_system_size_for_verity', '', d), '', d)}"
 do_makesystem_gluebi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubi_tools', '', d)}"

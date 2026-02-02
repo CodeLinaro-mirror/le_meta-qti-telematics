@@ -31,7 +31,7 @@
 
 [Unit]
 Description=Mount firmware partition to /firmware mount point
-SourcePath=/etc/initscripts/firmware-ubi-mount.sh
+SourcePath=/etc/initscripts/firmware-mount.sh
 Before=local-fs.target
 DefaultDependencies=no
 
@@ -39,7 +39,7 @@ DefaultDependencies=no
 Type=oneshot
 RemainAfterExit=yes
 PassEnvironment="SLOT_SUFFIX"
-ExecStart= sh /etc/initscripts/firmware-ubi-mount.sh
+ExecStart= sh /etc/initscripts/firmware-mount.sh
 Nice=-20
 
 [Install]
