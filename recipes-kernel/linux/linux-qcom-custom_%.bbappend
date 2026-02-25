@@ -1,8 +1,4 @@
 # Prepend to do_install: copy initramfs scripts and prepare directories
-
-KERNEL_CONFIG_FRAGMENTS:remove = " ${S}/arch/arm64/configs/qcom_addons.config"
-KERNEL_CONFIG_FRAGMENTS:remove = " ${@oe.utils.vartrue('DEBUG_BUILD', '${S}/arch/arm64/configs/qcom_debug.config', '', d)}"
-KERNEL_CONFIG_FRAGMENTS:remove = " ${@oe.utils.vartrue('DEBUG_BUILD', '${S}/arch/arm64/configs/qcom_addons_debug.config', '', d)}"
 RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base = ""
 
 do_install:prepend() {

@@ -8,10 +8,10 @@ require conf/machine/include/qcom-base.inc
 
 # Additional Kernel cmdline parameters for debug builds
 SERIAL_CONSOLES = "115200;ttyMSM0"
-DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr reboot=panic_warm page_owner=on qcom_scm.download_mode=1 slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
+DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
-PREFERRED_VERSION_linux-qcom-custom = "6.6"
+PREFERRED_VERSION_linux-qcom-custom = "6.18%"
 PREFERRED_VERSION_thermal-engine = "14.0"
 
 # Fixes for boot image dtb appending
@@ -20,7 +20,7 @@ KERNEL_DTB_NAMES = "dtb.img"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x80000000"
 
-KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/lib/firmware/image net.ifnames=0"
+KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/lib/firmware/image net.ifnames=0 qcom_scm.download_mode=1 reboot=panic_warm panic=-1"
 
 # Bootloader configuration
 EXTRA_IMAGEDEPENDS += "edk2"
@@ -56,6 +56,10 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-mrc             Machine supports mrcd feature
 
 MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim"
+MACHINE_FEATURES:remove = " \
+    qti-wlan \
+    qti-bluetooth \
+"
 
 MACHINE_MNT_POINTS = " \
     /firmware \

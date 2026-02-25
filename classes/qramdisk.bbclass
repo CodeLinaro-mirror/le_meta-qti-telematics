@@ -143,7 +143,7 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_secure_eip.ko lib/modules/
             cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_core.ko lib/modules/
             cp ${IMAGE_ROOTFS}/lib/firmware/qcom_aw_phy/eth_custom_rates_1.hex lib/firmware/qcom_aw_phy/
-            
+
             # strip and sign the KOs
             do_strip_and_sign_dlkm lib/modules/gsim.ko
             do_strip_and_sign_dlkm lib/modules/ecpri_dmam.ko
@@ -334,15 +334,9 @@ fakeroot do_ramdisk_create() {
             cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
             # remove the initrd-fde.gz file if exist
             rm -rf ${IMGDEPLOYDIR}/${PN}-initrd-fde.gz
-            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
-                # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
-                bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-fde -u 0 -g 0 ${RAMDISKDIRFDE}
-                gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-fde
-            else
-                # gen_initramfs_list creates compressed initramfs file using gen_init_cpio
-                # and compressor depending on the extension
-                bash ./scripts/gen_initramfs_list.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-fde.gz -u 0 -g 0 ${RAMDISKDIRFDE}
-            fi
+            # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
+            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-fde -u 0 -g 0 ${RAMDISKDIRFDE}
+            gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-fde
         fi
 
         if ${@bb.utils.contains('DISTRO_FEATURES','usrmerge','true','false',d)}; then
@@ -357,15 +351,9 @@ fakeroot do_ramdisk_create() {
         cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
         # remove the initrd.gz file if exist
         rm -rf ${IMGDEPLOYDIR}/${PN}-initrd.gz
-        if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
-            # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
-            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd -u 0 -g 0 ${RAMDISKDIR}
-            gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd
-        else
-            # gen_initramfs_list creates compressed initramfs file using gen_init_cpio
-            # and compressor depending on the extension
-            bash ./scripts/gen_initramfs_list.sh -o ${IMGDEPLOYDIR}/${PN}-initrd.gz -u 0 -g 0 ${RAMDISKDIR}
-        fi
+        # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
+        bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd -u 0 -g 0 ${RAMDISKDIR}
+        gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd
 
         if [[ "${OVERLAY_ENABLED}" == "True" ]]; then
 
@@ -382,16 +370,9 @@ fakeroot do_ramdisk_create() {
             # remove the initrd-overlay.gz file if exist
             rm -rf ${IMGDEPLOYDIR}/${PN}-initrd-debug.gz
 
-            if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-qcom-custom', '5.10 5.15 6.6', 'true', 'false', d)}; then
-
-                 # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
-                 bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-debug -u 0 -g 0 ${RAMDISKDIRDEBUG}
-                 gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-debug
-            else
-                 # gen_initramfs_list creates compressed initramfs file using gen_init_cpio
-                 # and compressor depending on the extension
-                 bash ./scripts/gen_initramfs_list.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-debug.gz -u 0 -g 0 ${RAMDISKDIRDEBUG}
-             fi
+            # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
+            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-debug -u 0 -g 0 ${RAMDISKDIRDEBUG}
+            gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-debug
         fi
         cd ${CURRENT_DIR}
 }
