@@ -44,7 +44,7 @@ do_compile() {
 do_install() {
     if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', 'false', 'true', d)}; then
         install -d ${D}${bindir}
-        install -m 0755 ${S}/daemons/gptp/linux/build/obj/qgptp ${D}${bindir}
+        install -m 0755 ${S}/daemons/gptp/obj/qgptp ${D}${bindir}
     fi
 
     install -d ${D}${libdir}
@@ -60,7 +60,7 @@ do_install() {
           install -m 0644 ${WORKDIR}/qgptp.rules -D ${D}${sysconfdir}/udev/rules.d/qgptp.rules
           install -d ${D}${sysconfdir}/tmpfiles.d/
           install -m 0644 ${WORKDIR}/gptp-daemon-tmpfilesd.conf ${D}${sysconfdir}/tmpfiles.d/gptp-daemon-tmpfilesd.conf
-          install -m 0644 ${S}/daemons/gptp/gptp_cfg_le.ini ${D}${sysconfdir}/gptp_cfg.ini
+          install -m 0644 ${S}/daemons/gptp/etc/gptp_cfg_le.ini ${D}${sysconfdir}/gptp_cfg.ini
        fi
     fi
 }
