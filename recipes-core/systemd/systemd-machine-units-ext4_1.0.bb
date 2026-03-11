@@ -14,6 +14,8 @@ SRC_URI += "file://var-cache.mount"
 SRC_URI += "file://firmware-mount.service"
 SRC_URI += "file://firmware-ext4-mount.sh"
 
+SRC_URI:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'file://isim.mount', '', d)}"
+
 IMAGETYPE = "ext4"
 
 do_install() {

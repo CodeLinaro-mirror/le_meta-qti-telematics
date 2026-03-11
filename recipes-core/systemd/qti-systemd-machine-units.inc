@@ -34,6 +34,9 @@ add_mount_files () {
 		elif [[ "$mountname" == "systemrw"  || "$mountname" == "data" ]]; then
 			install -m 0644 ${S}/${mountname}.mount -D ${D}${systemd_unitdir}/system/${mountname}.mount
 			ln -sf ${systemd_unitdir}/system/${mountname}.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}.mount
+		elif [[ "$mountname" == "isim" ]]; then
+			install -m 0644 ${S}/${mountname}.mount -D ${D}${systemd_unitdir}/system/${mountname}.mount
+			ln -sf ${systemd_unitdir}/system/${mountname}.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/${mountname}.mount
 		fi
 	fi
     done
