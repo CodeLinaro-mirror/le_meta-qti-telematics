@@ -55,9 +55,9 @@ RDEPENDS:packagegroup-qti-telematics-utils = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', 'qdloader', d)} \
     ${@oe.utils.conditional('CRONIE', 'True', 'cronie', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'devmem2 ', '', d)} \
-    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'net-tools', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'leproperties', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'procrank', '', d)} \
+    net-tools \
     ethtool \
     mtd-utils \
     chrony \
