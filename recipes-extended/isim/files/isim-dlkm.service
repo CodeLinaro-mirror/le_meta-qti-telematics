@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#
+
+[Unit]
+Description=Load TESIC dlkm service
+AssertPathExists=/lib/modules/
+Before=init_sys_mss.service
+After=isim.mount isim_ubi_mount.service
+Conflicts=shutdown.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+Restart=on-failure
+RemainAfterExit=yes
+ExecStart=/etc/initscripts/load_isim.sh start
+ExecStop=/etc/initscripts/load_isim.sh stop
+
+[Install]
+WantedBy=local-fs.target

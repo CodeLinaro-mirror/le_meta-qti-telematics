@@ -92,7 +92,7 @@ do_deploy_fixup () {
         install -m 0644 ${DEPLOY_DIR_IMAGE}/persist.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/persist.img
         install -m 0644 ${DEPLOY_DIR_IMAGE}/cache.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/cache.img
         install -m 0644 ${DEPLOY_DIR_IMAGE}/systemrw.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/systemrw.img
-        if ${@bb.utils.contains('MACHINE_FEATURES', 'isim', 'true', 'false', d)} ; then
+        if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
             install -m 0644 ${DEPLOY_DIR_IMAGE}/isim.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/isim.img
         fi
     elif [ "${NAND_BOOT}" = "True" ]; then

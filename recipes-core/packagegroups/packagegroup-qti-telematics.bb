@@ -33,6 +33,7 @@ PACKAGES = ' \
     ${MLPREFIX}packagegroup-qti-telematics-utils \
     ${MLPREFIX}packagegroup-qti-telematics-vnw \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sensors', '${MLPREFIX}packagegroup-qti-telematics-sensors', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', '${MLPREFIX}packagegroup-qti-telematics-isim', '', d)} \
     '
 
 RDEPENDS:packagegroup-qti-telematics = "\
@@ -42,6 +43,7 @@ RDEPENDS:packagegroup-qti-telematics = "\
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-mvm', '${MLPREFIX}packagegroup-qti-telematics-mvm', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'vbleima', 'keyutils ima-evm-utils attr ima-cert-setup', '',d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'packagegroup-qti-telematics-nad-core', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', '${MLPREFIX}packagegroup-qti-telematics-isim', '', d)} \
     "
 
 RDEPENDS:packagegroup-qti-telematics-sensors = "\
@@ -86,3 +88,7 @@ RDEPENDS:packagegroup-qti-telematics-nad-core = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-stream-update', 'stream-update', '', d)} \
     "
 
+RDEPENDS:packagegroup-qti-telematics-isim = "\
+    isim-dlkm \
+    isim-devicetree \
+    "
