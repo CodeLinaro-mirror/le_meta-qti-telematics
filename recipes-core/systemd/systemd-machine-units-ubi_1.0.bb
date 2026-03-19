@@ -17,6 +17,8 @@ SRC_URI += "file://data.mount"
 SRC_URI += "file://systemrw.mount"
 SRC_URI += "file://systemrw.conf"
 SRC_URI += "file://var-cache.mount"
+SRC_URI += "file://var-volatile.mount"
+
 
 IMAGETYPE = "ubi"
 
@@ -24,9 +26,12 @@ IMAGETYPE = "ubi"
 do_install() {
     install -d ${D}${sysconfdir}/initscripts
     install -d 0644 ${D}${systemd_unitdir}/system
+    install -d 0755 ${D}${systemd_unitdir}/system/local-fs.target.wants
     install -m 0644 ${WORKDIR}/firmware-ubi-mount.sh ${D}${sysconfdir}/initscripts/firmware-ubi-mount.sh
     install -m 0744 ${S}/systemrw.conf ${D}${systemd_system_unitdir}/systemrw-ubi.conf
+    install -m 0644 ${WORKDIR}/var-volatile.mount \
+            ${D}${systemd_unitdir}/system/var-volatile.mount
 
- 
-
+    ln -sf ${systemd_unitdir}/system/var-volatile.mount \
+           ${D}${systemd_unitdir}/system/local-fs.target.wants/var-volatile.mount
 }

@@ -13,6 +13,7 @@ SRC_URI += "file://systemrw.mount"
 SRC_URI += "file://var-cache.mount"
 SRC_URI += "file://firmware-mount.service"
 SRC_URI += "file://firmware-ext4-mount.sh"
+SRC_URI += "file://var-volatile.mount"
 
 SRC_URI:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'file://isim.mount', '', d)}"
 
@@ -22,5 +23,11 @@ do_install() {
 
     install -d ${D}${sysconfdir}/initscripts
     install -d 0644 ${D}${systemd_unitdir}/system
+    install -d 0755 ${D}${systemd_unitdir}/system/local-fs.target.wants
     install -m 0744 ${WORKDIR}/firmware-ext4-mount.sh ${D}${sysconfdir}/initscripts/firmware-ext4-mount.sh
+    install -m 0644 ${WORKDIR}/var-volatile.mount \
+            ${D}${systemd_unitdir}/system/var-volatile.mount
+
+    ln -sf ${systemd_unitdir}/system/var-volatile.mount \
+           ${D}${systemd_unitdir}/system/local-fs.target.wants/var-volatile.mount
 }
