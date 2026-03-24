@@ -9,3 +9,6 @@ Before=sysinit.target
 Type=ubifs
 What=ubi0:persist
 Where=/var/persist
+
+[Install]
+WantedBy=local-fs.target

@@ -38,3 +38,6 @@ What=/dev/disk/by-partlabel/cache
 Where=/var/cache
 Type=ext4
 Options=noatime,data=ordered,noauto_da_alloc,discard,noexec,nodev,nosuid,noauto,x-systemd.automount,rootcontext=system_u:object_r:cache_t:s0
+
+[Install]
+WantedBy=local-fs.target

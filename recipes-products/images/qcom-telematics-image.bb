@@ -59,12 +59,12 @@ EMMC_BOOT = "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'True', 'Fals
 NAND_BOOT = "${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'True', 'False', d)}"
 
 python () {
-	bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
+    bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
 }
 
 do_merge_dtbs() {
-        install -d ${DEPLOY_DIR_IMAGE}/dtbs/
-	cat ${DEPLOY_DIR_IMAGE}/combined-dtb.dtb > ${DEPLOY_DIR_IMAGE}/dtbs/dtb.img
+    install -d ${DEPLOY_DIR_IMAGE}/dtbs/
+    cat ${DEPLOY_DIR_IMAGE}/combined-dtb.dtb > ${DEPLOY_DIR_IMAGE}/dtbs/dtb.img
 }
 
 do_merge_dtbs[depends] += "virtual/kernel:do_deploy"
@@ -110,7 +110,10 @@ do_deploy_fixup () {
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/persist.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/persist.ubifs
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/sysfs-squashfs_ab.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/sysfs-squashfs_ab.ubi
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_ab.cfg ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/squashfs_ubinize_ab.cfg
-     fi
+        if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
+            install -m 0644 ${DEPLOY_DIR_IMAGE}/isim.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/isim.ubi
+        fi
+    fi
 }
 
 ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition; "

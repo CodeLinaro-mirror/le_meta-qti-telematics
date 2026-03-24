@@ -1,0 +1,19 @@
+#Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+
+#This is the logical/dummy mount unit
+
+[Unit]
+Description=logical iSIM mount unit
+Before=local-fs.target
+After=isim_ubi_mount.service
+Requires=isim_ubi_mount.service
+
+[Mount]
+What=/isim
+Where=/isim
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

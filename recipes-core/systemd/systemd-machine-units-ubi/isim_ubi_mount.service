@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[Unit]
+Description=Attach UBI and mount isim at /isim
+SourcePath=/etc/initscripts/isim-ubi-mount.sh
+Before=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=-/etc/initscripts/isim-ubi-mount.sh start
+ExecStop=-/etc/initscripts/isim-ubi-mount.sh stop
+
+[Install]
+WantedBy=local-fs.target

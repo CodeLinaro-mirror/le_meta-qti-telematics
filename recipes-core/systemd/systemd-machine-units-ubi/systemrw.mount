@@ -9,3 +9,6 @@ Type=ubifs
 What=ubi0:systemrw
 Where=/systemrw
 Options=bulk_read,nodev,noexec,nosuid,rw,rootcontext=system_u:object_r:system_data_t:s0
+
+[Install]
+WantedBy=local-fs.target

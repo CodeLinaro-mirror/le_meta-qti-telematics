@@ -10,3 +10,6 @@ Type=ubifs
 What=ubi0:cachefs
 Where=/var/cache
 Options=bulk_read,rw
+
+[Install]
+WantedBy=local-fs.target

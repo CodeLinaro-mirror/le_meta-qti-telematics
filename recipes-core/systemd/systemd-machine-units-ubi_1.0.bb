@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=7a434440b651f4a472ca93716d01033a"
 
 inherit systemd
-FILESPATH =+ "${WORKSPACE}:systemd-machine-uints-ubi"
+FILESPATH =+ "${WORKSPACE}:systemd-machine-units-ubi"
 
 
 SRC_URI += "file://firmware-mount.service"
@@ -20,6 +20,8 @@ SRC_URI += "file://systemrw.conf"
 SRC_URI += "file://var-cache.mount"
 SRC_URI += "file://var-volatile.mount"
 
+
+SRC_URI:append = " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'file://isim_ubi_mount.service file://isim-ubi-mount.sh file://isim.mount', '', d)}"
 
 IMAGETYPE = "ubi"
 
@@ -37,4 +39,8 @@ do_install() {
 
     ln -sf ${systemd_unitdir}/system/var-volatile.mount \
            ${D}${systemd_unitdir}/system/local-fs.target.wants/var-volatile.mount
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)}; then
+        install -m 0755 ${WORKDIR}/isim-ubi-mount.sh ${D}${sysconfdir}/initscripts/isim-ubi-mount.sh
+    fi
 }
