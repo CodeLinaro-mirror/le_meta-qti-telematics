@@ -59,6 +59,7 @@ RDEPENDS:packagegroup-qti-telematics-utils = "\
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'devmem2 ', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'leproperties', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'procrank', '', d)} \
+    ${@oe.utils.conditional('DEBUG_BUILD', '1', 'systemd-analyze', '', d)} \
     net-tools \
     ethtool \
     mtd-utils \
