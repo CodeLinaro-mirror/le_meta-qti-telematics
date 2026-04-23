@@ -28,6 +28,7 @@ VOLATILE_BINDS_SA535M_DEBUG = "\
 /systemrw/gptp_cfg.ini /etc/gptp_cfg.ini\n\
 /systemrw/sensors.conf /etc/sensors.conf\n\
 /systemrw/izat.conf /etc/izat.conf\n\
+/systemrw/izat_process.conf /etc/izat_process.conf\n\
 /systemrw/gps.conf /etc/gps.conf\n\
 /systemrw/telux_chrony-sock.conf /etc/telux_chrony-sock.conf\n\
 /systemrw/telux_power_refd.conf /etc/telux_power_refd.conf\n\
@@ -63,6 +64,7 @@ VOLATILE_BINDS_SA535M_PERF = "\
 /systemrw/gptp_cfg.ini /etc/gptp_cfg.ini\n\
 /systemrw/sensors.conf /etc/sensors.conf\n\
 /systemrw/izat.conf /etc/izat.conf\n\
+/systemrw/izat_process.conf /etc/izat_process.conf\n\
 /systemrw/gps.conf /etc/gps.conf\n\
 /systemrw/telux_chrony-sock.conf /etc/telux_chrony-sock.conf\n\
 /systemrw/telux_power_refd.conf /etc/telux_power_refd.conf\n\

@@ -30,7 +30,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     packagegroup-qti-ss-mgr \
     packagegroup-qcom-securemsm \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', 'packagegroup-qti-data', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location packagegroup-qti-location-auto', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
     packagegroup-qcom-ppat \
     binder \
