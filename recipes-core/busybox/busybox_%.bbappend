@@ -1,17 +1,16 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/busybox:"
 
 SRC_URI += "\
-            file://automountsdcard.sh \
             file://no-shell-history.cfg \
             file://busybox_utilities.cfg \
+            file://0001-Support-both-buffer-mode-and-file-mode.patch \
+            file://taskset.cfg \
 "
 
-SRC_URI:append:sa525m = "file://taskset.cfg"
-
 do_install:append() {
-    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then        install -d ${D}${sysconfdir}/udev/scripts/
-        install -m 0555 ${WORKDIR}/automountsdcard.sh \
-            ${D}${sysconfdir}/udev/scripts/automountsdcard.sh
+    if [ -f ${D}${sysconfdir}/default/busybox-syslog ]; then
+        echo 'OPTIONS="-C300 -O /var/log/messages -R 127.0.0.1:47111 -L"' \
+            >> ${D}${sysconfdir}/default/busybox-syslog
     fi
 }
 
