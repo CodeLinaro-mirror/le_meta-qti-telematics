@@ -70,6 +70,7 @@ RDEPENDS:packagegroup-qti-telematics-utils = "\
     procps \
     logcat \
     logd \
+    start-scripts-zram \
     "
 
 RDEPENDS:packagegroup-qti-telematics-vnw = "\

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+#Environment variables
+#SWAP_MEMTOTAL_PCT:
+#Swap size, expressed in terms of total system memory
+
+case "$1" in
+  start)
+    factor=${SWAP_MEMTOTAL_PCT:-50}
+
+    memtotal=$(grep "^MemTotal:" /proc/meminfo | sed -n 's/[^0-9]*//gp')
+    # Set disksize to 75% of memtotal when ram is less than or equal to 2GB
+    if [ $memtotal -le 2097152 ]; then
+       factor=${SWAP_MEMTOTAL_PCT:-75}
+    fi
+    mem_for_disksize=$(($memtotal*$factor/100*1024))
+    if [ $mem_for_disksize -eq 0 ]; then
+      echo "ZRAM is disabled."
+      exit 0
+    fi
+
+    echo 1 > /sys/block/zram0/reset
+    echo $mem_for_disksize > /sys/block/zram0/disksize
+    # Usage of mem_limited is currently disabled.
+    # echo 50M > /sys/block/zram$i/mem_limit
+    mkswap /dev/zram0
+    # Enable paging and swapping for zram with higher priority
+    # Priority is a value between -1 and 32767. Higher number, higher priority.
+    swapon -p 32758 /dev/zram0
+  ;;
+
+  stop)
+    if [ "$(grep "^/dev/zram0" /proc/swaps)" != "" ]; then
+       swapoff /dev/zram0
+    fi
+  ;;
+esac
+
+exit 0
