@@ -8,6 +8,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit kernel
 
+DISTRO_VERSION = "2.1"
+
+# Extend the version string of the Linux kernel to indicate distro
+LINUX_VERSION_EXTENSION = "-qli-${DISTRO_VERSION}"
+
 COMPATIBLE_MACHINE = "(qcom)"
 
 FILESEXTRAPATHS:prepend = "${WORKSPACE}/kernel/kernel_platform:"
@@ -41,10 +46,6 @@ do_configure:prepend() {
         printf "%s%s" +g $head > ${B}/.scmversion
     fi
 
-    if [ ! -z "${LINUX_VERSION_EXTENSION}" ]; then
-        echo "# Global settings from linux recipe" >> ${B}/.config
-        echo "CONFIG_LOCALVERSION="\"${LINUX_VERSION_EXTENSION}\" >> ${B}/.config
-    fi
 
     # Check for kernel config fragments.  The assumption is that the config
     # fragment will be specified with the absolute path.  For example:
@@ -74,6 +75,18 @@ do_configure:prepend() {
         ( cd ${WORKDIR} && ${S}/scripts/kconfig/merge_config.sh -m -r -O ${B} ${B}/.config ${KERNEL_CONFIG_FRAGMENTS} 1>&2 )
     fi
 
+     # After merging, combine CONFIG_LOCALVERSION (from fragments) with LINUX_VERSION_EXTENSION
+    if [ ! -z "${LINUX_VERSION_EXTENSION}" ]; then
+        # Extract whatever CONFIG_LOCALVERSION was set by the fragments (strip quotes)
+         existing=$(grep "^CONFIG_LOCALVERSION=" ${B}/.config | sed 's/CONFIG_LOCALVERSION=//;s/"//g' | tail -1)
+
+        # Remove the old CONFIG_LOCALVERSION line
+        sed -i '/^CONFIG_LOCALVERSION=/d' ${B}/.config
+
+        # Write the combined value
+        echo "# Global settings from linux recipe" >> ${B}/.config
+        echo "CONFIG_LOCALVERSION=\"${existing}${LINUX_VERSION_EXTENSION}\"" >> ${B}/.config
+    fi
 }
 
 do_configure:append() {
