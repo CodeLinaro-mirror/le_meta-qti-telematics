@@ -28,7 +28,74 @@ MACHINE_FILESMAP_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FILESMAP_CONF'
 
 SIGN_OTA_PACKAGE ?= "${@bb.utils.contains('MACHINE_FEATURES', 'ota-package-verification', '--sign', '', d)}"
 
+MACHINE_PARTITION_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/partition' % p for p in d.getVar('BBPATH').split(':'))}"
+MACHINE_PARTITION_CONF_FULL_PATH ?= "${@bb.utils.which(d.getVar('MACHINE_PARTITION_CONF_SEARCH_PATH'), d.getVar('MACHINE_PARTITION_CONF')) or ''}"
+
 SLOT_A_SUFFIX ?= "_a"
+
+#Set appropriate partion:Image map
+NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}',dtbo='${DTBOIMAGE_TARGET}'"
+AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
+
+def set_partition_image_map(d):
+    if "qti-ab-boot" in d.getVar('COMBINED_FEATURES', True):
+        return d.getVar('AB_BOOT_PARTITION_IMAGE_MAP', True)
+    else:
+        return d.getVar('NONAB_BOOT_PARTITION_IMAGE_MAP', True)
+
+PARTITION_IMAGE_MAP = "${@set_partition_image_map(d)}"
+
+python do_generate_partition_xml() {
+    import os
+    import re
+    import bb
+
+    conf = d.getVar('MACHINE_PARTITION_CONF_FULL_PATH')
+    if not conf or not os.path.isfile(conf):
+        bb.fatal("Partition conf not found: '%s'" % conf)
+
+    workdir = d.getVar('WORKDIR')
+    xml     = os.path.join(workdir, 'sources/partition.xml')
+
+    bb.note("Parsing EMMC partition conf: %s" % conf)
+
+    partitions = {}  # name -> size_in_kb (int)
+
+    with open(conf, 'r') as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '--partition' not in line:
+                continue
+
+            # extract --name=VALUE
+            m_name = re.search(r'--name=(\S+)', line)
+            # extract --size=VALUE  (e.g. 71680Kb or 71680KB or 71680)
+            m_size = re.search(r'--size=([0-9]+(?:\.[0-9]+)?)\s*[Kk][Bb]?', line)
+
+            if m_name and m_size:
+                name    = m_name.group(1)
+                size_kb = int(float(m_size.group(1)))
+                partitions[name] = size_kb
+                bb.note("  partition: %-30s  %d KB" % (name, size_kb))
+
+    if not partitions:
+        bb.fatal("No partitions parsed from %s" % conf)
+
+    # Write partition.xml — format that existing sed patterns can match
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<partitions>']
+    for name, size_kb in partitions.items():
+        lines.append('  <partition label="%s" size_in_kb="%d"/>' % (name, size_kb))
+    lines.append('</partitions>')
+
+    with open(xml, 'w') as fh:
+        fh.write('\n'.join(lines) + '\n')
+
+    bb.note("partition.xml written: %s" % xml)
+}
+
+addtask do_generate_partition_xml after do_rootfs before do_image
 
 #Create directory structure for targetfiles.zip
 do_recovery_ext4[cleandirs] += "${OTA_TARGET_IMAGE_ROOTFS_EXT4}"
@@ -89,8 +156,9 @@ do_recovery_ext4() {
     ln -snf ../run var/run
 
     # copy the contents of system overlayfs
-    cp -r ${IMAGE_ROOTFS}/overlay/. ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/DATA/.
-
+    if [ -f ${IMAGE_ROOTFS}/overlay/. ]; then
+        cp -r ${IMAGE_ROOTFS}/overlay/. ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/DATA/.
+    fi
     cp -r ${IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/.
 
     #generate recovery.fstab which is used by the updater-script

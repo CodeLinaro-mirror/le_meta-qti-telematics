@@ -73,8 +73,10 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
 # qti-nad-core            Machine supports all nad core features
+# qti-recovery            Machine supports a/b ota
 
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo" 
+
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery"
 
 MACHINE_MNT_POINTS = " \
     /firmware \

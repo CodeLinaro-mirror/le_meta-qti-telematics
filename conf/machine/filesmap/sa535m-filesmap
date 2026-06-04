@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+# filename              partition
+
+NON-HLOS.ubifs          firmware
+abl.elf                 abl
+aop.mbn                 aop
+aop_devcfg.mbn          aop_devcfg
+boot.img                boot
+cpucp.elf               cpucpfw
+cpucp_dtbs.elf          cpucp_dtb
+devcfg_auto.mbn         tz_devcfg
+fw_ipa_gsi_7.0_a.elf    ipa_fw
+hyp_ac_config.mbn       hyp_ac_config
+hypvm.mbn               qhee
+km41.mbn                keymaster
+Quantum.fv              quantumfv
+quantumsdk.fv           quantumsdk
+qupv3fw.elf             qupfw
+sec.elf                 sec
+shrm.elf                shrm
+tz.mbn                  tz
+tz_ac_config.mbn        tz_ac_config
+uefi.elf                uefi
+xbl_ac_config.mbn       xbl_ac_config
+xbl_config.elf          xbl_config
+xbl_ramdump.elf         xbl_ramdump
+xbl_s_nand.melf         sbl
+
