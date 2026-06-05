@@ -76,6 +76,7 @@ EXTRA_USERS_PARAMS += "usermod -p \
 "
 
 BBMASK += " \
+meta-qti-data/recipes/dnsmasq/dnsmasq_2.83.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/checkpolicy_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/libselinux-python_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/libselinux_3.3.bbappend \
