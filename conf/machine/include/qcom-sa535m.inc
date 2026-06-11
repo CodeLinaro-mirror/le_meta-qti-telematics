@@ -1,16 +1,30 @@
+SOC_FAMILY:prepend = "qcom:"
+SOC_FAMILY = "sa535m"
+require conf/machine/include/soc-family.inc
+
+#Define and add SOC_ARCH to the list of architectures compatible with the given target.
+SOC_ARCH = "${@ d.getVar('SOC_FAMILY').replace('-', '_').replace('qcom:', '')}"
+PACKAGE_EXTRA_ARCHS:append = "${@['', ' ${SOC_ARCH}']['${SOC_ARCH}' != "${MACHINE_ARCH}"]}"
+
 BASEMACHINE ?= "sa535m"
 
 DEFAULTTUNE = "armv8-2a-crypto"
 require conf/machine/include/arm/arch-armv8-2a.inc
 
-SOC_FAMILY = "sa535m"
-require conf/machine/include/qcom-base.inc
+# Supported BSP selections are: base, custom
+# We intend to use 'custom' BSP by default.
+# Specific MACHINEs or DISTROs might change this as needed.
+QCOM_SELECTED_BSP ??= "custom"
+MACHINEOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-bsp:"
 
 # Additional Kernel cmdline parameters for debug builds
 SERIAL_CONSOLES = "115200;ttyMSM0"
 DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
+# Kernel provider
+PREFERRED_PROVIDER_virtual/kernel = "linux-qcom-custom"
+# Kernel version preference
 PREFERRED_VERSION_linux-qcom-custom = "6.18%"
 PREFERRED_VERSION_thermal-engine = "14.0"
 
@@ -18,6 +32,7 @@ PREFERRED_VERSION_thermal-engine = "14.0"
 BOOT_HEADER_VERSION = "2"
 KERNEL_DTB_NAMES = "dtb.img"
 KERNEL_IMAGETYPE = "Image"
+KERNEL_ALT_IMAGETYPE ?= "vmlinux"
 KERNEL_BASE = "0x80000000"
 
 KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/lib/firmware/image net.ifnames=0 qcom_scm.download_mode=1 reboot=panic_warm panic=-1"

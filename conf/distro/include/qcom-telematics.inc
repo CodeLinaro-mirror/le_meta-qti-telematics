@@ -4,9 +4,6 @@
 # qti Telematics chipsets.
 ######################################################################
 
-# Get basic distro configuration
-require conf/distro/include/qcom-base.inc
-
 DISTRO_NAME = "QTI Linux Telematics distro."
 
 ##################################################################
@@ -17,6 +14,9 @@ DISTRO_NAME = "QTI Linux Telematics distro."
 # selinux:         Use selinux for mandatory access control.
 
 DISTRO_FEATURES += "selinux qti-ab-boot"
+
+# Use systemd init manager for system initialization.
+INIT_MANAGER = "systemd"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution
@@ -49,4 +49,4 @@ VOLATILE_LOG_DIR = "yes"
 VIRTUAL-RUNTIME_base-utils-syslog = "busybox-syslog"
 
 IMAGE_CMD_TAR:append = "${@bb.utils.contains('DISTRO_FEATURES','selinux', ' --selinux', '', d)}"
-DISTRO_FEATURES:remove = "bluetooth ext2 pcmcia usbgadget usbhost nfs zeroconf 3g x11 wifi nfc sota"
+DISTRO_FEATURES:remove = "bluetooth ext2 pcmcia usbgadget usbhost nfs zeroconf 3g x11 wifi nfc sota opengl"

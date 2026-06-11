@@ -75,7 +75,6 @@ do_merge_dtbs[depends] += "linux-qcom-mergedtb:do_deploy"
 # use do_deploy_fixup task and copy them here.
 do_deploy_fixup[dirs] = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}"
 do_deploy_fixup[cleandirs] = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}"
-do_deploy_fixup[depends] += "dtb-qcom-image:do_image_complete"
 do_deploy_fixup[depends] += "virtual/kernel:do_deploy"
 do_deploy_fixup[deptask] += "do_image_complete"
 
