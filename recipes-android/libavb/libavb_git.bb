@@ -13,5 +13,6 @@ FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://external/avb/"
 S = "${WORKDIR}/external/avb/"
 
+EXTRA_OEMAKE += "CPPFLAGS='-I${S}/libavb -I${S}/libavb/sha'"
 EXTRA_OECONF += " --disable-static"
 FILES:${PN} = "${libdir}/libavb.so.*"
