@@ -131,7 +131,7 @@ do_deploy_fixup () {
     fi
 }
 
-ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition; "
+ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition;gen_buildprop; "
 
 add_target_and_symlink() {
     echo "${MACHINE}" > ${IMAGE_ROOTFS}/target
@@ -153,6 +153,10 @@ create_required_dir() {
     mkdir -p ${IMAGE_ROOTFS}/firmware
     mkdir -p ${IMAGE_ROOTFS}/data
     mkdir -p ${IMAGE_ROOTFS}/isim
+}
+gen_buildprop() {
+   echo ro.build.version.release=${BUILDNAME} >> ${IMAGE_ROOTFS}/build.prop
+   echo ro.product.name=${BASEMACHINE}-${DISTRO} >> ${IMAGE_ROOTFS}/build.prop
 }
 
 addtask do_deploy_fixup after do_makeboot after do_image_complete before do_build
