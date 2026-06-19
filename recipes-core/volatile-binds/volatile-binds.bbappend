@@ -79,35 +79,3 @@ do_install:append (){
          sed -i '/StandardOutput=syslog/d' ${D}${systemd_system_unitdir}/$service
      done
 }
-
-
-do_compile () {
-    while read spec mountpoint target; do
-        if [ -z "$spec" ]; then
-            continue
-        fi
-
-       if [ -z "$target" ]; then
-            target="basic.target"
-       fi
-
-        servicefile="$(echo "${spec#/}" | tr / -).service"
-        [ "$mountpoint" != ${localstatedir}/lib ] || var_lib_servicefile=$servicefile
-        sed -e "s#@what@#$spec#g; s#@where@#$mountpoint#g" \
-            -e "s#@whatparent@#${spec%/*}#g; s#@whereparent@#${mountpoint%/*}#g" \
-            -e "s#@avoid_overlayfs@#${@d.getVar('AVOID_OVERLAYFS')}#g" \
-            -e "s/basic.target/${target}/g" \
-            volatile-binds.service.in >$servicefile
-    done <<END
-${@d.getVar('VOLATILE_BINDS').replace("\\n", "\n")}
-END
-
-    if [ -e "$var_lib_servicefile" ]; then
-        # As the seed is stored under /var/lib, ensure that this service runs
-        # after the volatile /var/lib is mounted.
-        sed -i -e "/^Before=/s/\$/ systemd-random-seed.service/" \
-               -e "/^WantedBy=/s/\$/ systemd-random-seed.service/" \
-               "$var_lib_servicefile"
-    fi
-}
-do_compile[dirs] = "${WORKDIR}"
