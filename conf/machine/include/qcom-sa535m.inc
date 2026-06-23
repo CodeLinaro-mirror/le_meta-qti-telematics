@@ -54,8 +54,9 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # dm-verity-initramfs-v4: Machine supports Initramfs and dm-verity working with AVB
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
+# qti-nad-core            Machine supports all nad core features
 
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim"
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core"
 MACHINE_FEATURES:remove = " \
     qti-wlan \
     qti-bluetooth \
