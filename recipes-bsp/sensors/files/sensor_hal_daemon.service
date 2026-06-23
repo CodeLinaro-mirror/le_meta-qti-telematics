@@ -33,8 +33,8 @@
 Description=sensor remote service launcher
 SourcePath=/usr/bin/sensor_hal_daemon
 DefaultDependencies=no
-#Requires=data.mount
-#After=data.mount logd.service evdev_load.service
+Requires=data.mount
+After=data.mount logd.service evdev_load.service
 Before=loc_launcher.service
 
 [Service]
@@ -46,7 +46,7 @@ Restart=always
 ExecStartPre=+/etc/initscripts/loc_bootup_iio.sh
 Nice=-15
 ExecStart=/usr/bin/sensor_hal_daemon
-#SupplementaryGroups=diag plugdev powermgr vnw locclient logd gps radio
+SupplementaryGroups=plugdev powermgr vnw locclient logd gps radio
 CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 
