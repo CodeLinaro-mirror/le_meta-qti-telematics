@@ -20,12 +20,9 @@ MACHINEOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-bsp:"
 
 # Additional Kernel cmdline parameters for debug builds
 SERIAL_CONSOLES = "115200;ttyMSM0"
-DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
+DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon=qcom_geni,0x00A84000 nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
-#PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
-# Kernel provider
-PREFERRED_PROVIDER_virtual/kernel = "linux-qcom-custom"
-# Kernel version preference
+PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
 PREFERRED_VERSION_linux-qcom-custom = "6.18%"
 PREFERRED_VERSION_thermal-engine = "14.0"
 
@@ -74,6 +71,18 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 
 MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core"
 
+MACHINE_FEATURES:remove = " \
+    qti-location \
+    qti-audio \
+    qti-data-modem \
+    qti-nad-mrc \
+    qti-wlan \
+    qti-bluetooth \
+    qti-nad-core \
+    qti-isim \
+    qti-sensors \
+"
+
 MACHINE_MNT_POINTS = " \
     /firmware \
     /data \
@@ -114,4 +123,5 @@ meta-qti-internal/recipes-firmware/firmware/hexagon-dsp-binaries_.*\.bbappend \
 meta-qti-internal/recipes-firmware/packagegroups/packagegroup-firmware-.*\.bbappend \
 meta-qcom/dynamic-layers/qcom-distro/recipes-ml/tflite/tensorflow-lite_%.bbappend \
 meta-qti-security/recipes-sota/ostree-initrd/ostree-initrd.bbappend \
+meta-qti-telematics-prop/recipes-extended/thermal-engine/thermal-engine_%.bbappend \
 "

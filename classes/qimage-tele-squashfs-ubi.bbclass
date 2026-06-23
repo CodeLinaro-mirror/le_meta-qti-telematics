@@ -23,20 +23,19 @@ DEPENDS += "\
 SYSTEM_IMAGE_UBI_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/sysfs.ubi"
 SYSTEM_IMAGE_UBI_TARGET_WITH_LXC ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/lxc/ubifs/sysfs.ubi"
 SYSTEM_IMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/sysfs.ubifs', d)}"
-SYSTEMRW_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/systemrw.ubifs"
-SYSTEMRW_ROOTFS ?= "${WORKDIR}/systemrw"
-USER_IMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/userfs.ubifs"
-USER_IMAGE_ROOTFS ?= "${WORKDIR}/usrfs-data"
+SYSTEMRW_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/systemrw.ubifs"
+SYSTEMRW_ROOTFS ?= "${UNPACKDIR}/systemrw"
+USER_IMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/userfs.ubifs"
+USER_IMAGE_ROOTFS ?= "${UNPACKDIR}/usrfs-data"
 MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 
 LXCRFSIMAGE_UBIFS_TARGET ?= "${DEPLOY_DIR_IMAGE}/lxcrootfs.ubifs"
 LXCRFSIMAGE_SQUASHFS_TARGET ?= "${DEPLOY_DIR_IMAGE}/lxcrootfs.squash"
 
-
-CACHE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/cache.ubifs"
-CACHE_IMAGE_ROOTFS ?= "${WORKDIR}/cache"
-PERSIST_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/persist.ubifs"
-PERSIST_IMAGE_ROOTFS ?= "${WORKDIR}/persist"
+CACHE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/cache.ubifs"
+CACHE_IMAGE_ROOTFS ?= "${UNPACKDIR}/cache"
+PERSIST_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/persist.ubifs"
+PERSIST_IMAGE_ROOTFS ?= "${UNPACKDIR}/persist"
 
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
@@ -93,7 +92,6 @@ IMAGE_ROOTFS_SQUASHFS_UBI = "${WORKDIR}/rootfs-squashfs-ubi"
 IMAGE_ROOTFS_UBIFS_UBI = "${WORKDIR}/rootfs-ubifs-ubi"
 
 create_tele_systemrw[cleandirs] = "${SYSTEMRW_ROOTFS}"
-# Nothing to do, empty volume
 create_tele_systemrw[noexec] = "1"
 
 create_cache[cleandirs] = "${CACHE_IMAGE_ROOTFS}"

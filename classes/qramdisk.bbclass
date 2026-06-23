@@ -21,14 +21,16 @@ DEPENDS += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'binutils-cross-${T
 KERNEL_VERSION = "${@oe.utils.read_file('${STAGING_KERNEL_BUILDDIR}/kernel-abiversion')}"
 
 # Adding mtd-utils to support dm-verity v4 for NAND
-PACKAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', '${MLIBPREFIX}mtd-utils ${MLIBPREFIX}avbtool ${MLIBPREFIX}cryptsetup ${MLIBPREFIX}nad-abctl ${MLIBPREFIX}util-linux-libuuid ${MLIBPREFIX}json-c', '', d)}"
+PACKAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', '${MLIBPREFIX}mtd-utils ${MLIBPREFIX}mtd-utils-ubifs ${MLIBPREFIX}avbtool ${MLIBPREFIX}cryptsetup ${MLIBPREFIX}nad-abctl ${MLIBPREFIX}util-linux-libuuid ${MLIBPREFIX}json-c', '', d)}"
 
 inherit qdlkm
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
+do_ramdisk_create[fakeroot] = "1"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIRFDE}"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIRDEBUG}"
+PSEUDO_INCLUDE_PATHS:append = ",${WORKDIR}/ramdisk,${WORKDIR}/ramdiskfde,${WORKDIR}/ramdiskdebug"
 fakeroot do_ramdisk_create() {
         mkdir -p ${RAMDISKDIR}/bin
         mkdir -p ${RAMDISKDIR}/etc
@@ -212,7 +214,7 @@ fakeroot do_ramdisk_create() {
                 # Creating actual rootfs dir mountpoint for initramfs
                 mkdir -p ${RAMDISKDIR}/rootfs
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubiblock usr/sbin/
-                cp ${IMAGE_ROOTFS}/usr/sbin/ubiattach usr/sbin/
+                cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
                 cp ${IMAGE_ROOTFS}/usr/bin/nad-abctl usr/bin/nad-abctl
                 cp ${IMAGE_ROOTFS}/usr/lib/libnad_ab_al.so.1 lib/libnad_ab_al.so.1
                 cp ${IMAGE_ROOTFS}/usr/lib/libgthread-2.0.so.0 lib/libgthread-2.0.so.0
