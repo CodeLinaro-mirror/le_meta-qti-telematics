@@ -56,9 +56,7 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-mrc             Machine supports mrcd feature
 
 MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim"
-MACHINE_FEATURES:remove = " \
-    qti-bluetooth \
-"
+
 MACHINE_MNT_POINTS = " \
     /firmware \
     /data \
@@ -90,4 +88,10 @@ meta-qti-sepolicy/recipes-security/selinux/selinux-sandbox_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/semodule-utils_3.3.bbappend \
 meta-qti-core-prop/recipes-products/images/machine-image.bbappend \
 meta-qti-internal/recipes-products/packagegroups/packagegroup-qcom-wifi.bbappend \
+meta-qti-internal/recipes-firmware/firmware/firmware-qcom-bootbins_.*\.bbappend \
+meta-qti-internal/recipes-firmware/firmware/firmware-qcom-partconf_.*\.bbappend \
+meta-qti-internal/recipes-firmware/firmware/firmware-qcom-verinfo_.*\.bbappend \
+meta-qti-internal/recipes-firmware/firmware/firmware-qcom-modempr_.*\.bb \
+meta-qti-internal/recipes-firmware/firmware/hexagon-dsp-binaries_.*\.bbappend \
+meta-qti-internal/recipes-firmware/packagegroups/packagegroup-firmware-.*\.bbappend \
 "

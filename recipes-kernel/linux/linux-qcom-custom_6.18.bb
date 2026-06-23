@@ -7,6 +7,7 @@ LICENSE = "GPLv2.0-with-linux-syscall-note"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit kernel
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'sota', 'sota', '', d)}
 
 COMPATIBLE_MACHINE = "(qcom)"
 
@@ -20,6 +21,7 @@ SRC_URI = "file://kernel \
 S = "${WORKDIR}/kernel"
 
 KERNEL_CONFIG ??= "qcom_telematics_base_defconfig"
+
 
 # Enable selinux support
 SELINUX_CFG = "${@oe.utils.vartrue('DEBUG_BUILD', 'selinux_debug.cfg', 'selinux.cfg', d)}"
@@ -88,3 +90,5 @@ do_install:prepend() {
     install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
     ln -rs ${STAGING_KERNEL_DIR} ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/source
 }
+
+do_unpack[postfuncs] += "copy_msm"
