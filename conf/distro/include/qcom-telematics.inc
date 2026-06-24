@@ -4,6 +4,9 @@
 # qti Telematics chipsets.
 ######################################################################
 
+# Get basic distro configuration
+require conf/distro/include/qcom-base.inc
+
 DISTRO_NAME = "QTI Linux Telematics distro."
 
 ##################################################################
@@ -14,9 +17,6 @@ DISTRO_NAME = "QTI Linux Telematics distro."
 # selinux:         Use selinux for mandatory access control.
 
 DISTRO_FEATURES += "selinux qti-ab-boot"
-
-# Use systemd init manager for system initialization.
-INIT_MANAGER = "systemd"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution

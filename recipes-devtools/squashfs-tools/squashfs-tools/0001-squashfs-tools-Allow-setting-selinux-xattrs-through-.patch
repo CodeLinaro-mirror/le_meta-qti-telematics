@@ -1,7 +1,4 @@
-From 2b2664449cf9072920aa48951035f0517ff55e62 Mon Sep 17 00:00:00 2001
-From: Akshaya Bhat <akshayab@qti.qualcomm.com>
-Date: Sun, 14 Jun 2026 17:07:53 -0700
-
+From 6419748c6b8888eb4bedd58b0663c522cb179f3d Mon Sep 17 00:00:00 2001
 From: Mohamad Ayyash <mkayyash@google.com>
 Date: Tue, 24 Feb 2015 19:21:29 -0800
 Subject: [PATCH] squashfs-tools: Allow setting selinux xattrs through
@@ -20,24 +17,22 @@ CFLAGS to ensure the code compiles fine even when selinux
 library support is not available.]
 Signed-off-by: Sahitya Tummala <stummala@codeaurora.org>
 
-Updated for squashfs version 4.7.5
-Signed-off-by: Akshaya Bhat <akshayab@qti.qualcomm.com>
-
 Upstream-Status: Inappropriate [other]
 
-Signed-off-by: Akshaya Bhat <akshayab@qti.qualcomm.com>
 ---
- squashfs-tools/Makefile          |  6 +++
- squashfs-tools/mksquashfs.c      | 19 +++++++
- squashfs-tools/mksquashfs_help.c |  1 +
- squashfs-tools/xattr.c           | 85 +++++++++++++++++++++++++++++++-
- 4 files changed, 110 insertions(+), 1 deletion(-)
+ squashfs-tools/Makefile     |  6 +++
+ squashfs-tools/mksquashfs.c | 20 +++++++++
+ squashfs-tools/xattr.c      | 88 ++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 113 insertions(+), 1 deletion(-)
+ mode change 100755 => 100644 squashfs-tools/Makefile
 
 diff --git a/squashfs-tools/Makefile b/squashfs-tools/Makefile
-index 7fe953ef..e71423cc 100644
+old mode 100755
+new mode 100644
+index 9aa4381a..e3c03a77
 --- a/squashfs-tools/Makefile
 +++ b/squashfs-tools/Makefile
-@@ -269,6 +269,12 @@ CFLAGS += $(EXTRA_CFLAGS) $(INCLUDEDIR) -D_FILE_OFFSET_BITS=64 \
+@@ -220,6 +220,12 @@ CFLAGS += $(EXTRA_CFLAGS) $(INCLUDEDIR) -D_FILE_OFFSET_BITS=64 \
  	-Wall
  
  LIBS = -lpthread -lm
@@ -51,10 +46,10 @@ index 7fe953ef..e71423cc 100644
  CFLAGS += -DGZIP_SUPPORT
  MKSQUASHFS_OBJS += gzip_wrapper.o
 diff --git a/squashfs-tools/mksquashfs.c b/squashfs-tools/mksquashfs.c
-index 153ff31b..02cb91ba 100644
+index ba28d65d..7df829c3 100644
 --- a/squashfs-tools/mksquashfs.c
 +++ b/squashfs-tools/mksquashfs.c
-@@ -239,6 +239,7 @@ unsigned int cache_bytes = 0, cache_size = 0, inode_count = 0;
+@@ -209,6 +209,7 @@ unsigned int cache_bytes = 0, cache_size = 0, inode_count = 0;
  
  /* inode lookup table */
  squashfs_inode *inode_lookup_table = NULL;
@@ -62,15 +57,23 @@ index 153ff31b..02cb91ba 100644
  struct inode_info *inode_info[INODE_HASH_SIZE];
  
  /* hash tables used to do fast duplicate searches in duplicate check */
-@@ -6700,6 +6701,7 @@ static int sqfstar(int argc, char *argv[])
+@@ -6270,6 +6271,7 @@ static void print_options(FILE *stream, char *name, int total_mem)
+ 	fprintf(stream, "cross the boundary\n");
+ 	fprintf(stream, "\nFilesystem extended attribute (xattrs) options:\n");
+ 	fprintf(stream, "-no-xattrs\t\tdo not store extended attributes" NOXOPT_STR "\n");
++       fprintf(stream, "-context-file <file>\tApply selinux security xattrs from context-file instead of reading xattrs from file system\n");
+ 	fprintf(stream, "-xattrs\t\t\tstore extended attributes" XOPT_STR "\n");
+ 	fprintf(stream, "-xattrs-exclude <regex>\texclude any xattr names ");
+ 	fprintf(stream, "matching <regex>.  <regex> is a\n\t\t\tPOSIX ");
+@@ -6927,6 +6929,7 @@ int sqfstar(int argc, char *argv[])
  	always_use_fragments = TRUE;
  
  	for(i = 1; i < dest_index; i++) {
 +		ERROR("Here %s\n",argv[i]);
- 		if(strcmp(argv[i], "-numeric-owner") == 0)
- 			numeric_owner = TRUE;
- 		else if(strcmp(argv[i], "-stream") == 0)
-@@ -7113,6 +7115,14 @@ static int sqfstar(int argc, char *argv[])
+ 		if(strcmp(argv[i], "-ignore-zeros") == 0)
+ 			ignore_zeros = TRUE;
+ 		else if(strcmp(argv[i], "-no-hardlinks") == 0)
+@@ -7364,6 +7367,14 @@ print_sqfstar_compressor_options:
  		} else if(strcmp(argv[i], "-nopad") == 0)
  			nopad = TRUE;
  
@@ -83,9 +86,9 @@ index 153ff31b..02cb91ba 100644
 +                      context_file = argv[i];
 +                }
  		else if(strcmp(argv[i], "-info") == 0)
- 			display_info = TRUE;
+ 			silent = FALSE;
  
-@@ -8259,6 +8269,15 @@ int main(int argc, char *argv[])
+@@ -8383,6 +8394,15 @@ print_compressor_options:
  		} else if(strcmp(argv[i], "-nopad") == 0)
  			nopad = TRUE;
  
@@ -99,27 +102,15 @@ index 153ff31b..02cb91ba 100644
 +		}
 +
  		else if(strcmp(argv[i], "-info") == 0)
- 			display_info = TRUE;
+ 			silent = FALSE;
  
-diff --git a/squashfs-tools/mksquashfs_help.c b/squashfs-tools/mksquashfs_help.c
-index 9c69ef09..c0404c10 100644
---- a/squashfs-tools/mksquashfs_help.c
-+++ b/squashfs-tools/mksquashfs_help.c
-@@ -336,6 +336,7 @@ static char *mksquashfs_text[]={
- 		"if they cross the boundary\n",
- 	"\n", "Filesystem extended attribute (xattrs) options:", "\n",
- 	"-no-xattrs\t\tdo not store extended attributes" NOXOPT_STR "\n",
-+        "-context-file <file>\tApply selinux security xattrs from context-file instead of reading xattrs from file system\n",
- 	"-xattrs\t\t\tstore extended attributes" XOPT_STR "\n",
- 	"-xattrs-exclude <regex>\texclude any xattr names matching <regex>.  "
- 		"<regex> is a POSIX regular expression, e.g. -xattrs-exclude "
 diff --git a/squashfs-tools/xattr.c b/squashfs-tools/xattr.c
-index d3979306..cfe12c33 100644
+index f9f4cc37..5f2e9ba1 100644
 --- a/squashfs-tools/xattr.c
 +++ b/squashfs-tools/xattr.c
-@@ -40,6 +40,11 @@
+@@ -39,6 +39,11 @@
+ #include <sys/xattr.h>
  #include <regex.h>
- #include <limits.h>
  
 +#ifdef WITH_SELINUX
 +#include <selinux/label.h>
@@ -129,24 +120,24 @@ index d3979306..cfe12c33 100644
  #include "squashfs_fs.h"
  #include "squashfs_swap.h"
  #include "mksquashfs.h"
-@@ -55,6 +60,8 @@
- #include "caches-queues-lists.h"
- #include "virt_disk_pos.h"
+@@ -50,6 +55,8 @@
+ #include "action.h"
+ #include "merge_sort.h"
  
 +#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 +
- /* compressed xattr table */
- static char *xattr_table = NULL;
- static unsigned int xattr_size = 0;
-@@ -91,6 +98,7 @@ static int xattr_add_count = 0;
- extern int no_xattrs, noX;
+ #ifdef XATTR_NOFOLLOW /* Apple's xattrs */
+ 	#define llistxattr(path_, buf_, sz_) \
+ 		listxattr(path_, buf_, sz_, XATTR_NOFOLLOW)
+@@ -94,6 +101,7 @@ extern int no_xattrs, noX;
+ extern long long bytes;
  extern int fd;
  extern unsigned int xattr_bytes, total_xattr_bytes;
 +extern char *context_file;
  extern regex_t *xattr_exclude_preg;
  extern regex_t *xattr_include_preg;
  
-@@ -120,6 +128,65 @@ static int xattr_get_type(char *name)
+@@ -123,6 +131,68 @@ static int xattr_get_type(char *name)
  	return prefix_table[i].type;
  }
  
@@ -195,11 +186,14 @@ index d3979306..cfe12c33 100644
 +    exit(EXIT_FAILURE);
 +}
 +
++
 +static int read_xattrs_from_context_file(char *filename, int mode,
 +       struct selabel_handle *sehnd, struct xattr_list **xattrs)
 +{
 +       char *attr_val;
 +       struct xattr_list *x = malloc(sizeof(*x));
++       if(x == NULL)
++               MEM_ERROR();
 +
 +       x->type = xattr_get_prefix(x, "security.selinux");
 +       attr_val = set_selabel(filename, mode, sehnd);
@@ -212,7 +206,7 @@ index d3979306..cfe12c33 100644
  
  static void xattr_copy_prefix(struct xattr_list *xattr, int t, char *name)
  {
-@@ -534,12 +601,13 @@ static int generate_xattrs(int xattrs, struct xattr_list *xattr_list)
+@@ -702,12 +772,13 @@ int generate_xattrs(int xattrs, struct xattr_list *xattr_list)
  SORT(sort_list, xattr_add, name, next);
  SORT(sort_xattr_list, xattr_list, full_name, vnext);
  
@@ -227,7 +221,7 @@ index d3979306..cfe12c33 100644
  	struct xattr_list *xattr_list = NULL, *head;
  	int count, i = 0, j;
  	struct xattr_add *l1 = xattr_add_list, *l2 = NULL, *l3 = NULL;
-@@ -548,10 +616,25 @@ int read_xattrs(void *d, int type)
+@@ -716,10 +787,25 @@ int read_xattrs(void *d, int type)
  	if(no_xattrs || inode->root_entry)
  		return SQUASHFS_INVALID_XATTR;
  
@@ -254,5 +248,5 @@ index d3979306..cfe12c33 100644
  	action_add_list = eval_xattr_add_actions(root_dir, dir_ent, &count);
  
 -- 
-2.34.1
+2.17.1
 
