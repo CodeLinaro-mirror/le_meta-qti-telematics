@@ -72,7 +72,9 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-mrc             Machine supports mrcd feature
 
 MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim"
-
+MACHINE_FEATURES:remove = " \
+    qti-bluetooth \
+"
 MACHINE_MNT_POINTS = " \
     /firmware \
     /data \
