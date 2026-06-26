@@ -2,7 +2,7 @@ From 40c3b4af7717dfa5725f92cc817a064e29e5261e Mon Sep 17 00:00:00 2001
 From: Praveen Yaramada <pyaramada@codeaurora.org>
 Date: Thu, 31 Aug 2017 16:17:33 -0700
 Subject: [PATCH] bitbake using cmake
-
+Upstream-Status: Inappropriate
 ---
  CMakeLists.txt            | 27 ++++++++++++++++-----
  extra/nanopb-config.cmake | 60 ++++++++++++++++++++++++++++++++++++++++++++++-

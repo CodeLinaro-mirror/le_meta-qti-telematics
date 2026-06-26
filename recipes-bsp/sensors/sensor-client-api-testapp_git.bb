@@ -10,7 +10,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 DEPENDS = "sensor-client-api sensor-hal-daemon libsensors"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://hardware/qcom/sensors/sensor-service/sensor_client_api_testapp"
-S = "${WORKDIR}/hardware/qcom/sensors/sensor-service/sensor_client_api_testapp"
+S = "${UNPACKDIR}/hardware/qcom/sensors/sensor-service/sensor_client_api_testapp"
 
 EXTRA_OECONF += "--with-glib \
                  --with-core-includes=${WORKSPACE}/system/core/include"

@@ -11,19 +11,19 @@ SRC_URI = "file://files"
 SRC_URI += "file://rgptp-start-stop_le"
 SRC_URI += "file://rgptp.service"
 
-S = "${WORKDIR}/files"
+S = "${UNPACKDIR}/files"
 
 do_install() {
     module_do_install
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/initscripts
-        install -m 0755 ${WORKDIR}/rgptp-start-stop_le ${D}${sysconfdir}/initscripts
+        install -m 0755 ${UNPACKDIR}/rgptp-start-stop_le ${D}${sysconfdir}/initscripts
 
         install -d ${D}${systemd_unitdir}/system/
         install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
 
         #RGPTP Service
-        install -m 0644 ${WORKDIR}/rgptp.service -D ${D}${systemd_unitdir}/system/rgptp.service
+        install -m 0644 ${UNPACKDIR}/rgptp.service -D ${D}${systemd_unitdir}/system/rgptp.service
 
         # enable the service for multi-user.target
         #ln -sf ${systemd_unitdir}/system/rgptp.service \

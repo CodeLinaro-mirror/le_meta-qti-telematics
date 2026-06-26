@@ -9,7 +9,7 @@ ${LICENSE};md5=8afb6abdac9a14cb18a0d6c9c151e9b4"
 PACKAGE_ARCH = "all"
 
 SRC_URI   =  "file://${KERNEL_PREBUILT_DISTDIR}/"
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

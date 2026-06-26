@@ -8,7 +8,7 @@ DEPENDS = "boost common-api-c++ vsomeip"
 SRCREV = "0ad2bdc1807fc0f078b9f9368a47ff2f3366ed13"
 SRC_URI = "git://git.codelinaro.org/clo/la/platform/external/capicxx-someip-runtime.git;protocol=https;branch=github/master \
     "
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 inherit cmake lib_package gitpkgv
 

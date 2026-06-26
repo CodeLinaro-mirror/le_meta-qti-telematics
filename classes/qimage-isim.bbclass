@@ -7,7 +7,7 @@
 inherit qimage-utils
 ISIM_DIR ??= "isim"
 ISIM_ROOTFS ??= "${IMAGE_ROOTFS}/${ISIM_DIR}"
-ISIM_FSCONFIG="${WORKDIR}/isim-fsconfig.conf"
+ISIM_FSCONFIG="${UNPACKDIR}/isim-fsconfig.conf"
 
 # Define macros for ext4 filesystem image
 ISIMIMAGE_EXT4_TARGET ?= "isim.img"
@@ -60,14 +60,14 @@ fakeroot do_makeisim() {
 [isim]
 vol_id=0
 mode=ubi
-image=${WORKDIR}/${ISIMIMAGE_UBIFS_TARGET}
+image=${UNPACKDIR}/${ISIMIMAGE_UBIFS_TARGET}
 vol_type=dynamic
 vol_name=isim
 vol_size=${ISIM_VOLUME_SIZE}
 EOF
 
         mkfs.ubifs -r ${IMAGE_ROOTFS}/${ISIM_DIR} \
-           -o ${WORKDIR}/${ISIMIMAGE_UBIFS_TARGET} \
+           -o ${UNPACKDIR}/${ISIMIMAGE_UBIFS_TARGET} \
            ${MKUBIFS_ARGS}
         ubinize -o ${IMGDEPLOYDIR}/${ISIMIMAGE_UBI_TARGET} \
                 ${UBINIZE_ARGS} ${ISIM_UBINIZE_CFG}

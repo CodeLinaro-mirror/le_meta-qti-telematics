@@ -34,7 +34,7 @@ VDLKMIMAGE_UNSPARSE_TARGET ?= "vendor_dlkm.img.unspase"
 VDLKMIMAGE_MAP_TARGET ?= "vendor_dlkm.map"
 
 # Ensure SELinux file context variable is defined
-SELINUX_FILE_CONTEXTS ?= ""
+SELINUX_FILE_CONTEXTS ?= "${IMAGE_ROOTFS}/etc/selinux/mls/contexts/files/file_contexts"
 SELINUX_IMG_S = "${@['-S ${SELINUX_FILE_CONTEXTS}', ''][d.getVar('SELINUX_FILE_CONTEXTS') == '']}"
 IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_S}', '', d)}"
 
@@ -64,7 +64,7 @@ do_fsconfig:append:qti-distro-user() {
 ### Generate system.img #####
 ################################################
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
-IMAGE_ROOTFS_EXT4 = "${WORKDIR}/rootfs-ext4"
+IMAGE_ROOTFS_EXT4 = "${UNPACKDIR}/rootfs-ext4"
 
 MACHINE_FSCONFIG_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/fsconfig' % p for p in '${BBPATH}'.split(':'))}}"
 MACHINE_FSCONFIG_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FSCONFIG_CONF'), d.getVar('MACHINE_FSCONFIG_CONF_SEARCH_PATH')) or ''}"
@@ -118,7 +118,7 @@ create_symlink_systemd_ext4_mount_rootfs() {
 }
 
 create_rootfs_ext4[cleandirs] = "${IMAGE_ROOTFS_EXT4}"
-python create_rootfs_ext4 () {
+fakeroot python create_rootfs_ext4 () {
     src_dir = d.getVar("IMAGE_ROOTFS")
     dest_dir = d.getVar("IMAGE_ROOTFS_EXT4")
     if os.path.isdir(src_dir):
@@ -167,15 +167,15 @@ get_system_verity_metdata_info(){
     FEC_ROOTS="2"
 
     # Remove files from previous run
-    rm -f ${WORKDIR}/system.verityhash
-    rm -f ${WORKDIR}/system.verityfec
-    rm -f ${WORKDIR}/system_verity_metadata.txt
+    rm -f ${UNPACKDIR}/system.verityhash
+    rm -f ${UNPACKDIR}/system.verityfec
+    rm -f ${UNPACKDIR}/system_verity_metadata.txt
 
     veritysetup format $1 \
-        ${WORKDIR}/system.verityhash \
-        --fec-device ${WORKDIR}/system.verityfec \
+        ${UNPACKDIR}/system.verityhash \
+        --fec-device ${UNPACKDIR}/system.verityfec \
         --fec-roots ${FEC_ROOTS} \
-        --salt ${VERITY_SALT} > ${WORKDIR}/system_verity_metadata.txt
+        --salt ${VERITY_SALT} > ${UNPACKDIR}/system_verity_metadata.txt
 }
 
 do_makesystem() {
@@ -187,7 +187,7 @@ do_makesystem() {
         echo "Cleared... ${IMAGE_ROOTFS_EXT4}/$mountname/"
     done
 
-    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${UNPACKDIR}/rootfs-fsconfig.conf
 
     if [ ! -d "${IMGDEPLOYDIR}/${IMAGE_BASENAME}" ]; then
         mkdir -p "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
@@ -200,7 +200,7 @@ do_makesystem() {
             adjustedSystemSize=$(echo $(adjust_system_size_for_verity "${count}" ))
             echo "adjustedSystemSize: ${adjustedSystemSize}"
             ImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_UNSPARSE_TARGET}"
-            make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
+            make_ext4fs -C ${UNPACKDIR}/rootfs-fsconfig.conf \
                         -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
                         -a / -b 4096 -l ${adjustedSystemSize} \
                         ${IMAGE_EXT4_SELINUX_OPTIONS} \
@@ -210,8 +210,8 @@ do_makesystem() {
             get_system_verity_metdata_info "${ImgPath}"
 
             # Append hash and fec data to the image
-            cat ${WORKDIR}/system.verityhash >> ${ImgPath}
-            cat ${WORKDIR}/system.verityfec >> ${ImgPath}
+            cat ${UNPACKDIR}/system.verityhash >> ${ImgPath}
+            cat ${UNPACKDIR}/system.verityfec >> ${ImgPath}
 
             # Check if size is within the range
             systemSize=`wc -c ${ImgPath} | awk '{print $1}'`
@@ -222,9 +222,9 @@ do_makesystem() {
 
             # Calculate offset
             hash_offset=$adjustedSystemSize
-            hash_size=`wc -c ${WORKDIR}/system.verityhash | awk '{print $1}'`
+            hash_size=`wc -c ${UNPACKDIR}/system.verityhash | awk '{print $1}'`
             fec_offset=`expr ${hash_offset} + ${hash_size}`
-            echo "fec_offset:$fec_offset" >> ${WORKDIR}/system_verity_metadata.txt
+            echo "fec_offset:$fec_offset" >> ${UNPACKDIR}/system_verity_metadata.txt
             echo "Calculated fec offset: $fec_offset"
 
             # Convert to sparse image
@@ -238,7 +238,7 @@ do_makesystem() {
     else
     # Directly generate sparsed image
             sparseImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
-            make_ext4fs -s -C ${WORKDIR}/rootfs-fsconfig.conf \
+            make_ext4fs -s -C ${UNPACKDIR}/rootfs-fsconfig.conf \
                         -a / -b 4096 -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \
                         ${IMAGE_EXT4_SELINUX_OPTIONS} \
                         ${sparseImgPath} ${IMAGE_ROOTFS_EXT4} /dev/null

@@ -11,6 +11,7 @@ Subject: [PATCH] ADB: Add leprop as the supplementary group
 
 Change-Id: I1ca692fb5f6fe4c5ada63458a12241149e313c70
 Signed-off-by: Akshaya Bhat <quic_akshayab@quicinc.com>
+Upstream-Status: Inappropriate
 ---
  daemon/main.cpp                         | 2 +-
  1 files changed, 1 insertions(+), 1 deletion(-)

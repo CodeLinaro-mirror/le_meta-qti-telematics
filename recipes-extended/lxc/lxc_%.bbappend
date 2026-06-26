@@ -37,18 +37,18 @@ do_install:append() {
       #installing service file for telaflxc container
       install -d 0644 ${D}${systemd_unitdir}/system
       install -d ${D}${systemd_unitdir}/system/multi-user.target.wants
-      install -m 0640 ${WORKDIR}/telaf_lxc.service ${D}${systemd_unitdir}/system/telaf_lxc.service
+      install -m 0640 ${UNPACKDIR}/telaf_lxc.service ${D}${systemd_unitdir}/system/telaf_lxc.service
       ln -sf ${systemd_unitdir}/system/telaf_lxc.service ${D}${systemd_unitdir}/system/multi-user.target.wants/telaf_lxc.service
    fi
 
-   install -m 0444 ${WORKDIR}/qti-lxc-common.conf \
+   install -m 0444 ${UNPACKDIR}/qti-lxc-common.conf \
       ${D}${sysconfdir}/lxc/
 
-   install -m 0444 ${WORKDIR}/lxc_networking.conf \
+   install -m 0444 ${UNPACKDIR}/lxc_networking.conf \
       ${D}${sysconfdir}/lxc/
 
-   install -m 0444 ${WORKDIR}/lxc_system.conf ${D}${sysconfdir}/lxc/lxc.conf
-   install -m 0555 ${WORKDIR}/container_launch.sh ${D}${sysconfdir}/initscripts/container_launch.sh
+   install -m 0444 ${UNPACKDIR}/lxc_system.conf ${D}${sysconfdir}/lxc/lxc.conf
+   install -m 0555 ${UNPACKDIR}/container_launch.sh ${D}${sysconfdir}/initscripts/container_launch.sh
 
 }
 

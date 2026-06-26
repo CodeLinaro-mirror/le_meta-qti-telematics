@@ -9,7 +9,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 PR = "r1"
 
-DEPENDS += "glib-2.0 libpcap pciutils cmake-native qmi-framework"
+DEPENDS += "glib-2.0 libpcap pciutils cmake-native qmi-framework qrtr"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://external/open-avb/ \
@@ -17,7 +17,7 @@ SRC_URI = "file://external/open-avb/ \
 		file://gptp-daemon-tmpfilesd.conf \
 		file://qgptp.rules"
 
-S = "${WORKDIR}/external/open-avb/"
+S = "${UNPACKDIR}/external/open-avb/"
 
 GPTP_AUTO_START_ENABLE= "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', 'NO', 'YES', d)}"
 RGPTP_SRV_INCLUDED= "YES"
@@ -55,11 +55,11 @@ do_install() {
     if [ "x${GPTP_AUTO_START_ENABLE}" = "xYES" ]; then
        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
           install -d ${D}${systemd_unitdir}/system/
-          install -m 0644 ${WORKDIR}/gptp-daemon.service -D ${D}${systemd_unitdir}/system/gptp-daemon.service
+          install -m 0644 ${UNPACKDIR}/gptp-daemon.service -D ${D}${systemd_unitdir}/system/gptp-daemon.service
           install -d ${D}${sysconfdir}/udev/rules.d/
-          install -m 0644 ${WORKDIR}/qgptp.rules -D ${D}${sysconfdir}/udev/rules.d/qgptp.rules
+          install -m 0644 ${UNPACKDIR}/qgptp.rules -D ${D}${sysconfdir}/udev/rules.d/qgptp.rules
           install -d ${D}${sysconfdir}/tmpfiles.d/
-          install -m 0644 ${WORKDIR}/gptp-daemon-tmpfilesd.conf ${D}${sysconfdir}/tmpfiles.d/gptp-daemon-tmpfilesd.conf
+          install -m 0644 ${UNPACKDIR}/gptp-daemon-tmpfilesd.conf ${D}${sysconfdir}/tmpfiles.d/gptp-daemon-tmpfilesd.conf
           install -m 0644 ${S}/daemons/gptp/etc/gptp_cfg_le.ini ${D}${sysconfdir}/gptp_cfg.ini
        fi
     fi
@@ -73,3 +73,6 @@ FILES:${PN}-dev = "${includedir}"
 FILES:${PN} += "${libdir}/libgptp.so"
 FILES:${PN} += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', '${sysconfdir}/gptp_cfg_le.ini', d)}"
 FILES:${PN} += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', '${sysconfdir}/udev/rules.d/qgptp.rules', d)}"
+
+INSANE_SKIP:${PN} += "buildpaths"
+INSANE_SKIP:${PN}-dbg += "buildpaths"

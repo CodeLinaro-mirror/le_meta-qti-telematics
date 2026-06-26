@@ -2,6 +2,7 @@ From: shanth kumar j p <quic_sjp@quicinc.com>
 Subject: [PATCH] add 660 permissions to leprop service
 
 Signed-off-by: Shanth Kumar J P <quic_sjp@quicinc.com>
+Upstream-Status: Inappropriate
 Index: leproperties/property_service.c
 ===================================================================
 --- leproperties.orig/property_service.c

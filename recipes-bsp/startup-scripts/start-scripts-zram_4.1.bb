@@ -11,6 +11,7 @@ SRC_URI += "file://zram-setup"
 
 PR = "r0"
 
+do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
 SYSTEMD_SERVICE:${PN} += "zram.service"
@@ -21,8 +22,8 @@ do_install() {
         install -d ${D}/etc/systemd/system/
         install -d ${D}/etc/systemd/system/local-fs.target.wants/
         install -d ${D}${base_sbindir}/
-        install -m 0744 ${WORKDIR}/zram-setup ${D}${base_sbindir}/zram-setup
-        install -m 0644 ${WORKDIR}/zram.service -D ${D}/etc/systemd/system/zram.service
+        install -m 0744 ${UNPACKDIR}/zram-setup ${D}${base_sbindir}/zram-setup
+        install -m 0644 ${UNPACKDIR}/zram.service -D ${D}/etc/systemd/system/zram.service
 
         # Set SWAP_MEMTOTAL_PCT in conf/machine/<target>.conf to use nondefault value
         val=${@d.getVar('SWAP_MEMTOTAL_PCT', 'true') or ""}

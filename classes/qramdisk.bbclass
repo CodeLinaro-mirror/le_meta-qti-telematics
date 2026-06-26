@@ -214,7 +214,11 @@ fakeroot do_ramdisk_create() {
                 # Creating actual rootfs dir mountpoint for initramfs
                 mkdir -p ${RAMDISKDIR}/rootfs
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubiblock usr/sbin/
-                cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
+                if [ -L ${IMAGE_ROOTFS}/usr/sbin/ubiattach ]; then
+                    cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
+                else
+                    cp ${IMAGE_ROOTFS}/usr/sbin/ubiattach usr/sbin/ubiattach
+                fi
                 cp ${IMAGE_ROOTFS}/usr/bin/nad-abctl usr/bin/nad-abctl
                 cp ${IMAGE_ROOTFS}/usr/lib/libnad_ab_al.so.1 lib/libnad_ab_al.so.1
                 cp ${IMAGE_ROOTFS}/usr/lib/libgthread-2.0.so.0 lib/libgthread-2.0.so.0

@@ -2,7 +2,7 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/systemd-machine-units:"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 IMAGETYPE ??= ""
 
@@ -34,7 +34,7 @@ add_mount_files () {
         elif [[ "$mountname" == "isim" ]]; then
             install -m 0644 ${S}/${mountname}.mount -D ${D}${systemd_unitdir}/system/${mountname}.mount
             if ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'true', 'false', d)}; then
-                install -m 0644 ${WORKDIR}/isim_ubi_mount.service -D ${D}${systemd_unitdir}/system/isim_ubi_mount.service
+                install -m 0644 ${UNPACKDIR}/isim_ubi_mount.service -D ${D}${systemd_unitdir}/system/isim_ubi_mount.service
             fi
         fi
         fi

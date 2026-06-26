@@ -10,7 +10,7 @@ RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 IMAGE_SYSTEM_MOUNT_POINT = "/"
 IMAGE_VDLKM_MOUNT_POINT = "/lib/modules/"
 
-OTA_TARGET_IMAGE_ROOTFS_EXT4 = "${WORKDIR}/ota-target-image-ext4"
+OTA_TARGET_IMAGE_ROOTFS_EXT4 = "${UNPACKDIR}/ota-target-image-ext4"
 
 OTA_TARGET_FILES_EXT4 = "target-files-ext4.zip"
 OTA_TARGET_FILES_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4}"
@@ -121,12 +121,12 @@ do_recovery_ext4() {
     #blocksize = BOARD_FLASH_BLOCK_SIZE
     echo blocksize=131072 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
 
-    export BOOT_SIZE=$(sed -r 's/.*label="boot${SLOT_A_SUFFIX}".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
-    export SYSTEM_SIZE=$(sed -r 's/.*label="system${SLOT_A_SUFFIX}".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
-    export USERDATA_SIZE=$(sed -r 's/.*label="userdata".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
-    export VDLKM_SIZE=$(sed -r 's/.*label="vendor_dlkm_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
-    export DTBO_SIZE=$(sed -r 's/.*label="dtbo_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
-    export VBOOT_SIZE=$(sed -r 's/.*label="vendor_boot_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${WORKDIR}/partition.xml)
+    export BOOT_SIZE=$(sed -r 's/.*label="boot${SLOT_A_SUFFIX}".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
+    export SYSTEM_SIZE=$(sed -r 's/.*label="system${SLOT_A_SUFFIX}".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
+    export USERDATA_SIZE=$(sed -r 's/.*label="userdata".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
+    export VDLKM_SIZE=$(sed -r 's/.*label="vendor_dlkm_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
+    export DTBO_SIZE=$(sed -r 's/.*label="dtbo_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
+    export VBOOT_SIZE=$(sed -r 's/.*label="vendor_boot_a".*size_in_kb="([0-9]+\.*[0-9]*).*/\1/;t;d' ${UNPACKDIR}/partition.xml)
 
     # convert kb to bytes
     export BOOT_SIZE="$(expr $BOOT_SIZE \* 1024)"

@@ -14,7 +14,7 @@ COMPATIBLE_MACHINE = "(qcom)"
 FILESEXTRAPATHS:prepend = "${WORKSPACE}/kernel/kernel_platform:"
 SRC_URI =+ "file://kernel"
 
-S = "${WORKDIR}/kernel"
+S = "${UNPACKDIR}/kernel"
 
 DEPENDS += "flex-native bison-native rsync-native"
 

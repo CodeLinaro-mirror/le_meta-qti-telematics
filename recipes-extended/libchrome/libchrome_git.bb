@@ -11,7 +11,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/libchrome/"
 
-S = "${WORKDIR}/OTA/streaming/external/libchrome/"
+S = "${UNPACKDIR}/OTA/streaming/external/libchrome/"
 
 BBCLASSEXTEND = "native"
 inherit autotools pkgconfig

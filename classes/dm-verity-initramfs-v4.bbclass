@@ -7,7 +7,7 @@
 
 CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs dm-verity-none"
 
-BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
+BOOTIMGDEPLOYDIR = "${UNPACKDIR}/deploy-${PN}-bootimage-complete"
 KERNEL_CMDLINE_EXTRA += "root=/dev/ram rootfstype=ramfs init=/sbin/init"
 
 INITRAMFS_IMAGE ?= ''

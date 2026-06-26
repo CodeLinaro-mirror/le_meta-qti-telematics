@@ -8,7 +8,7 @@ RECOVERY_ROOTFS = "$(echo ${IMAGE_ROOTFS} | sed 's#/${PN}/#/qti-recovery-image/#
 RECOVERY_IMAGE_ROOTFS = "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', RECOVERY_ROOTFS, '${IMAGE_ROOTFS_UBI}', d)}"
 
 IMAGE_SYSTEM_MOUNT_POINT = "/system"
-OTA_TARGET_IMAGE_ROOTFS_UBI = "${WORKDIR}/ota-target-image-ubi"
+OTA_TARGET_IMAGE_ROOTFS_UBI = "${UNPACKDIR}/ota-target-image-ubi"
 OTA_TARGET_FILES_UBI = "target-files-ubi.zip"
 OTA_TARGET_FILES_UBI_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_UBI}"
 

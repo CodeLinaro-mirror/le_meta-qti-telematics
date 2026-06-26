@@ -11,7 +11,7 @@ inherit cmake lib_package pkgconfig
 SRCREV = "89720d3c63bbd22cbccc80cdc92c2f2dd20193ba"
 SRC_URI = "git://git.codelinaro.org/clo/la/platform/external/capicxx-core-runtime.git;protocol=https;branch=github/master \
     "
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 EXTRA_OECMAKE += "-DCMAKE_INSTALL_PREFIX=/usr \
     -DINSTALL_LIB_DIR:PATH=${baselib} \

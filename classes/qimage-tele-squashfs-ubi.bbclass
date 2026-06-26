@@ -802,7 +802,7 @@ EOF
 
 
 create_rootfs_tele_ubi[cleandirs] = "${IMAGE_ROOTFS_SQUASHFS_UBI}"
-python create_rootfs_tele_ubi () {
+fakeroot python create_rootfs_tele_ubi () {
     src_dir = d.getVar("IMAGE_ROOTFS")
     dest_dir = d.getVar("IMAGE_ROOTFS_SQUASHFS_UBI")
     if os.path.isdir(src_dir):
@@ -812,7 +812,7 @@ python create_rootfs_tele_ubi () {
 }
 
 create_rootfs_tele_ubifs[cleandirs] = "${IMAGE_ROOTFS_UBIFS_UBI}"
-python create_rootfs_tele_ubifs () {
+fakeroot python create_rootfs_tele_ubifs () {
     src_dir = d.getVar("IMAGE_ROOTFS_SQUASHFS_UBI")
     dest_dir = d.getVar("IMAGE_ROOTFS_UBIFS_UBI")
     if os.path.isdir(src_dir):
@@ -997,8 +997,8 @@ IMAGE_EXT4_SELINUX_OPTIONS ?= "${@bb.utils.contains('DISTRO_FEATURES', 'selinux'
 ################################################
 do_makesystem_gluebi() {
     # Build ext4 system image
-    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig-gluebi.conf
-    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig-gluebi.conf \
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${UNPACKDIR}/rootfs-fsconfig-gluebi.conf
+    make_ext4fs -C ${UNPACKDIR}/rootfs-fsconfig-gluebi.conf \
             -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_MAP_TARGET} \
             -a / -b 4096 \
             -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \

@@ -15,14 +15,14 @@ CORE_IMAGE_EXTRA_INSTALL += "${MLIBPREFIX}systemd-machine-units-ubi"
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
 SYSTEMIMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'sysfs.ubifs', d)}"
 USERIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/userfs.ubifs"
-USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
+USERIMAGE_ROOTFS ?= "${UNPACKDIR}/usrfs"
 
 CACHEIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/cache.ubifs"
-CACHEIMAGE_ROOTFS ?= "${WORKDIR}/cache"
+CACHEIMAGE_ROOTFS ?= "${UNPACKDIR}/cache"
 PERSISTIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/persist.ubifs"
-PERSISTIMAGE_ROOTFS ?= "${WORKDIR}/persist"
+PERSISTIMAGE_ROOTFS ?= "${UNPACKDIR}/persist"
 SYSTEMRWIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/systemrw.ubifs"
-SYSTEMRWIMAGE_ROOTFS ?= "${WORKDIR}/systemrw"
+SYSTEMRWIMAGE_ROOTFS ?= "${UNPACKDIR}/systemrw"
 
 VMIMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VMIMAGE_UBIFS_TARGET ?= "vm-bootsys.ubifs"
@@ -343,7 +343,7 @@ fi
 }
 
 create_rootfs_ubi[cleandirs] = "${IMAGE_ROOTFS_UBI}"
-python create_rootfs_ubi () {
+fakeroot python create_rootfs_ubi () {
     src_dir = d.getVar("IMAGE_ROOTFS")
     dest_dir = d.getVar("IMAGE_ROOTFS_UBI")
     if os.path.isdir(src_dir):
@@ -436,8 +436,8 @@ MACHINE_FSCONFIG_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FSCONFIG_
 
 do_makesystem_gluebi() {
     # Build ext4 system image
-    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig-gluebi.conf
-    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig-gluebi.conf \
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${UNPACKDIR}/rootfs-fsconfig-gluebi.conf
+    make_ext4fs -C ${UNPACKDIR}/rootfs-fsconfig-gluebi.conf \
             -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_MAP_TARGET} \
             -a / -b 4096 \
             -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \

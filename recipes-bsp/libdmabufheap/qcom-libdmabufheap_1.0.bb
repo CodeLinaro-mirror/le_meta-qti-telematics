@@ -16,7 +16,7 @@ SRC_URI   = " \
              file://0001-libdmabufheap-Update-generated-libs-version.patch \
              "
 
-S = "${WORKDIR}/system/memory/libdmabufheap"
+S = "${UNPACKDIR}/system/memory/libdmabufheap"
 
 EXTRA_OECONF:append = " \
     --disable-static \
@@ -24,7 +24,7 @@ EXTRA_OECONF:append = " \
 "
 
 do_install:append() {
-    install -m 0644 ${WORKDIR}/kmem.rules -D ${D}${sysconfdir}/udev/rules.d/kmem.rules
+    install -m 0644 ${UNPACKDIR}/kmem.rules -D ${D}${sysconfdir}/udev/rules.d/kmem.rules
 }
 
 PACKAGES +="${PN}-test-bin"

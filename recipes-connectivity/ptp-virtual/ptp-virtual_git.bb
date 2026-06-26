@@ -8,7 +8,7 @@ PR = "r1"
 
 SRC_URI = "file://external/open-avb/kernel/ptp-virtual/"
 
-S = "${WORKDIR}/external/open-avb/kernel/ptp-virtual"
+S = "${UNPACKDIR}/external/open-avb/kernel/ptp-virtual"
 
 inherit pkgconfig module systemd
 
@@ -21,7 +21,7 @@ do_compile() {
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
     EXT_MODULES=../../external/open-avb/kernel/ptp-virtual \
     ROOTDIR=${WORKSPACE}/ \
-    MODULE_OUT=${WORKDIR}/external/open-avb/kernel/ptp-virtual-out \
+    MODULE_OUT=${UNPACKDIR}/external/open-avb/kernel/ptp-virtual-out \
     OUT_DIR=${KERNEL_OUT_PATH}/ \
     ./build/build_module.sh
 }
@@ -33,8 +33,8 @@ do_install() {
     #Signing and installing the ptp-virtual module
     LD_LIBRARY_PATH=${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/prebuilts/kernel-build-tools/linux-x86/lib64/ \
     ${STAGING_KERNEL_BUILDDIR}/scripts/sign-file sha1 ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.pem \
-    ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.x509 ${WORKDIR}/external/open-avb/kernel/ptp-virtual-out/ptp_dlkm.ko
-    install -m 0755 ${WORKDIR}/external/open-avb/kernel/ptp-virtual-out/ptp_dlkm.ko -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/ptp.ko
+    ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.x509 ${UNPACKDIR}/external/open-avb/kernel/ptp-virtual-out/ptp_dlkm.ko
+    install -m 0755 ${UNPACKDIR}/external/open-avb/kernel/ptp-virtual-out/ptp_dlkm.ko -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/ptp.ko
 
     #Install the ptp_dlkm service file
     install -d ${D}${systemd_unitdir}/system/

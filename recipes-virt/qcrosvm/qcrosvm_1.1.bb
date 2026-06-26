@@ -19,7 +19,7 @@ SRC_URI = "\
         file://external/minijail/ \
 "
 
-S = "${WORKDIR}/vendor/qcom/opensource/crosvm-gunyah"
+S = "${UNPACKDIR}/vendor/qcom/opensource/crosvm-gunyah"
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
 

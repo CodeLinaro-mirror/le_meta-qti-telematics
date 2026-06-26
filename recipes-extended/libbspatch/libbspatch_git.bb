@@ -10,7 +10,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/bsdiff/"
 
-S = "${WORKDIR}/OTA/streaming/external/bsdiff/"
+S = "${UNPACKDIR}/OTA/streaming/external/bsdiff/"
 
 BBCLASSEXTEND = "native"
 

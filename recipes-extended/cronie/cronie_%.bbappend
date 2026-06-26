@@ -5,7 +5,7 @@ SRC_URI += "\
 "
 
 do_install:append() {
-    install -m 0600 ${WORKDIR}/crontab ${D}${sysconfdir}/
+    install -m 0600 ${UNPACKDIR}/crontab ${D}${sysconfdir}/
 }
 
 PACKAGE_ARCH ?= "${MACHINE_ARCH}"

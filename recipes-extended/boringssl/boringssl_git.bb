@@ -11,7 +11,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/boringssl/"
 
-S = "${WORKDIR}/OTA/streaming/external/boringssl/"
+S = "${UNPACKDIR}/OTA/streaming/external/boringssl/"
 
 BBCLASSEXTEND = "native"
 

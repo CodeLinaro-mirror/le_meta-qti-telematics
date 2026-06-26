@@ -14,7 +14,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/libbrillo/"
 
-S = "${WORKDIR}/OTA/streaming/external/libbrillo/"
+S = "${UNPACKDIR}/OTA/streaming/external/libbrillo/"
 
 BBCLASSEXTEND = "native"
 
