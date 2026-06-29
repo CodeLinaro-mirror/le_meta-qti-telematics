@@ -1,0 +1,61 @@
+From: Nikhil Kumar <nikkuma@qti.qualcomm.com>
+Date: Mon, 1 Jan 2024 00:00:00 +0530
+Subject: [PATCH] oem-recovery: disable UFS BSG source and use stub
+
+The oem-recovery build unconditionally compiles recovery-ufs-bsg.cpp.
+That file depends on UFS-specific kernel UAPI headers such as
+scsi/ufs/ioctl.h, which are not available in the non-UFS recipe sysroot.
+
+Remove recovery-ufs-bsg.cpp from the oem recovery source list and add a
+small non-UFS stub implementation for set_boot_lun(). This keeps
+librecovery_updater_msm link-compatible for recovery-ab while leaving
+UFS boot LUN switching disabled on this platform.
+
+Upstream-Status: Inappropriate [LE platform specific - UFS support disabled]
+Signed-off-by: Nikhil Kumar <nikkuma@qti.qualcomm.com>
+---
+diff --git a/Makefile.am b/Makefile.am
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -16,7 +16,7 @@
+               -I$(WORKSPACE)/OTA/recovery \
+               -I$(WORKSPACE)/system/core/libsparse
+ 
+-oem_recovery_sources := gpt-utils.cpp dec.cpp oem-updater.cpp recovery-ufs-bsg.cpp
++oem_recovery_sources := gpt-utils.cpp dec.cpp oem-updater.cpp recovery-ufs-bsg-stub.cpp
+ 
+ library_includedir := $(pkgincludedir)
+ 
+diff --git a/recovery-ufs-bsg-stub.cpp b/recovery-ufs-bsg-stub.cpp
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/recovery-ufs-bsg-stub.cpp
+@@ -0,0 +1,27 @@
++/*Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries. 
++ *SPDX-License-Identifier: BSD-3-Clause-Clear
++ */
++/*
++ * Non-UFS stub for platforms where UFS BSG support is disabled.
++ *
++ * The real implementation lives in recovery-ufs-bsg.cpp and depends on
++ * UFS-specific kernel UAPI headers. Non-UFS builds do not stage those
++ * headers, but gpt-utils.cpp still references set_boot_lun(), so provide
++ * a small link-compatible stub.
++ */
++
++#include <errno.h>
++#include <stdio.h>
++
++#ifndef ENOTSUP
++#define ENOTSUP EOPNOTSUPP
++#endif
++
++int set_boot_lun(char *boot_part, unsigned char boot_lun)
++{
++    (void)boot_part;
++    (void)boot_lun;
++
++    fprintf(stderr, "UFS boot LUN switch is disabled on this platform\n");
++    return -ENOTSUP;
++}
