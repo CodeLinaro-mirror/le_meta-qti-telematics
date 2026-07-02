@@ -125,8 +125,14 @@ fakeroot do_ramdisk_create() {
             fi
             ln -s busybox bin/sh
             ln -s busybox bin/echo
-            ln -s busybox.suid bin/mount
-            ln -s busybox.suid bin/umount
+            # mount/umount moved to nosuid busybox in newer builds
+            if strings ${IMAGE_ROOTFS}/bin/busybox.suid | grep -q "^mount$"; then
+                ln -s busybox.suid bin/mount
+                ln -s busybox.suid bin/umount
+            else
+                ln -s busybox bin/mount
+                ln -s busybox bin/umount
+            fi
             if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
                 ln -s busybox bin/mdev
             fi

@@ -117,7 +117,7 @@ EnableZram()
         return ${STATUS_ERR}
     fi
 
-    busybox.suid mount -o remount,size=315M -t tmpfs tmpfs /tmp
+    mount -o remount,size=315M -t tmpfs tmpfs /tmp
     if [ $? -ne ${STATUS_OK} ]; then
        LOGD "Error: remount tmp failed"
        return ${STATUS_ERR}
@@ -181,12 +181,12 @@ EmmcGetPartitionID() {
 }
 
 EarlySetup() {
-    busybox.suid mount -t proc proc /proc
-    busybox.suid mount -t sysfs sysfs /sys
-    busybox.suid mount -t devtmpfs none /dev
+    mount -t proc proc /proc
+    mount -t sysfs sysfs /sys
+    mount -t devtmpfs none /dev
 
     busybox mkdir -p /tmp
-    busybox.suid mount -t tmpfs tmpfs /tmp
+    mount -t tmpfs tmpfs /tmp
 
     if [ -f "$KPI_FILE_PATH" ]; then
         echo -n 'M - Ramdisk-init Start' >> $KPI_FILE_PATH
@@ -300,9 +300,9 @@ SlotSwitchReboot () {
 }
 
 MoveMountToSystem() {
-    busybox.suid mount -n --move /proc ${ROOT_MOUNT}/proc
-    busybox.suid mount -n --move /sys ${ROOT_MOUNT}/sys
-    busybox.suid mount -n --move /dev ${ROOT_MOUNT}/dev
+    mount -n --move /proc ${ROOT_MOUNT}/proc
+    mount -n --move /sys ${ROOT_MOUNT}/sys
+    mount -n --move /dev ${ROOT_MOUNT}/dev
     return ${STATUS_OK}
 }
 
@@ -465,7 +465,7 @@ MountSystem () {
             block_device=${dm_verity_device}
         fi
     fi
-    busybox.suid mount $block_device ${ROOT_MOUNT} -oro
+    mount $block_device ${ROOT_MOUNT} -oro
     if [ $? -ne ${STATUS_OK} ]; then
        LOGD "Error: mount ${block_device} failed"
        return ${STATUS_ERR}
@@ -482,7 +482,7 @@ MountSystemrw() {
 
     block_device="/dev/mmcblk0p"$DEV_NUM
 
-    busybox.suid mount -t ext4 "${block_device}" ${ROOT_MOUNT}/systemrw -o rw,noexec,nosuid,nodev
+    mount -t ext4 "${block_device}" ${ROOT_MOUNT}/systemrw -o rw,noexec,nosuid,nodev
     if [ $? -ne ${STATUS_OK} ]; then
         LOGD "Error: mount ${block_device} failed"
         return ${STATUS_ERR}
@@ -497,13 +497,13 @@ MountSystemdOverlay() {
     busybox mkdir -p ${ROOT_MOUNT}/systemrw/etc-systemd-system
     busybox mkdir -p ${ROOT_MOUNT}/systemrw/etc-systemd-system-work
 
-    busybox.suid mount -t overlay overlay ${ROOT_MOUNT}/lib/systemd/system -o lowerdir=${ROOT_MOUNT}/lib/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/lib-systemd-system,workdir=${ROOT_MOUNT}/systemrw/lib-systemd-system-work,noexec,nosuid,nodev
+    mount -t overlay overlay ${ROOT_MOUNT}/lib/systemd/system -o lowerdir=${ROOT_MOUNT}/lib/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/lib-systemd-system,workdir=${ROOT_MOUNT}/systemrw/lib-systemd-system-work,noexec,nosuid,nodev
     if [ $? -ne ${STATUS_OK} ]; then
         LOGD "Error: mount overlay ${ROOT_MOUNT}/lib/systemd/system failed"
         return ${STATUS_ERR}
     fi
 
-    busybox.suid mount -t overlay overlay ${ROOT_MOUNT}/etc/systemd/system -o lowerdir=${ROOT_MOUNT}/etc/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/etc-systemd-system,workdir=${ROOT_MOUNT}/systemrw/etc-systemd-system-work,noexec,nosuid,nodev
+    mount -t overlay overlay ${ROOT_MOUNT}/etc/systemd/system -o lowerdir=${ROOT_MOUNT}/etc/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/etc-systemd-system,workdir=${ROOT_MOUNT}/systemrw/etc-systemd-system-work,noexec,nosuid,nodev
     if [ $? -ne ${STATUS_OK} ]; then
         LOGD "Error: mount overlay ${ROOT_MOUNT}/etc/systemd/system failed"
         return ${STATUS_ERR}
