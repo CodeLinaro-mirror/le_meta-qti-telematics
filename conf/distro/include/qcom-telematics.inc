@@ -46,8 +46,5 @@ DEFAULT_ENFORCING ?= "permissive"
 DISTRO_FEATURES_FILTER_NATIVESDK:append = " selinux"
 DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)}"
 
-VOLATILE_LOG_DIR = "yes"
-VIRTUAL-RUNTIME_base-utils-syslog = "busybox-syslog"
-
 IMAGE_CMD_TAR:append = "${@bb.utils.contains('DISTRO_FEATURES','selinux', ' --selinux', '', d)}"
-DISTRO_FEATURES:remove = "bluetooth ext2 pcmcia usbgadget usbhost nfs zeroconf 3g x11 wifi nfc sota"
+DISTRO_FEATURES:remove = "bluetooth ext2 pcmcia usbgadget usbhost nfs zeroconf 3g x11 wifi nfc sota opengl"
