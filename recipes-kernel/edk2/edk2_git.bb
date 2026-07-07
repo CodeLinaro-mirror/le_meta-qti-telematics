@@ -1,8 +1,8 @@
 inherit deploy python3native
 DESCRIPTION = "UEFI bootloader"
-LICENSE = "BSD-3-Clause"
+LICENSE = "BSD-2-Clause-Patent"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
-${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
+${LICENSE};md5=0518d409dae93098cca8dfa932f3ab1b"
 
 BUILD_OS = "linux"
 
