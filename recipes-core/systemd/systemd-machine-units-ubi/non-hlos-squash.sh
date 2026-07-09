@@ -158,8 +158,7 @@ SlotSwitchReboot () {
         fi
         chmod 660 /dev/${mtd_device}
         echo "RBM: Rebooting for switching slots or EDL mode" > /dev/kmsg
-	echo "warm" > /sys/kernel/reboot/mode
-        /bin/sh -c 'reboot'
+        /bin/sh -c 'reboot system-abnormal'
     else
         echo "non a/b volumes , reboot to edl " > /dev/kmsg
         /bin/sh -c 'reboot edl'
