@@ -34,6 +34,8 @@ DISTRO_FEATURES += "selinux qti-ab-boot"
 #DISTRO_FEATURES:append = " qti-adsp qti-security qti-vble qti-audio qti-earlyusb qti-early-eth qti-telux vbleima vbleevm qti-nad-telaf"
 DISTRO_FEATURES:append = " qti-nad-core"
 
+DISTRO_FEATURES:append = " qti-telux "
+
 # Allow checking of required and conflicting features across the distro
 IMAGE_CLASSES += "features_check"
 
