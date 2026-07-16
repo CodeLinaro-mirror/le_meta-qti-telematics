@@ -11,7 +11,7 @@ PR = "r1"
 SRC_URI = "file://vendor/qcom/opensource/mvm-kernel/"
 SRC_URI += "file://mvm.rules"
 
-S = "${WORKDIR}/vendor/qcom/opensource/mvm-kernel"
+S = "${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel"
 
 inherit pkgconfig module systemd deploy qdlkm
 
@@ -27,7 +27,7 @@ do_compile() {
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
     EXT_MODULES=../../vendor/qcom/opensource/mvm-kernel \
     ROOTDIR=${WORKSPACE}/ \
-    MODULE_OUT=${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out \
+    MODULE_OUT=${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out \
     OUT_DIR=${KERNEL_OUT_PATH}/ \
     ./build/build_module.sh
 }
@@ -37,12 +37,12 @@ do_install() {
     install -d ${D}${nonarch_base_libdir}/modules/
 
     # Copy unsigned kernel modules
-    install -m 0644 ${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko ${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_unsigned.ko
+    install -m 0644 ${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko ${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_unsigned.ko
 
     # Strip debug symbols and sign the module
-    sign_strip_module ${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko
+    sign_strip_module ${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko
 
-    install -m 0755 ${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/mvm.ko
+    install -m 0755 ${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_dlkm.ko -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/mvm.ko
 
     #Install the mvm_dlkm service file
     install -d ${D}${systemd_unitdir}/system/
@@ -50,7 +50,7 @@ do_install() {
 
     #Install udev rules
     install -d ${D}${sysconfdir}/udev/rules.d/
-    install -m 0644 ${WORKDIR}/mvm.rules -D ${D}${sysconfdir}/udev/rules.d/mvm.rules
+    install -m 0644 ${UNPACKDIR}/mvm.rules -D ${D}${sysconfdir}/udev/rules.d/mvm.rules
 
 }
 
@@ -58,7 +58,7 @@ do_install() {
 do_deploy() {
     if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-host', 'false', 'true', d)}; then
         install -d ${DEPLOYDIR}/kernel_modules/${PN}
-        install -m 0644 ${WORKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_unsigned.ko ${DEPLOYDIR}/kernel_modules/${PN}/mvm.ko
+        install -m 0644 ${UNPACKDIR}/vendor/qcom/opensource/mvm-kernel-out/mvm_unsigned.ko ${DEPLOYDIR}/kernel_modules/${PN}/mvm.ko
     fi
 }
 

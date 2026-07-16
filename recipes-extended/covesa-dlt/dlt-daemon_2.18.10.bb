@@ -27,7 +27,7 @@ SRC_URI = "git://github.com/COVESA/${BPN}.git;protocol=https;branch=master \
            "
 SRCREV = "0f2d4cfffada6f8448a2cb27995b38eb4271044f"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 PACKAGECONFIG ?= "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd systemd-watchdog systemd-journal ', '', d)} \
  dlt-examples dlt-adaptor dlt-adaptor-stdin dlt-adaptor-udp dlt-console \
@@ -78,8 +78,8 @@ FILES:${PN}-doc += "${datadir}/dlt-filetransfer"
 
 do_install:append() {
     rm -f ${D}${bindir}/dlt-test-*
-    install -m 0444 ${WORKDIR}/dlt-system.conf ${D}${sysconfdir}/dlt-system.conf
-    install -m 0644 ${WORKDIR}/dlt-logd-converter.service ${D}${systemd_unitdir}/system/dlt-logd-converter.service
+    install -m 0444 ${UNPACKDIR}/dlt-system.conf ${D}${sysconfdir}/dlt-system.conf
+    install -m 0644 ${UNPACKDIR}/dlt-logd-converter.service ${D}${systemd_unitdir}/system/dlt-logd-converter.service
     chmod 444 ${D}${sysconfdir}/dlt.conf
     chmod 444 ${D}${sysconfdir}/dlt_gateway.conf
     chmod 444 ${D}${sysconfdir}/dlt-logd-converter.conf

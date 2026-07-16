@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/${LICENSE};md5=550794465ba0ec53
 FILESPATH   =+ "${WORKSPACE}:"
 SRC_URI     =  "file://vendor/qcom-opensource/isim-opensource/isim-devicetree"
 
-S = "${WORKDIR}/vendor/qcom-opensource/isim-opensource/isim-devicetree"
+S = "${UNPACKDIR}/vendor/qcom-opensource/isim-opensource/isim-devicetree"
 
 DTC := "${KBUILD_OUTPUT}/scripts/dtc/dtc"
 KERNEL_INCLUDE := "${STAGING_KERNEL_DIR}/include/"

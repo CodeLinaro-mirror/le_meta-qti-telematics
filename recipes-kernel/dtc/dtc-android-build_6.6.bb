@@ -8,7 +8,7 @@ PROVIDES = "virtual/dtc-native"
 
 FILESEXTRAPATHS:prepend := "${WORKSPACE}/kernel-6.6/kernel_platform/prebuilts/kernel-build-tools/linux-x86/:"
 SRC_URI = "file://bin"
-S = "${WORKDIR}/bin"
+S = "${UNPACKDIR}/bin"
 
 INHIBIT_SYSROOT_STRIP = "1"
 do_configure[noexec] = "1"

@@ -16,11 +16,7 @@ DEPENDS:append:class-native = " python3-protobuf-native"
 SRCREV = "cc74b9f200176edc5524aa00ba45fa90a5e87d27"
 
 SRC_URI = "git://git.codelinaro.org/clo/le/nanopb.git;protocol=https;branch=caf_migration/nanopb/master"
-SRC_URI += "${@bb.utils.contains_any('LAYERSERIES_COMPAT_core', 'nanbield scarthgap',\
-           'file://0002-compilation-fixes-for-nanbield-scarthgap.patch','', d)}"
 SRC_URI += "file://0001-bitbake-using-cmake.patch"
-
-S = "${WORKDIR}/git"
 
 # need to export these variables for python-config to work
 FILES:${PN} += "/usr/include/*"
@@ -37,6 +33,6 @@ CFLAGS += "-DPB_FIELD_16BIT=1"
 
 EXTRA_OECMAKE:append:class-native = "-Dnanopb_BUILD_GENERATOR=ON -Dnanopb_BUILD_RUNTIME=OFF -Dnanopb_MSVC_STATIC_RUNTIME=OFF"
 
-EXTRA_OECMAKE += "-DCMAKE_INSTALL_CMAKEDIR=${libdir}/cmake/nanopb"
+EXTRA_OECMAKE += "-DCMAKE_INSTALL_CMAKEDIR=${libdir}/cmake/nanopb -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 BBCLASSEXTEND = "native nativesdk"

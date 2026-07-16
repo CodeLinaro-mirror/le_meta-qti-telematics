@@ -14,6 +14,6 @@ FILESPATH =+ "${WORKSPACE}:"
 DEPENDS = "openssl"
 
 SRC_URI = "file://c2c/external/eclipse/paho.mqtt.c"
-S = "${WORKDIR}/c2c/external/eclipse/paho.mqtt.c"
+S = "${UNPACKDIR}/c2c/external/eclipse/paho.mqtt.c"
 
 EXTRA_OECMAKE = "-DPAHO_WITH_SSL=ON"

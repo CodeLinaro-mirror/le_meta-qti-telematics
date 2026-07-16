@@ -21,7 +21,7 @@ LAUNCHER = "${@get_launcher_name(d)}"
 # inherit native
 SANITY_REQUIRED_UTILITIES += "java"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 DD = "${D}${datadir}/${LAUNCHER_BASE}"
 
 do_install() {

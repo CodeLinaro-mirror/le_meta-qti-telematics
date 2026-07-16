@@ -12,7 +12,7 @@ DEPENDS += "glib-2.0 libxml2 libusb1"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://vendor/qcom/opensource/qdloader"
 SRC_DIR = "${WORKSPACE}/vendor/qcom/opensource/qdloader"
-S = "${WORKDIR}/vendor/qcom/opensource/qdloader"
+S = "${UNPACKDIR}/vendor/qcom/opensource/qdloader"
 
 do_install:append() {
     install -d ${D}/usr/sbin/

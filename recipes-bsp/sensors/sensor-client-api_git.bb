@@ -10,7 +10,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 DEPENDS = "glib-2.0 sensor-util-lib sensor-socket libcutils sensor-hal-daemon-hdr libsensors"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://hardware/qcom/sensors/sensor-service/sensor_client_api"
-S = "${WORKDIR}/hardware/qcom/sensors/sensor-service/sensor_client_api"
+S = "${UNPACKDIR}/hardware/qcom/sensors/sensor-service/sensor_client_api"
 
 ##Entries for VMs
 PACKAGECONFIG:append = "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', 'sensors-vm', '', d)}"

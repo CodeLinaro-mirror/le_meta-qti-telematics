@@ -11,8 +11,8 @@ exist in the build.
 Signed-off-by: Abinaya P <abinayap@codeaurora.org>
 ---
  rules.d/50-udev-default.rules.in | 2 --
- src/core/exec-invoke.c           | 5 -----
- 2 files changed, 7 deletions(-)
+ src/core/exec-invoke.c           | 3 ---
+ 2 files changed, 5 deletions(-)
 
 diff --git a/rules.d/50-udev-default.rules.in b/rules.d/50-udev-default.rules.in
 index af4f594791..e1b6ea800e 100644
@@ -21,28 +21,25 @@ index af4f594791..e1b6ea800e 100644
 @@ -53,8 +53,6 @@ SUBSYSTEM=="dvb", GROUP="video"
  SUBSYSTEM=="media", GROUP="video"
  SUBSYSTEM=="cec", GROUP="video"
- 
+
 -SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
 -SUBSYSTEM=="kfd", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
  SUBSYSTEM=="accel", GROUP="render", MODE="{{GROUP_RENDER_MODE}}"
- 
+
  SUBSYSTEM=="misc", KERNEL=="sgx_enclave", GROUP="sgx", MODE="0660"
 diff --git a/src/core/exec-invoke.c b/src/core/exec-invoke.c
 index 28d6142318..8fb85ff44c 100644
 --- a/src/core/exec-invoke.c
 +++ b/src/core/exec-invoke.c
-@@ -597,11 +597,6 @@ static int setup_output(
+@@ -595,8 +595,6 @@
          case EXEC_OUTPUT_JOURNAL_AND_CONSOLE:
                  r = connect_logger_as(context, params, o, ident, fileno, uid, gid);
                  if (r < 0) {
--                        log_exec_warning_errno(context,
--                                               params,
--                                               r,
--                                               "Failed to connect %s to the journal socket, ignoring: %m",
--                                               fileno == STDOUT_FILENO ? "stdout" : "stderr");
+-                        log_warning_errno(r, "Failed to connect %s to the journal socket, ignoring: %m",
+-                                          fileno == STDOUT_FILENO ? "stdout" : "stderr");
                          r = open_null_as(O_WRONLY, fileno);
                  } else {
                          struct stat st;
--- 
+--
 2.34.1
 

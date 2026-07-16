@@ -11,7 +11,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/system/core/libbinderwrapper/"
 
-S = "${WORKDIR}/OTA/system/core/libbinderwrapper/"
+S = "${UNPACKDIR}/OTA/system/core/libbinderwrapper/"
 
 BBCLASSEXTEND = "native"
 

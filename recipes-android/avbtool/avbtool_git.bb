@@ -19,24 +19,24 @@ SRC_URI += "file://qpsa_rootca.der"
 
 do_install(){
    install -d ${TMPDIR}/work-shared/avbtool/
-   install -m 0555 ${WORKDIR}/avbtool ${TMPDIR}/work-shared/avbtool/
+   install -m 0555 ${UNPACKDIR}/avbtool ${TMPDIR}/work-shared/avbtool/
 
    # Install the avbtool and related keys to work shared for recipes build
    install -d "${D}${sysconfdir}/keys"
-   install -m 0444 ${WORKDIR}/qpsa_rootca.der ${D}${sysconfdir}/keys/x509_root.der
-   install -m 0444 ${WORKDIR}/qpsa_attest.key ${TMPDIR}/work-shared/avbtool/
-   install -m 0444 ${WORKDIR}/qpsa_attest.der ${TMPDIR}/work-shared/avbtool/
-   install -m 0444 ${WORKDIR}/qpsa_attestca.key ${TMPDIR}/work-shared/avbtool/
-   install -m 0444 ${WORKDIR}/qpsa_attestca.der ${TMPDIR}/work-shared/avbtool/
+   install -m 0444 ${UNPACKDIR}/qpsa_rootca.der ${D}${sysconfdir}/keys/x509_root.der
+   install -m 0444 ${UNPACKDIR}/qpsa_attest.key ${TMPDIR}/work-shared/avbtool/
+   install -m 0444 ${UNPACKDIR}/qpsa_attest.der ${TMPDIR}/work-shared/avbtool/
+   install -m 0444 ${UNPACKDIR}/qpsa_attestca.key ${TMPDIR}/work-shared/avbtool/
+   install -m 0444 ${UNPACKDIR}/qpsa_attestca.der ${TMPDIR}/work-shared/avbtool/
 
 }
 
 do_install:append:class-nativesdk () {
    # Add avbtool and related keys to sdk tool chain for standalone build
    install -d ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/keys
-   install -m 0555 ${WORKDIR}/avbtool         ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/
-   install -m 0444 ${WORKDIR}/qpsa_attest.key ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/keys/
-   install -m 0444 ${WORKDIR}/qpsa_attest.der ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/keys/
+   install -m 0555 ${UNPACKDIR}/avbtool         ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/
+   install -m 0444 ${UNPACKDIR}/qpsa_attest.key ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/keys/
+   install -m 0444 ${UNPACKDIR}/qpsa_attest.der ${D}${SDKPATHNATIVE}/usr/share/avb_py_tool/keys/
 }
 
 #don't run these functions

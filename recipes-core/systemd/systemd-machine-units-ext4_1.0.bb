@@ -24,8 +24,8 @@ do_install() {
     install -d ${D}${sysconfdir}/initscripts
     install -d 0644 ${D}${systemd_unitdir}/system
     install -d 0755 ${D}${systemd_unitdir}/system/local-fs.target.wants
-    install -m 0744 ${WORKDIR}/firmware-ext4-mount.sh ${D}${sysconfdir}/initscripts/firmware-ext4-mount.sh
-    install -m 0644 ${WORKDIR}/var-volatile.mount \
+    install -m 0744 ${UNPACKDIR}/firmware-ext4-mount.sh ${D}${sysconfdir}/initscripts/firmware-ext4-mount.sh
+    install -m 0644 ${UNPACKDIR}/var-volatile.mount \
             ${D}${systemd_unitdir}/system/var-volatile.mount
 
     ln -sf ${systemd_unitdir}/system/var-volatile.mount \

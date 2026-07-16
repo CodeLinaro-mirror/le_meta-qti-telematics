@@ -11,7 +11,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://vendor/qcom/opensource/qti-can-kernel/"
 
-S = "${WORKDIR}/vendor/qcom/opensource/qti-can-kernel"
+S = "${UNPACKDIR}/vendor/qcom/opensource/qti-can-kernel"
 EXT_MODULES = "${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")}"
 
 inherit linux-kernel-base deploy module pkgconfig
@@ -20,6 +20,8 @@ KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
+TARGET_CC_ARCH += "-fdebug-prefix-map=${UNPACKDIR}=/usr/src/debug/${PN}/${PV}"
+
 do_compile() {
     cd ${S}
     oe_runmake -C ${STAGING_KERNEL_DIR} M=${S} modules
@@ -27,7 +29,7 @@ do_compile() {
 
 do_install() {
     install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra
-    install -m 0755 ${WORKDIR}/vendor/qcom/opensource/qti-can-kernel/qti-can.ko ${D}/${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/
+    install -m 0755 ${UNPACKDIR}/vendor/qcom/opensource/qti-can-kernel/qti-can.ko ${D}/${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/
 }
 
 do_module_signing() {
@@ -62,3 +64,5 @@ FILES:${PN}+="${nonarch_base_libdir}/"
 
 RPROVIDES:${PN} += "kernel-module-qti-can-${KERNEL_VERSION}"
 
+INSANE_SKIP:${PN} += "buildpaths"
+INSANE_SKIP:${PN}-dbg += "buildpaths"

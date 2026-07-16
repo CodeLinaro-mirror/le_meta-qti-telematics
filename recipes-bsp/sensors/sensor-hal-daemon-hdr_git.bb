@@ -9,7 +9,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://hardware/qcom/sensors/sensor-service/sensor_hal_daemon"
-S = "${WORKDIR}/hardware/qcom/sensors/sensor-service/sensor_hal_daemon"
+S = "${UNPACKDIR}/hardware/qcom/sensors/sensor-service/sensor_hal_daemon"
 
 # don't run these functions
 do_configure[noexec] = "1"

@@ -21,10 +21,10 @@ do_compile[noexec] = "1"
 do_install () {
       # Place coresight_load.service in systemd unitdir
       install -d ${D}${systemd_unitdir}/system/
-      install -m 0644 ${WORKDIR}/load_coresight-dlkm.service  \
+      install -m 0644 ${UNPACKDIR}/load_coresight-dlkm.service  \
           -D ${D}${systemd_unitdir}/system/load_coresight-dlkm.service
 
       # Place load_coresight_dlkm script in initscripts dir
-      install -m 0555 ${WORKDIR}/load_coresight_dlkm  \
+      install -m 0555 ${UNPACKDIR}/load_coresight_dlkm  \
           -D ${D}${sysconfdir}/initscripts/load_coresight_dlkm
 }

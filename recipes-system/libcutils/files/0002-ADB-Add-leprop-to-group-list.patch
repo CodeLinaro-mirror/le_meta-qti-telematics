@@ -1,9 +1,3 @@
-# This patch file is from Qualcomm Innovation Center, Inc. and is provided
-# under the following license:
-
-# Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
 From b4ee0d76775b79d054a03436c04f444e740e258d Mon Sep 17 00:00:00 2001
 From: Akshaya Bhat <quic_akshayab@quicinc.com>
 Date: Mon, 21 Oct 2024 23:13:07 -0700
@@ -11,6 +5,7 @@ Subject: [PATCH] ADB: Add leprop as the supplementary group
 
 Change-Id: I1ca692fb5f6fe4c5ada63458a12241149e313c70
 Signed-off-by: Akshaya Bhat <quic_akshayab@quicinc.com>
+Upstream-Status: Inappropriate
 ---
  include/private/android_filesystem_config.h | 1 +
  1 files changed, 1 insertions(+)

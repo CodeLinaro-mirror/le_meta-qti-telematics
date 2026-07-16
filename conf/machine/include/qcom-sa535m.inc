@@ -23,6 +23,9 @@ SERIAL_CONSOLES = "115200;ttyMSM0"
 DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon=qcom_geni,0x00A84000 nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
+# Kernel provider
+PREFERRED_PROVIDER_virtual/kernel = "linux-qcom-custom"
+# Kernel version preference
 PREFERRED_VERSION_linux-qcom-custom = "6.18%"
 PREFERRED_VERSION_thermal-engine = "14.0"
 
@@ -98,6 +101,7 @@ EXTRA_USERS_PARAMS += "usermod -p \
 "
 
 BBMASK += " \
+meta-qti-data/recipes/dnsmasq/dnsmasq_2.90.bbappend \
 meta-qti-data/recipes/dnsmasq/dnsmasq_2.83.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/checkpolicy_3.3.bbappend \
 meta-qti-sepolicy/recipes-security/selinux/libselinux-python_3.3.bbappend \
@@ -124,4 +128,5 @@ meta-qti-internal/recipes-firmware/packagegroups/packagegroup-firmware-.*\.bbapp
 meta-qcom/dynamic-layers/qcom-distro/recipes-ml/tflite/tensorflow-lite_%.bbappend \
 meta-qti-security/recipes-sota/ostree-initrd/ostree-initrd.bbappend \
 meta-qti-telematics-prop/recipes-extended/thermal-engine/thermal-engine_%.bbappend \
+meta-qti-telematics-prop/recipes-bsp/ss-restart/qcom-subsystem-ramdump_%.bbappend \
 "

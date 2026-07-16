@@ -15,7 +15,7 @@ PR = "r0"
 SRC_URI = "file://OTA/streaming/system/update_engine/ \
            file://stream-update.service \
           "
-S = "${WORKDIR}/OTA/streaming/system/update_engine/"
+S = "${UNPACKDIR}/OTA/streaming/system/update_engine/"
 SYSTEMD_SERVICE:${PN} = "stream-update.service"
 
 inherit autotools-brokensep pkgconfig systemd useradd
@@ -39,7 +39,7 @@ do_install:append:class-target() {
    install -d ${D}${sysconfdir}/initscripts/
    install -m 0555 ${S}/start_update_engine -D ${D}${sysconfdir}/initscripts/start_update_engine
    install -d ${D}${systemd_unitdir}/system/
-   install -m 0644 ${WORKDIR}/stream-update.service -D ${D}${systemd_unitdir}/system/stream-update.service
+   install -m 0644 ${UNPACKDIR}/stream-update.service -D ${D}${systemd_unitdir}/system/stream-update.service
    install -m 0755 -o system -g system -d ${D}${userfsdatadir}/stream_update/
 }
 FILESPATH =+ "${WORKSPACE}:"

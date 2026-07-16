@@ -11,7 +11,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/modp_b64/"
 
-S = "${WORKDIR}/OTA/streaming/external/modp_b64/"
+S = "${UNPACKDIR}/OTA/streaming/external/modp_b64/"
 
 BBCLASSEXTEND = "native"
 

@@ -16,7 +16,7 @@ TARGET_CFLAGS += "-Wno-format-security"
 
 SRC_URI = "file://udpreplay"
 SRC_DIR = "${WORKSPACE}/udpreplay"
-S = "${WORKDIR}/udpreplay"
+S = "${UNPACKDIR}/udpreplay"
 
 SOLIBS = ".so*"
 FILES_SOLIBSDEV = ""

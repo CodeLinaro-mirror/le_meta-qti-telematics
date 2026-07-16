@@ -15,13 +15,13 @@ FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://system/tools/aidl/"
 
 EXTRA_OECONF:append = "BISON=true"
-S = "${WORKDIR}/system/tools/aidl/"
+S = "${UNPACKDIR}/system/tools/aidl/"
 RM_WORK_EXCLUDE += "${PN}"
 
 do_install:append(){
    install -d ${D}${includedir}
-   install -m 0755 ${WORKDIR}/build/location.hh -D ${D}${includedir}/
-   install -m 0755 ${WORKDIR}/build/position.hh -D ${D}${includedir}/
+   install -m 0755 ${UNPACKDIR}/build/location.hh -D ${D}${includedir}/
+   install -m 0755 ${UNPACKDIR}/build/position.hh -D ${D}${includedir}/
 }
 BBCLASSEXTEND = "native"
 FILES:${PN} += "${includedir}/*"

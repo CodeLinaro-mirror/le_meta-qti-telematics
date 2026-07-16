@@ -13,8 +13,8 @@ do_install() {
    install -m 0755  -d ${D}/tmp
    install -m 0755  -d ${D}/dev
 
-   install -m 0744 ${WORKDIR}/inittab ${D}/${sysconfdir}
-   install -m 0744 ${WORKDIR}/rcS ${D}/${sysconfdir}/init.d/
+   install -m 0744 ${UNPACKDIR}/inittab ${D}/${sysconfdir}
+   install -m 0744 ${UNPACKDIR}/rcS ${D}/${sysconfdir}/init.d/
    chmod 744 ${D}/${sysconfdir}/init.d/rcS
 
 }

@@ -4,10 +4,14 @@
 # qti Telematics chipsets.
 ######################################################################
 
-# Get basic distro configuration
-require conf/distro/include/qcom-base.inc
-
 DISTRO_NAME = "QTI Linux Telematics distro."
+
+DISTRO_VERSION = "2.99+snapshot-${METADATA_REVISION}"
+
+# Supported selections are: base, custom
+# We intend to use same selection as that of BSP by default.
+# Specific DISTROs might change this as needed.
+DISTROOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-distro:"
 
 ##################################################################
 # list of distro features
@@ -16,6 +20,7 @@ DISTRO_NAME = "QTI Linux Telematics distro."
 # dm-verity:       Support block integrity check on system image
 # selinux:         Use selinux for mandatory access control.
 
+DISTRO_FEATURES:append = " pam overlayfs acl xattr ptest security virtualization tpm usrmerge"
 DISTRO_FEATURES += "selinux qti-ab-boot"
 
 ## QTI defined distro features ##
@@ -50,3 +55,16 @@ DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES','selinux
 
 IMAGE_CMD_TAR:append = "${@bb.utils.contains('DISTRO_FEATURES','selinux', ' --selinux', '', d)}"
 DISTRO_FEATURES:remove = "bluetooth ext2 pcmcia usbgadget usbhost nfs zeroconf 3g x11 wifi nfc sota opengl"
+
+# Use systemd init manager for system initialization.
+INIT_MANAGER = "systemd"
+
+INHERIT += "buildhistory"
+INHERIT += "image-buildinfo"
+INHERIT += "recipe_sanity"
+
+BUILDHISTORY_COMMIT = "1"
+
+# Enable uninative for reuse -native sstate across hosts.
+require conf/distro/include/yocto-uninative.inc
+INHERIT += "uninative"

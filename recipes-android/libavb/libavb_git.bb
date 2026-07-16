@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/Apache-2.0;md5
 FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI = "file://external/avb/"
-S = "${WORKDIR}/external/avb/"
+S = "${UNPACKDIR}/external/avb/"
 
 EXTRA_OEMAKE += "CPPFLAGS='-I${S}/libavb -I${S}/libavb/sha'"
 EXTRA_OECONF += " --disable-static"

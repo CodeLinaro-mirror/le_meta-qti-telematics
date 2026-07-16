@@ -16,7 +16,7 @@ SRC_URI   = " \
              file://membuf.rules \
              "
 
-S = "${WORKDIR}/system/memory/libvmmem"
+S = "${UNPACKDIR}/system/memory/libvmmem"
 
 EXTRA_OECONF:append = " \
     --with-sanitized-headers=${STAGING_INCDIR}/linux-kernel-qcom/usr/include \
@@ -24,7 +24,7 @@ EXTRA_OECONF:append = " \
 "
 
 do_install:append() {
-    install -m 0644 ${WORKDIR}/membuf.rules -D ${D}${sysconfdir}/udev/rules.d/membuf.rules
+    install -m 0644 ${UNPACKDIR}/membuf.rules -D ${D}${sysconfdir}/udev/rules.d/membuf.rules
 }
 
 PACKAGES +="${PN}-test-bin"

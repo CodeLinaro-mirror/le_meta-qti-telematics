@@ -36,7 +36,6 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
     packagegroup-qcom-ppat \
     binder \
-    packagegroup-qti-telsdk \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
     diag-reboot-app \
@@ -49,6 +48,7 @@ CORE_IMAGE_BASE_INSTALL:remove += " \
     packagegroup-qcom-ppat \
     packagegroup-qti-ss-mgr \
     diag-reboot-app \
+    packagegroup-qti-telsdk \
 "
 
 
@@ -145,6 +145,14 @@ update_usb_composition() {
     if [ -e ${IMAGE_ROOTFS}/etc/usb/boot_hsusb_comp ]; then
         echo ${USBCOMPOSITION} > ${IMAGE_ROOTFS}/etc/usb/boot_hsusb_comp
     fi
+}
+
+ROOTFS_POSTPROCESS_COMMAND += "create_required_dir;"
+
+create_required_dir() {
+    mkdir -p ${IMAGE_ROOTFS}/firmware
+    mkdir -p ${IMAGE_ROOTFS}/data
+    mkdir -p ${IMAGE_ROOTFS}/isim
 }
 
 addtask do_deploy_fixup after do_makeboot after do_image_complete before do_build

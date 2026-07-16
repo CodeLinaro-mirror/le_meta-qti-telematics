@@ -9,7 +9,7 @@ SRC_URI = "file://x509_ima.der \
            file://privkey_ima.pem \
            ${@bb.utils.contains('COMBINED_FEATURES', 'vbleevm', 'file://x509_evm.der', '', d)}"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
@@ -26,15 +26,15 @@ do_patch() {
 
 do_install() {
     install -d "${D}${sysconfdir}/keys"
-    install -m 0444 "${WORKDIR}/x509_ima.der" "${D}${sysconfdir}/keys"
+    install -m 0444 "${UNPACKDIR}/x509_ima.der" "${D}${sysconfdir}/keys"
     if ${@bb.utils.contains('COMBINED_FEATURES', 'vbleevm', 'true', 'false', d)}; then
-        install -m 0444 "${WORKDIR}/x509_evm.der" "${D}${sysconfdir}/keys"
+        install -m 0444 "${UNPACKDIR}/x509_evm.der" "${D}${sysconfdir}/keys"
     fi
 }
 
 do_install:append:class-native() {
     install -d ${D}${sysconfdir}/keys
-    install -m 0444 "${WORKDIR}/privkey_ima.pem" "${D}${sysconfdir}/keys"
+    install -m 0444 "${UNPACKDIR}/privkey_ima.pem" "${D}${sysconfdir}/keys"
 }
 
 BBCLASSEXTEND = "native"

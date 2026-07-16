@@ -31,24 +31,24 @@ do_configure:append() {
 
 do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/61-pps.rules ${D}${sysconfdir}/udev/rules.d/61-pps.rules
+        install -m 0644 ${UNPACKDIR}/61-pps.rules ${D}${sysconfdir}/udev/rules.d/61-pps.rules
 
-        install -m 0644 ${WORKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
+        install -m 0644 ${UNPACKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
 
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
-                install -m 0644 ${WORKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
+                install -m 0644 ${UNPACKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
         fi
 
         install -d ${D}${systemd_unitdir}/system/
-        cp -fR ${WORKDIR}/${BASEMACHINE}/* ${D}${systemd_unitdir}/system/
+        cp -fR ${UNPACKDIR}/${BASEMACHINE}/* ${D}${systemd_unitdir}/system/
 
         #Install service files and scripts
         install -d ${D}${sysconfdir}/initscripts/
         install -d ${D}${systemd_unitdir}/system/basic.target.wants/
 
         if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', 'false', 'true', d)}; then
-            install -m 0555 ${WORKDIR}/postmss ${D}${sysconfdir}/initscripts/postmss
-            install -m 0644 ${WORKDIR}/postmss.service ${D}${systemd_unitdir}/system/postmss.service
+            install -m 0555 ${UNPACKDIR}/postmss ${D}${sysconfdir}/initscripts/postmss
+            install -m 0644 ${UNPACKDIR}/postmss.service ${D}${systemd_unitdir}/system/postmss.service
             ln -sf ${systemd_unitdir}/system/postmss.service \
                     ${D}${systemd_unitdir}/system/basic.target.wants/postmss.service
 
@@ -61,9 +61,9 @@ do_install:append() {
 
         #Install iio bootup script for sensors
         if ${@bb.utils.contains('MACHINE', 'sa515m', 'true', 'false', d)}; then
-            install -m 0755 ${WORKDIR}/loc_bootup_iio.sh ${D}${sysconfdir}/initscripts/loc_bootup_iio.sh
+            install -m 0755 ${UNPACKDIR}/loc_bootup_iio.sh ${D}${sysconfdir}/initscripts/loc_bootup_iio.sh
         else
-            install -m 0555 ${WORKDIR}/sensor_bootup_iio.sh ${D}${sysconfdir}/initscripts/loc_bootup_iio.sh
+            install -m 0555 ${UNPACKDIR}/sensor_bootup_iio.sh ${D}${sysconfdir}/initscripts/loc_bootup_iio.sh
         fi
 
         if [ -f ${D}/lib/udev/rules.d/60-persistent-storage.rules ]; then
@@ -74,7 +74,7 @@ do_install:append() {
                 ${D}/usr/lib/udev/rules.d/60-persistent-storage.rules
         fi
 
-        install -m 0644 ${WORKDIR}/platform.conf -D ${D}${sysconfdir}/tmpfiles.d/platform.conf
+        install -m 0644 ${UNPACKDIR}/platform.conf -D ${D}${sysconfdir}/tmpfiles.d/platform.conf
 
     fi
 }

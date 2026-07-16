@@ -12,7 +12,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/xz-embedded/"
 
-S = "${WORKDIR}/OTA/streaming/external/xz-embedded/"
+S = "${UNPACKDIR}/OTA/streaming/external/xz-embedded/"
 
 BBCLASSEXTEND = "native"
 

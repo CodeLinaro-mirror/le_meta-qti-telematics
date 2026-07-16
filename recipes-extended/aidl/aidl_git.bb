@@ -20,7 +20,7 @@ EXTRA_OECONF:append = "BISON=true"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://system/tools/aidl/src/"
 
-S = "${WORKDIR}/system/tools/aidl/src/"
+S = "${UNPACKDIR}/system/tools/aidl/src/"
 
 BBCLASSEXTEND = "native"
 

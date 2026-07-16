@@ -125,8 +125,14 @@ fakeroot do_ramdisk_create() {
             fi
             ln -s busybox bin/sh
             ln -s busybox bin/echo
-            ln -s busybox.suid bin/mount
-            ln -s busybox.suid bin/umount
+            # mount/umount moved to nosuid busybox in newer builds
+            if strings ${IMAGE_ROOTFS}/bin/busybox.suid | grep -q "^mount$"; then
+                ln -s busybox.suid bin/mount
+                ln -s busybox.suid bin/umount
+            else
+                ln -s busybox bin/mount
+                ln -s busybox bin/umount
+            fi
             if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
                 ln -s busybox bin/mdev
             fi
@@ -214,7 +220,11 @@ fakeroot do_ramdisk_create() {
                 # Creating actual rootfs dir mountpoint for initramfs
                 mkdir -p ${RAMDISKDIR}/rootfs
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubiblock usr/sbin/
-                cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
+                if [ -L ${IMAGE_ROOTFS}/usr/sbin/ubiattach ]; then
+                    cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
+                else
+                    cp ${IMAGE_ROOTFS}/usr/sbin/ubiattach usr/sbin/ubiattach
+                fi
                 cp ${IMAGE_ROOTFS}/usr/bin/nad-abctl usr/bin/nad-abctl
                 cp ${IMAGE_ROOTFS}/usr/lib/libnad_ab_al.so.1 lib/libnad_ab_al.so.1
                 cp ${IMAGE_ROOTFS}/usr/lib/libgthread-2.0.so.0 lib/libgthread-2.0.so.0

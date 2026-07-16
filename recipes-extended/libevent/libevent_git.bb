@@ -12,7 +12,7 @@ PR = "r0"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/streaming/external/libevent/"
 
-S = "${WORKDIR}/OTA/streaming/external/libevent/"
+S = "${UNPACKDIR}/OTA/streaming/external/libevent/"
 
 BBCLASSEXTEND = "native"
 

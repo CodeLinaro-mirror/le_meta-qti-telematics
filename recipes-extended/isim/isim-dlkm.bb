@@ -12,7 +12,7 @@ SRC_URI     =  "file://vendor/qcom-opensource/isim-opensource/isim-driver/ \
                 file://isim-dlkm.service \
                 file://load_isim.sh"
 
-S = "${WORKDIR}/vendor/qcom-opensource/isim-opensource/isim-driver"
+S = "${UNPACKDIR}/vendor/qcom-opensource/isim-opensource/isim-driver"
 
 RPROVIDES:${PN} += "kernel-module-isim-dlkm-${KERNEL_VERSION}"
 RPROVIDES:${PN} += "isim-dlkm"
@@ -38,10 +38,10 @@ do_install:append(){
     install -m 0644 ${S}/isim_driver.pc ${D}${libdir}/pkgconfig/
 
     install -d ${D}${systemd_unitdir}/system/
-    install -m 0644 ${WORKDIR}/isim-dlkm.service ${D}${systemd_unitdir}/system/isim-dlkm.service
+    install -m 0644 ${UNPACKDIR}/isim-dlkm.service ${D}${systemd_unitdir}/system/isim-dlkm.service
 
     install -d ${D}${sysconfdir}/initscripts/
-    install -m 0755 ${WORKDIR}/load_isim.sh ${D}${sysconfdir}/initscripts/load_isim.sh
+    install -m 0755 ${UNPACKDIR}/load_isim.sh ${D}${sysconfdir}/initscripts/load_isim.sh
 
     install -d ${D}/isim
     install -d ${D}/isim/isim/

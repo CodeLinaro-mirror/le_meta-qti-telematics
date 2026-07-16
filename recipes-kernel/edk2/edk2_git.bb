@@ -6,7 +6,7 @@ ${LICENSE};md5=0518d409dae93098cca8dfa932f3ab1b"
 
 BUILD_OS = "linux"
 
-DEPENDS += "util-linux-native"
+DEPENDS += "util-linux-native python3-setuptools-native"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILESPATH =+ "${WORKSPACE}/kernel/kernel_platform/bootable/bootloader:"
@@ -14,7 +14,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "file://edk2 \
            file://0001-BaseTools-suppress-compiler-warnings.patch"
-S         =  "${WORKDIR}/edk2"
+S         =  "${UNPACKDIR}/edk2"
 
 INSANE_SKIP:${PN} = "arch"
 
@@ -97,7 +97,7 @@ do_install[noexec]="1"
 do_configure[noexec]="1"
 
 do_deploy() {
-    install -m 644 ${WORKDIR}/unsigned_abl.elf ${DEPLOYDIR}/
+    install -m 644 ${UNPACKDIR}/unsigned_abl.elf ${DEPLOYDIR}/
 }
 
 do_deploy[dirs] = "${S} ${DEPLOYDIR}"

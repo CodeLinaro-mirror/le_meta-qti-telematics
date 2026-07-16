@@ -114,13 +114,13 @@ WaitDevReady()
 
 EarlySetup() {
     busybox mkdir -p /sys
-    busybox.suid mount -t sysfs sysfs /sys
+    busybox mount -t sysfs sysfs /sys
 
     echo -n 'M - Ramdisk-init Start' >> /sys/kernel/boot_kpi/kpi_values
 
     busybox mkdir -p /proc
-    busybox.suid mount -t proc proc /proc
-    busybox.suid mount -t devtmpfs none /dev
+    busybox mount -t proc proc /proc
+    busybox mount -t devtmpfs none /dev
 
     busybox mkdir -p ${ROOT_MOUNT}
     return ${STATUS_OK}
@@ -129,7 +129,7 @@ EarlySetup() {
 UmountModem () {
     if ${Bgrep} "${FW_DIR}" /proc/mounts -w > /dev/null; then
         busybox killall qseecomd
-        busybox.suid umount ${FW_DIR} -l
+        busybox umount ${FW_DIR} -l
         busybox sleep 1
         LOGD "umount ${FW_DIR} -l"
     fi
@@ -285,7 +285,7 @@ MountModemVol() {
        LOGD "Error: wait UBI volume: ${m_block_device} timeout"
        return ${STATUS_ERR}
    fi
-   busybox.suid mount -t squashfs ${m_block_device} ${FW_DIR} -oro
+   busybox mount -t squashfs ${m_block_device} ${FW_DIR} -oro
    if [ $? -ne ${STATUS_OK} ]; then
        LOGD "Error: mount ${m_block_device} on ${FW_DIR} failed"
        return ${STATUS_ERR}
@@ -381,7 +381,7 @@ FdeInitialize ()
     /usr/bin/qseecomd > /dev/kmsg &
 
     busybox mkdir -p /tmp
-    busybox.suid mount -t tmpfs tmpfs /tmp
+    busybox mount -t tmpfs tmpfs /tmp
 
     return ${STATUS_OK}
 }
@@ -502,9 +502,9 @@ EncryptNotSysPartition () {
 }
 
 MoveMountToSystem() {
-    busybox.suid mount -n --move /proc ${ROOT_MOUNT}/proc
-    busybox.suid mount -n --move /sys ${ROOT_MOUNT}/sys
-    busybox.suid mount -n --move /dev ${ROOT_MOUNT}/dev
+    busybox mount -n --move /proc ${ROOT_MOUNT}/proc
+    busybox mount -n --move /sys ${ROOT_MOUNT}/sys
+    busybox mount -n --move /dev ${ROOT_MOUNT}/dev
     return ${STATUS_OK}
 }
 
@@ -668,13 +668,13 @@ MountSystem () {
                 fi
             fi
 
-            busybox.suid mount -t ${image_type} ${block_device} ${ROOT_MOUNT} -oro
+            busybox mount -t ${image_type} ${block_device} ${ROOT_MOUNT} -oro
             if [ $? -ne ${STATUS_OK} ]; then
                 LOGD "Error: mount squashfs ${block_device} failed"
                 return ${STATUS_ERR}
             fi
         elif [ "${image_type}" == "ubifs" ]; then
-            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
+            busybox mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
             if [ $? -ne ${STATUS_OK} ]; then
                 LOGD "Error: mount ubifs ${char_device} failed"
                 return ${STATUS_ERR}
@@ -700,7 +700,7 @@ MountSystemrw() {
 
     char_device=/dev/ubi${SYS_UBI_DEV_NUM}_${vol}
 
-    busybox.suid mount -t ubifs "${char_device}" ${ROOT_MOUNT}/systemrw -o bulk_read,rw,noexec,nosuid,nodev
+    busybox mount -t ubifs "${char_device}" ${ROOT_MOUNT}/systemrw -o bulk_read,rw,noexec,nosuid,nodev
     return ${STATUS_OK}
 }
 
@@ -710,8 +710,8 @@ MountSystemdOverlay() {
     busybox mkdir -p ${ROOT_MOUNT}/systemrw/etc-systemd-system
     busybox mkdir -p ${ROOT_MOUNT}/systemrw/etc-systemd-system-work
 
-    busybox.suid mount -t overlay overlay ${ROOT_MOUNT}/lib/systemd/system -o lowerdir=${ROOT_MOUNT}/lib/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/lib-systemd-system,workdir=${ROOT_MOUNT}/systemrw/lib-systemd-system-work,noexec,nosuid,nodev
-    busybox.suid mount -t overlay overlay ${ROOT_MOUNT}/etc/systemd/system -o lowerdir=${ROOT_MOUNT}/etc/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/etc-systemd-system,workdir=${ROOT_MOUNT}/systemrw/etc-systemd-system-work,noexec,nosuid,nodev
+    busybox mount -t overlay overlay ${ROOT_MOUNT}/lib/systemd/system -o lowerdir=${ROOT_MOUNT}/lib/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/lib-systemd-system,workdir=${ROOT_MOUNT}/systemrw/lib-systemd-system-work,noexec,nosuid,nodev
+    busybox mount -t overlay overlay ${ROOT_MOUNT}/etc/systemd/system -o lowerdir=${ROOT_MOUNT}/etc/systemd/system,upperdir=${ROOT_MOUNT}/systemrw/etc-systemd-system,workdir=${ROOT_MOUNT}/systemrw/etc-systemd-system-work,noexec,nosuid,nodev
     return ${STATUS_OK}
 }
 

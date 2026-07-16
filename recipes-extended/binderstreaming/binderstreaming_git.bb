@@ -14,7 +14,7 @@ FILESPATH =+ "${WORKSPACE}/OTA/streaming/frameworks/:"
 
 SRC_URI  = "file://native"
 
-S = "${WORKDIR}/native"
+S = "${UNPACKDIR}/native"
 
 EXTRA_OECONF += " --with-glib"
 

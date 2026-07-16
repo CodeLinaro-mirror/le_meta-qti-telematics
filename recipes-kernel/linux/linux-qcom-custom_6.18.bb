@@ -22,13 +22,13 @@ SRC_URI = "file://kernel \
            ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', ' file://selinux_debug.cfg', '', d)} \
            "
 
-S = "${WORKDIR}/kernel"
+S = "${UNPACKDIR}/kernel"
 
 KERNEL_CONFIG ??= "qcom_telematics_base_defconfig"
 
 # Enable selinux support
 SELINUX_CFG = "${@oe.utils.vartrue('DEBUG_BUILD', 'selinux_debug.cfg', 'selinux.cfg', d)}"
-KERNEL_CONFIG_FRAGMENTS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${WORKDIR}/${SELINUX_CFG}', '', d)}"
+KERNEL_CONFIG_FRAGMENTS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${UNPACKDIR}/${SELINUX_CFG}', '', d)}"
 
 #Add DTC_FLAGS to compile DTB with symbols.
 KERNEL_DTC_FLAGS += "-@"
@@ -49,20 +49,20 @@ do_configure:prepend() {
 
     # Check for kernel config fragments.  The assumption is that the config
     # fragment will be specified with the absolute path.  For example:
-    #   * ${WORKDIR}/config1.cfg
+    #   * ${UNPACKDIR}/config1.cfg
     #   * ${S}/config2.cfg
     # Iterate through the list of configs and make sure that you can find
     # each one.  If not then error out.
     # NOTE: If you want to override a configuration that is kept in the kernel
     #       with one from the OE meta data then you should make sure that the
-    #       OE meta data version (i.e. ${WORKDIR}/config1.cfg) is listed
+    #       OE meta data version (i.e. ${UNPACKDIR}/config1.cfg) is listed
     #       after the in kernel configuration fragment.
     # Check if any config fragments are specified.
     if [ ! -z "${KERNEL_CONFIG_FRAGMENTS}" ]
     then
         for f in ${KERNEL_CONFIG_FRAGMENTS}
         do
-            # Check if the config fragment was copied into the WORKDIR from
+            # Check if the config fragment was copied into the UNPACKDIR from
             # the OE meta data
             if [ ! -e "$f" ]
             then
@@ -72,7 +72,7 @@ do_configure:prepend() {
         done
 
         # Now that all the fragments are located merge them.
-        ( cd ${WORKDIR} && ${S}/scripts/kconfig/merge_config.sh -m -r -O ${B} ${B}/.config ${KERNEL_CONFIG_FRAGMENTS} 1>&2 )
+        ( cd ${UNPACKDIR} && ${S}/scripts/kconfig/merge_config.sh -m -r -O ${B} ${B}/.config ${KERNEL_CONFIG_FRAGMENTS} 1>&2 )
     fi
 
      # After merging, combine CONFIG_LOCALVERSION (from fragments) with LINUX_VERSION_EXTENSION
@@ -90,7 +90,7 @@ do_configure:prepend() {
 }
 
 do_configure:append() {
-    oe_runmake -C ${S} O=${B} savedefconfig && cp ${B}/defconfig ${WORKDIR}/defconfig.saved
+    oe_runmake -C ${S} O=${B} savedefconfig && cp ${B}/defconfig ${UNPACKDIR}/defconfig.saved
 }
 
 # Kernel 6.6 with commit d8131c2965d5ee59bfa4d548641e52a13cbe17c9

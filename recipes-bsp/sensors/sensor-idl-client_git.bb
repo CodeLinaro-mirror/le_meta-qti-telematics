@@ -11,7 +11,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 DEPENDS = "glib-2.0 common-api-c++ vsomeip common-api-c++-someip open-avb sensor-fidl"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://hardware/qcom/sensors/sensor-service/sensor_idl_client"
-S = "${WORKDIR}/hardware/qcom/sensors/sensor-service/sensor_idl_client"
+S = "${UNPACKDIR}/hardware/qcom/sensors/sensor-service/sensor_idl_client"
 
 RDEPENDS:${PN} = "open-avb"
 
