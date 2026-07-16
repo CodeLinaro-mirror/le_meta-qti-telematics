@@ -3,13 +3,14 @@
 
 # filename              partition
 
-NON-HLOS.bin            /dev/block/bootdevice/by-name/modem
+NON-HLOS.bin            /dev/block/bootdevice/by-name/firmware
 xbl_ac_config.mbn       /dev/block/bootdevice/by-name/xbl_ac_config
 hyp_ac_config.mbn       /dev/block/bootdevice/by-name/hyp_ac_config
 shrm.el                 /dev/block/bootdevice/by-name/shrm
 aop.mbn                 /dev/block/bootdevice/by-name/aop
 aop_devcfg.mbn          /dev/block/bootdevice/by-name/aop_devcfg
 xbl_s.melf              /dev/block/bootdevice/by-name/xbl
+tz.mbn                  /dev/block/bootdevice/by-name/tz
 devcfg.mbn              /dev/block/bootdevice/by-name/tz_devcfg
 tz_ac_config.mbn        /dev/block/bootdevice/by-name/tz_ac_config
 xbl_config.elf          /dev/block/bootdevice/by-name/xbl_config

@@ -80,8 +80,7 @@ IMAGE_FSTYPES_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '',
 # qti-nad-core            Machine supports all nad core features
 # qti-recovery            Machine supports a/b ota
 
-
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery"
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery qti-stream-update"
 
 MACHINE_MNT_POINTS = " \
     /firmware \
