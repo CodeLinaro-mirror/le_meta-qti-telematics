@@ -9,7 +9,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 PR = "r1"
 
-DEPENDS += "glib-2.0 libpcap pciutils cmake-native qmi-framework qrtr"
+DEPENDS += "glib-2.0 libpcap pciutils cmake-native qmi-framework"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://external/open-avb/ \

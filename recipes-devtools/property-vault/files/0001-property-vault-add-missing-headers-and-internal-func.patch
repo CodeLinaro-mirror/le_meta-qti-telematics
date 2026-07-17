@@ -1,0 +1,67 @@
+From 6134e5b7ca955a15c908d4e8da03a2829a52e30f Mon Sep 17 00:00:00 2001
+From: Puneet Yatnal <puneety@qti.qualcomm.com>
+Date: Mon, 20 Jul 2026 13:57:52 +0530
+Subject: [PATCH] property-vault: add missing headers and internal function
+ prototypes
+
+Add missing system header includes and internal function declarations
+required for successful compilation with newer toolchains.
+
+Changes:
+- Include <unistd.h> and <sys/stat.h> in property_vault.c and
+  properties_def.h.
+- Add forward declarations for internal property-vault helper
+  functions used before their definitions.
+
+These updates resolve implicit function declaration and missing
+prototype/header build errors while maintaining existing behavior.
+
+Upstream-Status: Pending
+Signed-off-by: Puneet Yatnal <puneety@qti.qualcomm.com>
+---
+ property-vault/properties_def.h |  2 ++
+ property-vault/property_vault.c | 13 +++++++++++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/property-vault/properties_def.h b/property-vault/properties_def.h
+index cbad6b4..2ba46f1 100644
+--- a/properties_def.h
++++ b/properties_def.h
+@@ -2,6 +2,8 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Clear
+ 
+ #include <glib.h>
++#include <unistd.h>
++#include <sys/stat.h>
+ #define strlcpy g_strlcpy
+ #define strlcat g_strlcat
+ 
+diff --git a/property-vault/property_vault.c b/property-vault/property_vault.c
+index 43c24df..26ae160 100644
+--- a/property_vault.c
++++ b/property_vault.c
+@@ -42,8 +42,21 @@
+ #include <sys/un.h>
+ #include <errno.h>
+ 
++#include <unistd.h>
++#include <sys/stat.h>
++
+ #include "property_vault.h"
+ 
++/* Missing internal prototypes */
++int __update_prop_value(const char *, const char *);
++int __retrive_prop_value(const char *, char *);
++int __save_persist_nodes_to_file(void);
++int __remove_node_from_list(const char *);
++int __list_add(void *);
++int __free_list(void);
++void __dump_nodes(void);
++
++
+ static int persist_storage_ready = 0;
+ 
+ int main(int argc, char* argv[]) {
+-- 
+2.34.1
+
