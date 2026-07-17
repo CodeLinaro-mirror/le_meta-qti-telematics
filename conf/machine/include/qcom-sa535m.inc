@@ -36,7 +36,7 @@ KERNEL_IMAGETYPE = "Image"
 KERNEL_ALT_IMAGETYPE ?= "vmlinux"
 KERNEL_BASE = "0x80000000"
 
-KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 firmware_class.path=/lib/firmware/image net.ifnames=0 qcom_scm.download_mode=1 reboot=panic_warm panic=-1"
+KERNEL_CMDLINE_EXTRA ?= "ro rootwait ${DBG_CMDLINE} no_console_suspend=1 androidboot.console=ttyMSM0 console=ttyMSM0,115200n8 root=/dev/ram0 rw rootwait printk.devkmsg=on console_msg_format=syslog androidboot.fstab_suffix=rdshell firmware_class.path=/lib/firmware/image net.ifnames=0 qcom_scm.download_mode=1 reboot=panic_warm panic=-1"
 
 # Bootloader configuration
 EXTRA_IMAGEDEPENDS += "edk2"
@@ -72,19 +72,7 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-mrc             Machine supports mrcd feature
 # qti-nad-core            Machine supports all nad core features
 
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core"
-
-MACHINE_FEATURES:remove = " \
-    qti-location \
-    qti-audio \
-    qti-data-modem \
-    qti-nad-mrc \
-    qti-wlan \
-    qti-bluetooth \
-    qti-nad-core \
-    qti-isim \
-    qti-sensors \
-"
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo" 
 
 MACHINE_MNT_POINTS = " \
     /firmware \
@@ -129,4 +117,5 @@ meta-qcom/dynamic-layers/qcom-distro/recipes-ml/tflite/tensorflow-lite_%.bbappen
 meta-qti-security/recipes-sota/ostree-initrd/ostree-initrd.bbappend \
 meta-qti-telematics-prop/recipes-extended/thermal-engine/thermal-engine_%.bbappend \
 meta-qti-telematics-prop/recipes-bsp/ss-restart/qcom-subsystem-ramdump_%.bbappend \
+meta-qcom/recipes-support/qrtr/qrtr_1.2.bb \
 "
