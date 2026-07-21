@@ -74,7 +74,7 @@
 # prebuilt packages. This can be achieved via PREBUILT_INHIBIT_DEPS variable.
 # If set to "0" (default) build deps are preserved, if set to "1" all buil
 # deps are removed, else variable is considered as a list of dependencies to
-# ihnibit.
+# inhibit.
 #
 # DEPENDS = "systemd zlib"
 # ...
@@ -120,26 +120,43 @@ def get_prebuilt_paths(d):
     pbpaths = []
 
     srcdir = d.getVar('PREBUILT_SRC_DIR')
+    pkgpath = d.getVar("PREBUILT_PKG_PATH") or ""
     if srcdir:
-        pbpaths.append(srcdir)
+        pbpaths.append(os.path.join(srcdir, pkgpath) if pkgpath else srcdir)
 
     defaultsrc = d.getVar('USE_DEFAULT_PREBUILT_SRC_DIR')
     if defaultsrc == "1":
         dpbpath = (d.getVar("DEFAULT_PREBUILT_SRC_DIR") or "").split()
-        pbpaths += dpbpath
+        pbpaths += [os.path.join(p, pkgpath) if pkgpath else p for p in dpbpath]
 
     bb.debug(1,"Searching for prebuilts in: %s" % pbpaths)
 
     return " ".join(pbpaths)
+
+# Strip SRC_URI entries whose local path doesn't exist before do_create_spdx runs. Handles source directories that are intentionally absent.
+# create-spdx-3.0 introduced add_download_files which tries to hash these paths causing a crash. Skipping file:// types restores the behaviour of create-spdx-2.2 which ignored them.
+python do_create_spdx:prepend() {
+    import bb.fetch2
+    uris = (d.getVar('SRC_URI') or '').split()
+    if not uris:
+        return
+    if not any(u.startswith('file://') for u in uris):
+        return
+    fetch = bb.fetch2.Fetch(uris, d)
+    d.setVar('SRC_URI', ' '.join(
+        u for u in uris
+        if fetch.ud[u].type != 'file'
+    ))
+}
 
 # Install Prebuilt tarball
 do_install_prebuilt[dirs] = "${D}"
 do_install_prebuilt[doc] = "Populate Destination directory with prebuilt package content"
 
 fakeroot python do_install_prebuilt() {
+    import re
     import shutil
 
-    licensedir = d.getVar('LICENSE_DIRECTORY')
     arch = d.getVar('PACKAGE_ARCH')
     flavor = d.getVar('FLAVOR')
     alternate_archs = (d.getVar('MACHINEOVERRIDES') or "").split(":")
@@ -170,13 +187,28 @@ fakeroot python do_install_prebuilt() {
                 if retval:
                     bb.fatal("Errors in extracting prebuilt: %s (%s)" % ( tarball, output))
 
-    # Install license
-    cmd = "cp -r %s/__LIC__ %s/%s" % (dest, licensedir, pn)
-    (retval, output) = oe.utils.getstatusoutput(cmd)
-    if retval:
-        bb.warn("Unable to retrieve license: %s" % output)
+    # Populate LICENSE_DIRECTORY directly since do_populate_lic is noexec. Write generic_<license> and recipeinfo so license_image.bbclass passes.
+    licdir = os.path.join(d.getVar('LICENSE_DIRECTORY'),
+                          d.getVar('SSTATE_PKGARCH'), pn)
+    bb.utils.mkdirhier(licdir)
+    lic_src = os.path.join(d.getVar('QCOM_COMMON_LICENSE_DIR'), d.getVar('LICENSE'))
+    if os.path.exists(lic_src):
+        lic_name = "generic_%s" % re.sub(r'\+', '', d.getVar('LICENSE'))
+        shutil.copyfile(lic_src, os.path.join(licdir, lic_name))
+    with open(os.path.join(licdir, "recipeinfo"), "w") as f:
+        f.write("PV: %s\n" % d.getVar('PV'))
+        f.write("PR: %s\n" % d.getVar('PR'))
+        f.write("LICENSE: %s\n" % d.getVar('LICENSE'))
 
-    shutil.rmtree("%s/__LIC__" % dest)
+    # Stop notice and legacy license files from getting packaged
+    for fname in ["NOTICE", "LICENSE.qcom-2",
+                  "NO.LOGIN.BINARY.LICENSE.QTI.pdf", "NOTICE.txt"]:
+        fpath = os.path.join(dest, fname)
+        if os.path.exists(fpath):
+            os.remove(fpath)
+
+    if os.path.exists("%s/__LIC__" % dest):
+        shutil.rmtree("%s/__LIC__" % dest, ignore_errors=True)
 }
 
 def gen_prebuiltvar(d):
@@ -223,12 +255,19 @@ do_generate_prebuilt[vardeps] = "${@gen_prebuiltvar(d)}"
 
 def strip_dir(d, dir):
     strip = d.getVar('STRIP')
-    cmd = "find " + dir + " -type f -exec " + strip + " {} +"
+    cmd = "find " + dir + " -type f -exec " + strip + " --remove-section=.comment --remove-section=.note --strip-debug {} +"
     (retval, output) = oe.utils.getstatusoutput(cmd)
 
 fakeroot python do_generate_prebuilt() {
+    import re
     import shutil
     from subprocess import Popen
+
+    # Extend PSEUDO_INCLUDE_PATHS so pseudo intercepts lchown/lstat calls in the prebuilt staging dirs, enabling --same-owner to store guid/uid
+    prebuilt_dir = d.getVar('PREBUILT_DIR')
+    prebuilt_data_dir = d.getVar('PREBUILT_DATA_DIR')
+    existing = os.environ.get('PSEUDO_INCLUDE_PATHS', '')
+    os.environ['PSEUDO_INCLUDE_PATHS'] = existing + ',' + prebuilt_dir + ',' + prebuilt_data_dir
 
     ppackages = (d.getVar("PREBUILT_PACKAGES") or "").split()
     pbvariants = (d.getVar("PREBUILT_VARIANTS") or "").split()
@@ -286,10 +325,17 @@ fakeroot python do_generate_prebuilt() {
 
             # Append files
             for file in files:
-                cmd = "tar -rvf %s ./%s" % (tarball, file)
-                (retval, output) = oe.utils.getstatusoutput(cmd)
-                if retval:
-                    bb.debug(1,"Unable to add %s to archive %s: %s" % (file, tarball, output))
+                directory, filename = os.path.split(file)
+                file_regex = re.compile(filename)
+                dirpath = "./%s" % directory if directory else "."
+                if os.path.exists(dirpath):
+                    for f in os.listdir(dirpath):
+                        if file_regex.match(f):
+                            full_path = os.path.join(directory, f) if directory else f
+                            cmd = "tar --same-owner -rvf %s ./%s" % (tarball, full_path)
+                            (retval, output) = oe.utils.getstatusoutput(cmd)
+                            if retval:
+                                bb.debug(1,"Unable to add %s to archive %s: %s" % (full_path, tarball, output))
 
             # Append license
             cmd = "tar --owner 0 --group 0 -rvf %s ./%s" % (tarball, "__LIC__")
@@ -353,6 +399,8 @@ python () {
             d.setVarFlag(task, 'noexec', '1')
         bb.build.addtask('do_install_prebuilt', 'do_populate_sysroot', 'do_install', d)
         d.appendVarFlag('do_package', 'depends', ' %s:do_install_prebuilt' % pn)
+        # Ignore qa-already-stripped as files are pre-stripped
+        d.appendVar("INSANE_SKIP:%s" % pn, " already-stripped")
 
         # Remove build-only deps ?
         inhibit_deps = d.getVar('PREBUILT_INHIBIT_DEPS')
