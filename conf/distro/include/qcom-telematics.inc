@@ -20,7 +20,7 @@ DISTROOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-distro:"
 # dm-verity:       Support block integrity check on system image
 # selinux:         Use selinux for mandatory access control.
 
-DISTRO_FEATURES:append = " pam overlayfs acl xattr ptest security virtualization tpm usrmerge"
+DISTRO_FEATURES:append = " pam overlayfs acl xattr ptest security virtualization tpm usrmerge dm-verity"
 DISTRO_FEATURES += "selinux qti-ab-boot"
 
 ## QTI defined distro features ##
