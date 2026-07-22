@@ -36,21 +36,12 @@ CORE_IMAGE_BASE_INSTALL += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
     packagegroup-qcom-ppat \
     binder \
+    packagegroup-qti-telsdk \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wlan', 'packagegroup-qti-wlan', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', 'packagegroup-qti-bt', '', d)} \
     diag-reboot-app \
     post-boot \
 "
-
-CORE_IMAGE_BASE_INSTALL:remove += " \
-    packagegroup-qti-core \
-    packagegroup-qcom-securemsm \
-    packagegroup-qcom-ppat \
-    packagegroup-qti-ss-mgr \
-    diag-reboot-app \
-    packagegroup-qti-telsdk \
-"
-
 
 DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'ext4-utils-native', '', d)}"
 DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-native', '', d)}"
