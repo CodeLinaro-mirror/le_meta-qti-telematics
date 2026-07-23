@@ -8,6 +8,8 @@ SOC_FAMILY = "sa535m"
 SOC_FAMILY:prepend = "qcom:"
 require conf/machine/include/soc-family.inc
 
+PREFERRED_PROVIDER_virtual/mkdtimg-native = "mkdtimg-gki-native"
+
 #Define and add SOC_ARCH to the list of architectures compatible with the given target.
 SOC_ARCH = "${@ d.getVar('SOC_FAMILY').replace('-', '_').replace('qcom:', '')}"
 PACKAGE_EXTRA_ARCHS:append = "${@['', ' ${SOC_ARCH}']['${SOC_ARCH}' != "${MACHINE_ARCH}"]}"
