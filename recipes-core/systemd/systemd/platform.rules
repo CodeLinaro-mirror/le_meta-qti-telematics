@@ -2,3 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 ACTION=="add", KERNEL=="kmsg", OWNER="root", GROUP="kmsg", MODE="0664"
 ACTION=="add", KERNEL=="hw_random", NAME="hwrng", MODE="0644"
+# Create /dev/block/bootdevice/by-name/<partname> symlinks for GPT partitions.
+# ID_PART_ENTRY_SCHEME and ID_PART_ENTRY_NAME are populated by 60-persistent-storage.rules.
+SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", \
+    ENV{ID_PART_ENTRY_SCHEME}=="gpt", ENV{ID_PART_ENTRY_NAME}=="?*", \
+    SYMLINK+="block/bootdevice/by-name/$env{ID_PART_ENTRY_NAME}"
