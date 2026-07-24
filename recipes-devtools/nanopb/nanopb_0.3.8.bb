@@ -17,6 +17,7 @@ SRCREV = "cc74b9f200176edc5524aa00ba45fa90a5e87d27"
 
 SRC_URI = "git://git.codelinaro.org/clo/le/nanopb.git;protocol=https;branch=caf_migration/nanopb/master"
 SRC_URI += "file://0001-bitbake-using-cmake.patch"
+SRC_URI += "file://0002-compilation-fixes-for-newer-yocto.patch"
 
 # need to export these variables for python-config to work
 FILES:${PN} += "/usr/include/*"
