@@ -1,3 +1,9 @@
+# This patch file is from Qualcomm Technologies, Inc. and is provided
+# under the following license:
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 From b4ee0d76775b79d054a03436c04f444e740e258d Mon Sep 17 00:00:00 2001
 From: Akshaya Bhat <quic_akshayab@quicinc.com>
 Date: Mon, 21 Oct 2024 23:13:07 -0700
