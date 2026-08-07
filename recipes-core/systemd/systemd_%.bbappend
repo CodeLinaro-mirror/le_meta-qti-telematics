@@ -20,6 +20,7 @@ PACKAGECONFIG:remove = " \
     binfmt \
     hibernate \
     kmod \
+    timesyncd \
 "
 
 FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
