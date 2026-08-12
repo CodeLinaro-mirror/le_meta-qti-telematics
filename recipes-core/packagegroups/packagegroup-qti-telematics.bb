@@ -71,6 +71,7 @@ RDEPENDS:packagegroup-qti-telematics-utils = "\
     logcat \
     logd \
     start-scripts-zram \
+    sysstat \
     "
 
 RDEPENDS:packagegroup-qti-telematics-vnw = "\
