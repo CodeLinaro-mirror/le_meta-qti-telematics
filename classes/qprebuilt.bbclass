@@ -137,15 +137,12 @@ def get_prebuilt_paths(d):
 python do_create_spdx:prepend() {
     import bb.fetch2
     uris = (d.getVar('SRC_URI') or '').split()
-    if not uris:
-        return
-    if not any(u.startswith('file://') for u in uris):
-        return
-    fetch = bb.fetch2.Fetch(uris, d)
-    d.setVar('SRC_URI', ' '.join(
-        u for u in uris
-        if fetch.ud[u].type != 'file'
-    ))
+    if uris and any(u.startswith('file://') for u in uris):
+        fetch = bb.fetch2.Fetch(uris, d)
+        d.setVar('SRC_URI', ' '.join(
+            u for u in uris
+            if fetch.ud[u].type != 'file'
+        ))
 }
 
 # Install Prebuilt tarball
