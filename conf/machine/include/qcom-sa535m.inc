@@ -53,6 +53,11 @@ PREFERRED_PROVIDER_virtual/bootbins = ""
 
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 
+#Include tar.bz2 image artifact only for debug builds
+IMAGE_FSTYPES += "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '' , d)}"
+IMAGE_GEN_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', '1', '0', d)}"
+IMAGE_FSTYPES_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '', d)}"
+
 # MACHINE_FEATURES ##
 # qti-adsp:               Machine supports QTI adsp solution
 # qti-cdsp:               Machine supports QTI cdsp solution
