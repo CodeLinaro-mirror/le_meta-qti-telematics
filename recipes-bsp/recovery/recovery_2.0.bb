@@ -36,14 +36,10 @@ do_configure:prepend() {
 CPPFLAGS:append = " -I${RECIPE_SYSROOT}/usr/include/cutils \
                     -I${RECIPE_SYSROOT}/usr/include/fs_mgr \
                     -I${RECIPE_SYSROOT}/usr/include/ext4_utils \
-                    -I${UNPACKDIR}/OTA/system/core/adb \
-                    -I${UNPACKDIR}/OTA/system/core/include \
 "
 CXXFLAGS:append = " -I${RECIPE_SYSROOT}/usr/include/cutils \
                     -I${RECIPE_SYSROOT}/usr/include/fs_mgr \
                     -I${RECIPE_SYSROOT}/usr/include/ext4_utils \
-                    -I${UNPACKDIR}/OTA/system/core/adb \
-                    -I${UNPACKDIR}/OTA/system/core/include \
 "
 do_install:append() {
     install -d ${D}${systemd_unitdir}/system/
