@@ -143,7 +143,9 @@ ROOTFS_POSTPROCESS_COMMAND += "create_required_dir;"
 create_required_dir() {
     mkdir -p ${IMAGE_ROOTFS}/firmware
     mkdir -p ${IMAGE_ROOTFS}/data
-    mkdir -p ${IMAGE_ROOTFS}/isim
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
+        mkdir -p ${IMAGE_ROOTFS}/isim
+    fi
 }
 gen_buildprop() {
    echo ro.build.version.release=${BUILDNAME} >> ${IMAGE_ROOTFS}/build.prop
