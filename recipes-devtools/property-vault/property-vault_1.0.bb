@@ -1,4 +1,4 @@
-inherit autotools pkgconfig systemd
+inherit autotools pkgconfig systemd useradd
 
 DESCRIPTION = "property vault managment"
 SUMMARY = "property vault managment"
@@ -18,8 +18,7 @@ SRC_URI = "\
 
 S = "${UNPACKDIR}/le-utils/property-vault"
 
-DEPENDS += "syslog-plumber glib-2.0 useradd-qcom"
-RDEPENDS:${PN} += "useradd-qcom"
+DEPENDS += "syslog-plumber glib-2.0"
 
 PACKAGECONFIG ??= "\
     ${@bb.utils.filter('DISTRO_FEATURES', 'systemd', d)} \
