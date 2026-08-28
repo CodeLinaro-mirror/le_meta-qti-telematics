@@ -150,4 +150,20 @@ gen_buildprop() {
    echo ro.product.name=${BASEMACHINE}-${DISTRO} >> ${IMAGE_ROOTFS}/build.prop
 }
 
+do_rootfs[depends] += "binutils-cross-${TARGET_ARCH}:do_populate_sysroot"
+
+strip_kernel_modules() {
+    strip_bin="${RECIPE_SYSROOT_NATIVE}/usr/bin/${TARGET_SYS}/${KERNEL_STRIP}"
+
+    if [ ! -x "${strip_bin}" ]; then
+        bbfatal "Strip executable not found: ${strip_bin}"
+    fi
+
+    find "${IMAGE_ROOTFS}" -name "*.ko" | while read -r ko; do
+        "${strip_bin}" --strip-debug "${ko}"
+    done
+}
+
+ROOTFS_POSTPROCESS_COMMAND += "strip_kernel_modules; "
+
 addtask do_deploy_fixup after do_makeboot after do_image_complete before do_build
