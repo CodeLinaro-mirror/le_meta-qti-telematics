@@ -9,6 +9,7 @@ Before=sysinit.target
 Type=ubifs
 What=ubi0:persist
 Where=/var/persist
+Options=bulk_read,noexec,nodev,nosuid,rootcontext=system_u:object_r:persist_t:s0
 
 [Install]
 WantedBy=local-fs.target
