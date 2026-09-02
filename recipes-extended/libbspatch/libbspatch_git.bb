@@ -14,4 +14,17 @@ S = "${UNPACKDIR}/OTA/streaming/external/bsdiff/"
 
 BBCLASSEXTEND = "native"
 
+CPPFLAGS:append = " -I${S}/include"
+
+do_install:append() {
+    install -d ${D}${includedir}/bsdiff
+
+    if [ -d ${S}/include/bsdiff ]; then
+        install -m 0644 ${S}/include/bsdiff/*.h \
+            ${D}${includedir}/bsdiff/
+    else
+        bbwarn "bsdiff headers not found"
+    fi
+}
+
 inherit autotools pkgconfig

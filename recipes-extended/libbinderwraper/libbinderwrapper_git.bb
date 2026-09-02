@@ -15,4 +15,19 @@ S = "${UNPACKDIR}/OTA/system/core/libbinderwrapper/"
 
 BBCLASSEXTEND = "native"
 
+do_install:append() {
+    install -d ${D}${includedir}/binderwrapper
+
+    if [ -d ${S}/include/binderwrapper ]; then
+        install -m 0644 ${S}/include/binderwrapper/*.h \
+            ${D}${includedir}/binderwrapper/
+    else
+        bbwarn "libbinderwrapper headers not found at ${S}/include/binderwrapper"
+    fi
+}
+
+CPPFLAGS:append = " -I${S}/include \
+                    -I${STAGING_INCDIR}/libchrome \
+"
+
 inherit autotools pkgconfig

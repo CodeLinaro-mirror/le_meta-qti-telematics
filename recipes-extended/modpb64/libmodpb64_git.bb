@@ -15,4 +15,10 @@ S = "${UNPACKDIR}/OTA/streaming/external/modp_b64/"
 
 BBCLASSEXTEND = "native"
 
+CPPFLAGS:append = " -I${S}/include"
+
+do_install:append() {
+    install -d ${D}${includedir}/modp_b64/
+    install -m 0644 ${S}/modp_b64/* ${D}${includedir}/modp_b64/
+}
 inherit autotools pkgconfig

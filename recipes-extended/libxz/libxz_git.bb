@@ -16,4 +16,15 @@ S = "${UNPACKDIR}/OTA/streaming/external/xz-embedded/"
 
 BBCLASSEXTEND = "native"
 
+do_install:append() {
+    install -d ${D}${includedir}/linux
+
+    if [ -f ${S}/linux/include/linux/xz.h ]; then
+        install -m 0644 ${S}/linux/include/linux/xz.h \
+            ${D}${includedir}/linux/xz.h
+    else
+        bbwarn "linux/xz.h not found at ${S}/linux/include/linux/xz.h"
+    fi
+}
+
 inherit autotools pkgconfig
