@@ -7,3 +7,5 @@ ACTION=="add", KERNEL=="hw_random", NAME="hwrng", MODE="0644"
 SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", \
     ENV{ID_PART_ENTRY_SCHEME}=="gpt", ENV{ID_PART_ENTRY_NAME}=="?*", \
     SYMLINK+="block/bootdevice/by-name/$env{ID_PART_ENTRY_NAME}"
+ACTION=="add" SUBSYSTEM=="smcinvoke", GROUP="system", MODE="0660"
+
