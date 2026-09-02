@@ -7,8 +7,7 @@ Before=local-fs.target
 [Mount]
 What=/dev/disk/by-partlabel/isim
 Where=/isim
-# TODO:Add selinux context
-Options=noexec,nodev,rw
+Options=rw,noatime,nodev,noexec,rootcontext=system_u:object_r:isim_fw_t:s0
 
 [Install]
 WantedBy=local-fs.target

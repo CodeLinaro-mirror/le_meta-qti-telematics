@@ -59,12 +59,15 @@ start)
         exit 0
     fi
 
-
     # Mount using correct UBIFS syntax
     if ! mountpoint -q "${MOUNT_POINT}"; then
-        if ! mount -t ubifs "${UBI_DEV}:${VOL_NAME}" "${MOUNT_POINT}" 2>/dev/null; then
+        if ! mount -t ubifs "${UBI_DEV}:${VOL_NAME}" "${MOUNT_POINT}" -o "rw,noatime,nodiratime,nodev,noexec,rootcontext=system_u:object_r:isim_fw_t:s0" 2>/dev/null; then
             echo "isim : mount failed for ${UBI_DEV}:${VOL_NAME} on ${MOUNT_POINT}, skipping" > /dev/kmsg
             exit 0
+        fi
+        if command -v restorecon >/dev/null 2>&1; then
+            # Ensure files under /isim get policy-based labels after mount.
+            restorecon -RF "${MOUNT_POINT}" >/dev/null 2>&1 || true
         fi
     else
         echo "isim : Already mounted, skipping" > /dev/kmsg
