@@ -13,6 +13,7 @@ SRC_URI:append += " \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'file://mtd.rules', '',d)} \
     file://platform.rules \
     file://platform.conf \
+    file://set-usb-nodes.rules \
 "
 
 PACKAGECONFIG:remove = " \
@@ -35,6 +36,7 @@ do_install:append() {
         install -m 0644 ${UNPACKDIR}/61-pps.rules ${D}${sysconfdir}/udev/rules.d/61-pps.rules
 
         install -m 0644 ${UNPACKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
+        install -m 0644 ${UNPACKDIR}/set-usb-nodes.rules ${D}${sysconfdir}/udev/rules.d/set-usb-nodes.rules
 
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
                 install -m 0644 ${UNPACKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
@@ -112,5 +114,6 @@ do_install:append() {
 }
 FILES:${PN} += "${sysconfdir}/udev/rules.d/61-pps.rules"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/platform.rules"
+FILES:${PN} += "${sysconfdir}/udev/rules.d/set-usb-nodes.rules"
 
 ERROR_QA:remove = "patch-status"
