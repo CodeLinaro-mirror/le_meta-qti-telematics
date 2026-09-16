@@ -70,6 +70,9 @@ do_recovery_ubi() {
     #copy contents of recovery rootfs
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
         rm -rf ${RECOVERY_IMAGE_ROOTFS}/cache
+        if ${@bb.utils.contains('BASEMACHINE', 'sa535m', 'true', 'false', d)}; then
+            rm -rf ${RECOVERY_IMAGE_ROOTFS}/var/cache
+        fi
     fi
     cp -r ${RECOVERY_IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
 
@@ -192,6 +195,9 @@ do_recovery_ubi() {
 
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
       echo le_target_supports_nad=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
+    fi
+    if ${@bb.utils.contains('BASEMACHINE', 'sa535m', 'true', 'false', d)}; then
+      echo use_var_cache=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
     fi
 
     # copy contents of META folder

@@ -172,6 +172,11 @@ do_recovery_ext4() {
     # Targets that support A/B boot do not need recovery(fs)-updater
     echo le_target_supports_ab=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
 
+    # to use /var/cache path for target sa535m
+    if ${@bb.utils.contains('BASEMACHINE', 'sa535m', 'true', 'false', d)}; then
+        echo use_var_cache=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
+    fi
+
     cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ${OTA_TARGET_FILES_EXT4_PATH} *
 
     # Create target zip with boot-fde.img when qti-nad-fde is enabled
