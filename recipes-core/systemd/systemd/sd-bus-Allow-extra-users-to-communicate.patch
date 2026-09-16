@@ -1,0 +1,31 @@
+From d590be2e7708ceece27da0346932642ede98c68d Mon Sep 17 00:00:00 2001
+From: Sumedha Sanjay Shenolikar <shenolik@qti.qualcomm.com> 
+Date: Thu, 1 Aug 2019 10:13:04 -0700
+Signed-off-by: Sumedha Sanjay Shenolikar <shenolik@qti.qualcomm.com>
+Subject: [PATCH] sd-bus: Allow extra users to communicate
+
+Rebased for systemd 259.5 (function parameter renamed call->m, blank
+lines around capability check already removed upstream; only the
+sender_uid allow-list hunk is needed).
+
+---
+ src/libsystemd/sd-bus/bus-convenience.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/libsystemd/sd-bus/bus-convenience.c b/src/libsystemd/sd-bus/bus-convenience.c
+index 4ec0616..d5b7f57 100644
+--- a/src/libsystemd/sd-bus/bus-convenience.c
++++ b/src/libsystemd/sd-bus/bus-convenience.c
+@@ -733,6 +733,10 @@ _public_ int sd_bus_query_sender_privilege(sd_bus_message *m, int capability) {
+                         if (sender_uid == our_uid)
+                                 return 1;
+ 
++                        /* Other specific users also allowed access (radio) */
++                        if (sender_uid == 1001 )
++                                return 1;
++
+                         /* Sender is root, we are not root. */
+                         if (our_uid != 0 && sender_uid == 0)
+                                 return 1;
+-- 
+1.9.1

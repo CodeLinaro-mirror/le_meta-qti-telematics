@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI:append += " \
     file://0001-Remove-queuing-mechanism-update-to-fq-codel.patch \
     file://0001-Allow-powermgr-group-to-communicate.patch \
+    file://sd-bus-Allow-extra-users-to-communicate.patch \
     file://61-pps.rules \
     file://0001-Allow-system-user-to-use-dbus-for-communication.patch \
     file://loc_bootup_iio.sh \
@@ -56,7 +57,7 @@ do_install:append() {
         install -m 0644 ${UNPACKDIR}/61-pps.rules ${D}${sysconfdir}/udev/rules.d/61-pps.rules
 
         install -m 0644 ${UNPACKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
-        install -m 0644 ${UNPACKDIR}/set-usb-nodes.rules ${D}${sysconfdir}/udev/rules.d/set-usb-nodes.rules
+	install -m 0644 ${UNPACKDIR}/set-usb-nodes.rules ${D}${sysconfdir}/udev/rules.d/set-usb-nodes.rules
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
                 install -m 0644 ${UNPACKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
         fi
