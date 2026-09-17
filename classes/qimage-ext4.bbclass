@@ -11,24 +11,23 @@ DEPENDS += "cryptsetup-native"
 MNT_POINTS = "${MACHINE_MNT_POINTS} ${GENERATED_MACHINE_MNT_POINTS}"
 
 QIMGEXT4CLASSES  = ""
-#QIMGEXT4CLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-ext4', '', d)}"
-QIMGEXT4CLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ext4', '', d)}"
+QIMGEXT4CLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ab-ota-ext4', '', d)}"
+#QIMGEXT4CLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/cache', 'qimage-cache-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/persist', 'qimage-persist-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/systemrw', 'qimage-systemrw-ext4', '', d)}"
-QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/lib/modules', 'qimage-vdlkm-ext4', '', d)}"
 QIMGEXT4CLASSES += "${@bb.utils.contains('MNT_POINTS', '/data', 'qimage-userdata', '', d)}"
 
 inherit ${QIMGEXT4CLASSES}
 
-#CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' ${MLIBPREFIX}recovery-ab', '', d)}"
+CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' ${MLIBPREFIX}recovery-ab', '', d)}"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ext4"
 
 # Default Image names
-SYSTEMIMAGE_TARGET ?= "system.img"
+SYSTEMIMAGE_TARGET ?= "sysfs.img"
 SYSTEMIMAGE_UNSPARSE_TARGET ?= "system.img.unsparse"
-SYSTEMIMAGE_MAP_TARGET ?= "system.map"
+SYSTEMIMAGE_MAP_TARGET ?= "sysfs.map"
 VDLKMIMAGE_TARGET ?= "vendor_dlkm.img"
 VDLKMIMAGE_UNSPARSE_TARGET ?= "vendor_dlkm.img.unspase"
 VDLKMIMAGE_MAP_TARGET ?= "vendor_dlkm.map"
@@ -229,9 +228,11 @@ do_makesystem() {
 
             # Convert to sparse image
             sparseImgPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
+            sparseMapPath="${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET}"
             img2simg ${ImgPath} ${sparseImgPath}
             cp ${ImgPath} ${IMGDEPLOYDIR}/
             cp ${sparseImgPath} ${IMGDEPLOYDIR}/
+            cp ${sparseMapPath} ${IMGDEPLOYDIR}/
             break
         done
 

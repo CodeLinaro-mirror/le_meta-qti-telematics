@@ -1,4 +1,4 @@
-DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native"
+DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native libsparse-native"
 DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'qti-recovery-image', '', d)}"
 DEPENDS += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', bb.utils.contains('MACHINE_FEATURES', 'qti-stream-update', 'payload-gen-native', '', d), '', d)}"
 
@@ -89,7 +89,7 @@ do_recovery_ubi() {
     cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
 
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
-        cp -r ${IMAGE_ROOTFS_SQUASHFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
+        cp -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
         cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/applypatch ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
         cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
         if ${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'true', 'false', d)}; then
@@ -107,6 +107,7 @@ do_recovery_ubi() {
 
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
             squashfs2sparse ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
+            cp -rf ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.squash
         else
             img2simg ${DEPLOY_DIR_IMAGE}/${BASEMACHINE}-sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
         fi
