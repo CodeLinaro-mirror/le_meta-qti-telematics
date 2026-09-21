@@ -40,6 +40,5 @@ index 28d6142318..8fb85ff44c 100644
                          r = open_null_as(O_WRONLY, fileno);
                  } else {
                          struct stat st;
---
+-- 
 2.34.1
-
