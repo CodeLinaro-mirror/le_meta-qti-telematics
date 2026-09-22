@@ -18,7 +18,9 @@ S = "${UNPACKDIR}/OTA/streaming/external/libbrillo/"
 
 BBCLASSEXTEND = "native"
 
-CPPFLAGS:append = " -I${STAGING_INCDIR}/libchrome"
+CPPFLAGS:append = " -I${STAGING_INCDIR}/libchrome \
+                    -I${STAGING_INCDIR}/binderstreaming \
+"
 
 do_install:append() {
     install -d ${D}${includedir}/libbrillo

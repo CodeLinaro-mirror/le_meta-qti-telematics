@@ -29,10 +29,10 @@ EXTRA_OECONF:append:arm = " \
 BBCLASSEXTEND = "native"
 
 do_install:append() {
-    install -d ${D}${includedir}/binder
+      install -d ${D}${includedir}/binderstreaming/binder
 
-    install -m 0644 ${S}/libs/binder/include/binder/*.h \
-            ${D}${includedir}/binder/
+      install -m 0644 ${S}/libs/binder/include/binder/*.h \
+          ${D}${includedir}/binderstreaming/binder/
 }
 
 # sdmsteppe uses 64bit IPC though userspace is 32bit.

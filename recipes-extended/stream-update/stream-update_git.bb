@@ -38,6 +38,7 @@ STREAM_UPDATE_EXTRA_INCLUDES = " \
     -I${STAGING_INCDIR}/libbrillo \
     -I${STAGING_INCDIR}/recovery \
     -I${STAGING_INCDIR}/libxz \
+    -I${STAGING_INCDIR}/binderstreaming \
 "
 
 CPPFLAGS:append = " ${STREAM_UPDATE_EXTRA_INCLUDES}"

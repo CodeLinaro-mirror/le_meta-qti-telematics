@@ -28,6 +28,7 @@ do_install:append() {
 
 CPPFLAGS:append = " -I${S}/include \
                     -I${STAGING_INCDIR}/libchrome \
+                    -I${STAGING_INCDIR}/binderstreaming \
 "
 
 inherit autotools pkgconfig
