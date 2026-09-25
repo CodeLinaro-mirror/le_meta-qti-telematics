@@ -14,6 +14,7 @@ SRC_URI:append += " \
     file://platform.rules \
     file://platform.conf \
     file://set-usb-nodes.rules \
+    file://0001-systemd-mask-journald-messages-and-remove-rules-with.patch \
 "
 
 PACKAGECONFIG:remove = " \
@@ -22,13 +23,40 @@ PACKAGECONFIG:remove = " \
     hibernate \
     kmod \
     timesyncd \
+    logind \
+    networkd \
+    userdb \
+    randomseed \
 "
 
 FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
 
+MASKED_SYSTEMD_UNITS = " \
+    dev-hugepages.mount \
+"
+
+PERFORMANCE_MASKED_SYSTEMD_UNITS = " \
+    systemd-journald.service \
+    systemd-journal-flush.service \
+"
+
 do_configure:append() {
     # Disable autostart of systemd-network-generator.service
     sed -i -e "s/enable systemd-network-generator.service/disable systemd-network-generator.service/g" ${S}/presets/90-systemd.preset
+}
+
+do_install:append() {
+    install -d ${D}${sysconfdir}/systemd/system
+
+    for unit in ${MASKED_SYSTEMD_UNITS}; do
+        ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
+    done
+
+    if [ "${PERFORMANCE_BUILD}" = "1" ]; then
+        for unit in ${PERFORMANCE_MASKED_SYSTEMD_UNITS}; do
+            ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
+        done
+    fi
 }
 
 do_install:append() {
@@ -54,7 +82,6 @@ do_install:append() {
             install -m 0644 ${UNPACKDIR}/postmss.service ${D}${systemd_unitdir}/system/postmss.service
             ln -sf ${systemd_unitdir}/system/postmss.service \
                     ${D}${systemd_unitdir}/system/basic.target.wants/postmss.service
-
             rm -rf ${D}${systemd_unitdir}/system/adbd.service.d/adbd-gvm.conf
         fi
 
