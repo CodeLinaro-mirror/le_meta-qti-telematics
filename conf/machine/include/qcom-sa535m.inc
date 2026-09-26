@@ -22,7 +22,7 @@ MACHINEOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-bsp:"
 
 # Additional Kernel cmdline parameters for debug builds
 SERIAL_CONSOLES = "115200;ttyMSM0"
-DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon=qcom_geni,0x00A84000 nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
+DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
 # Kernel provider
