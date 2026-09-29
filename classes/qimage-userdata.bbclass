@@ -33,4 +33,4 @@ do_makeuserdata() {
     fi
 }
 
-addtask do_makeuserdata after do_image before do_build
+addtask do_makeuserdata after do_makesystem before do_build

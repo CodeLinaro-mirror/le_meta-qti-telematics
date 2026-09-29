@@ -841,12 +841,14 @@ do_makesystem_tele_ubi_with_lxc[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/lxc"
 do_makesystem_tele_ubi_with_lxc[depends] = "qti-lxcrootfs-image:do_build"
 
 fakeroot do_makesystem_tele_ubi() {
-   mkdir ${USER_IMAGE_ROOTFS}/cache
-   rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/cache
-   ln -sf /data/cache ${IMAGE_ROOTFS_UBIFS_UBI}/cache
+   if ${@bb.utils.contains('IMAGE_FEATURES', 'cache-volume', 'false', 'true', d)}; then
+       mkdir -p ${USER_IMAGE_ROOTFS}/cache
+       rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/var/cache
+       ln -snf /data/cache ${IMAGE_ROOTFS_UBIFS_UBI}/var/cache
 
-   rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/cache
-   ln -sf /data/cache ${IMAGE_ROOTFS_SQUASHFS_UBI}/cache
+       rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/var/cache
+       ln -snf /data/cache ${IMAGE_ROOTFS_SQUASHFS_UBI}/var/cache
+   fi
 
    rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/lib/systemd/system/telaf.mount.service
    rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/lib/systemd/system/telaf.service

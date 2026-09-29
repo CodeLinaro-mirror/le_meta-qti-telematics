@@ -17,7 +17,7 @@ SRC_URI += "file://var-persist.mount"
 SRC_URI += "file://data.mount"
 SRC_URI += "file://systemrw.mount"
 SRC_URI += "file://systemrw.conf"
-SRC_URI += "file://var-cache.mount"
+SRC_URI += " ${@bb.utils.contains( 'MACHINE_MNT_POINTS', '/cache', 'file://var-cache.mount', '', d)}"
 SRC_URI += "file://var-volatile.mount"
 
 

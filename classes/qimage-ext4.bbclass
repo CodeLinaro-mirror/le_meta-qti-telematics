@@ -178,6 +178,11 @@ get_system_verity_metdata_info(){
 }
 
 do_makesystem() {
+    if ${@bb.utils.contains('MNT_POINTS', '/cache', 'false', 'true', d)}; then
+       mkdir -p ${IMAGE_ROOTFS}/data/cache
+       rm -rf ${IMAGE_ROOTFS_EXT4}/var/cache
+       ln -snf /data/cache ${IMAGE_ROOTFS_EXT4}/var/cache
+    fi
     # Empty the folders that have seperate mount points
     # so that they doesn't end up in system image as well
     for entry in ${MNT_POINTS}; do

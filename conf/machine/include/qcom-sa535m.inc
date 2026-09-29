@@ -85,7 +85,6 @@ MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-mod
 MACHINE_MNT_POINTS = " \
     /firmware \
     /data \
-    /cache \
     /persist \
     /systemrw \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', '/isim', '', d)} \
