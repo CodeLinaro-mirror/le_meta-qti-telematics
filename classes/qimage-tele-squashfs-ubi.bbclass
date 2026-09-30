@@ -38,7 +38,7 @@ LXCRFSIMAGE_SQUASHFS_TARGET ?= "${DEPLOY_DIR_IMAGE}/lxcrootfs.squash"
 CACHE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/cache.ubifs"
 CACHE_IMAGE_ROOTFS ?= "${UNPACKDIR}/cache"
 PERSIST_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs/persist.ubifs"
-PERSIST_IMAGE_ROOTFS ?= "${UNPACKDIR}/persist"
+PERSIST_IMAGE_ROOTFS ?= "${IMAGE_ROOTFS_UBIFS_UBI}/persist"
 
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
@@ -100,10 +100,6 @@ create_tele_systemrw[noexec] = "1"
 create_cache[cleandirs] = "${CACHE_IMAGE_ROOTFS}"
 # Nothing to do, empty volume
 create_cache[noexec] = "1"
-
-create_persist[cleandirs] = "${PERSIST_IMAGE_ROOTFS}"
-# Nothing to do, empty volume
-create_persist[noexec] = "1"
 
 create_symlink_tele_userfs[cleandirs] = "${USER_IMAGE_ROOTFS}"
 create_symlink_tele_userfs() {
@@ -831,7 +827,6 @@ do_makesystem_tele_ubi[prefuncs] += "do_create_ubinize_tele_config"
 do_makesystem_tele_ubi[prefuncs] += "create_rootfs_tele_ubifs"
 do_makesystem_tele_ubi[prefuncs] += "create_tele_systemrw"
 do_makesystem_tele_ubi[prefuncs] += "create_cache"
-do_makesystem_tele_ubi[prefuncs] += "create_persist"
 do_makesystem_tele_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubi_tools', '', d)}"
 do_makesystem_tele_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_makesystem_tele_ubi[dirs] += "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubifs ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
@@ -849,6 +844,11 @@ fakeroot do_makesystem_tele_ubi() {
        rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/var/cache
        ln -snf /data/cache ${IMAGE_ROOTFS_SQUASHFS_UBI}/var/cache
    fi
+
+   # For sa535m target the licenses are supposed to be packed into
+   # /var/persist and is being done seperately, delete the licenses
+   # in rootfs path 
+   rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/persist/*
 
    rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/lib/systemd/system/telaf.mount.service
    rm -rf ${IMAGE_ROOTFS_UBIFS_UBI}/lib/systemd/system/telaf.service

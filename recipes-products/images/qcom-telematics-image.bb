@@ -117,7 +117,7 @@ do_deploy_fixup () {
         if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/cache', 'true', 'false', d)}; then
 	   install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/cache.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/cache.ubifs
         fi
-	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/persist.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/persist.ubifs
+	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/ubifs/persist.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/persist.ubifs
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/sysfs-squashfs_ab.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/sysfs-squashfs_ab.ubi
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_ab.cfg ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/squashfs_ubinize_ab.cfg
         if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
