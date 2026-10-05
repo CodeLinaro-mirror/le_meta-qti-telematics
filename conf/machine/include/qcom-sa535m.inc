@@ -94,6 +94,12 @@ EXTRA_USERS_PARAMS += "usermod -p \
     '\$6\$fixed\$ehhrBJycOdAtiIuyucGkTk3lphxtYcRODdJVNS8T1kdONi5tWAFnzMcfOXlfH42wBNE5wmTyiNEopIKxG0U5r/' \
     -d /home/root root \
 "
+# Append Anti Rollback Index and Assign default value
+ENABLE_ANTI_ROLLBACK = "0"
+# Below index used by BOOT & DTBO img
+ANTIROLL_BACK_INDEX_VALUE = "0"
+# Below index used by Rootfs Image
+ANTIROLL_BACK_INDEX_VALUE_ROOTFS = "0"
 
 BBMASK += " \
 meta-qti-data/recipes/dnsmasq/dnsmasq_2.90.bbappend \
