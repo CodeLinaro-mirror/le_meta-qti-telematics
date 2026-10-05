@@ -2,6 +2,10 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 VOLATILE_BINDS:append = "${@bb.utils.contains('DEBUG_BUILD','1',' '.join(d.getVar('VOLATILE_BINDS_SA535M_DEBUG').split()),' '.join(d.getVar('VOLATILE_BINDS_SA535M_PERF').split()),d)}"
 
+# mount-copybind's overlay mount(2) attempt hits errno 13 (EACCES) in enforcing mode with zero correlating AVC denials even after granting mount_t the capabilities theoretically needed for overlay setup.
+# Skip overlayfs and use the script's existing bind+copy fallback instead. Keeping the behaviour same with other configurations.
+AVOID_OVERLAYFS:sa535m = "1"
+
 VOLATILE_BINDS_SA535M_DEBUG = "\
 /systemrw/adb_devid  /etc/adb_devid\n\
 /systemrw/data /etc/data/\n\
