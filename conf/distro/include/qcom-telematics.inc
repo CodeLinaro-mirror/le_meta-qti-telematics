@@ -48,7 +48,7 @@ IMAGE_CLASSES += "features_check"
 DISTRO_FEATURES_FILTER_NATIVE += "selinux"
 
 # Set selinux in enforcing state by default
-DEFAULT_ENFORCING ?= "permissive"
+DEFAULT_ENFORCING ?= "enforcing"
 
 DISTRO_FEATURES_FILTER_NATIVESDK:append = " selinux"
 DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)}"
