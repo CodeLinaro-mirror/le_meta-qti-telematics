@@ -138,15 +138,12 @@ def get_prebuilt_paths(d):
 python do_create_spdx:prepend() {
     import bb.fetch2
     uris = (d.getVar('SRC_URI') or '').split()
-    if not uris:
-        return
-    if not any(u.startswith('file://') for u in uris):
-        return
-    fetch = bb.fetch2.Fetch(uris, d)
-    d.setVar('SRC_URI', ' '.join(
-        u for u in uris
-        if fetch.ud[u].type != 'file'
-    ))
+    if uris and any(u.startswith('file://') for u in uris):
+        fetch = bb.fetch2.Fetch(uris, d)
+        d.setVar('SRC_URI', ' '.join(
+            u for u in uris
+            if fetch.ud[u].type != 'file'
+        ))
 }
 
 # Install Prebuilt tarball
@@ -192,6 +189,8 @@ fakeroot python do_install_prebuilt() {
                           d.getVar('SSTATE_PKGARCH'), pn)
     bb.utils.mkdirhier(licdir)
     lic_src = os.path.join(d.getVar('QCOM_COMMON_LICENSE_DIR'), d.getVar('LICENSE'))
+    if not os.path.exists(lic_src):
+        lic_src = os.path.join(d.getVar('COREBASE'), 'meta/files/common-licenses', d.getVar('LICENSE'))
     if os.path.exists(lic_src):
         lic_name = "generic_%s" % re.sub(r'\+', '', d.getVar('LICENSE'))
         shutil.copyfile(lic_src, os.path.join(licdir, lic_name))

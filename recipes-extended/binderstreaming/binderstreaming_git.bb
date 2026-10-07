@@ -6,7 +6,7 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 
-DEPENDS = "liblog libcutils fsmgr  glib-2.0 libutils libbase \
+DEPENDS = "liblog libcutils fsmgr  glib-2.0 libutils libbase system-core-headers \
            libcutils-native libselinux-native glib-2.0-native libutils-native linux-libc-headers \
            "
 PR = "r0"
@@ -27,6 +27,13 @@ EXTRA_OECONF:append:arm = " \
 "
 
 BBCLASSEXTEND = "native"
+
+do_install:append() {
+      install -d ${D}${includedir}/binderstreaming/binder
+
+      install -m 0644 ${S}/libs/binder/include/binder/*.h \
+          ${D}${includedir}/binderstreaming/binder/
+}
 
 # sdmsteppe uses 64bit IPC though userspace is 32bit.
 EXTRA_OECONF:remove:sdmsteppe = "--enable-32bit-binder-ipc"

@@ -16,4 +16,14 @@ S = "${UNPACKDIR}/OTA/streaming/external/lzma/C/"
 
 BBCLASSEXTEND = "native"
 
+do_install:append() {
+    install -d ${D}${includedir}/
+
+    if ls ${S}/*.h >/dev/null 2>&1; then
+        install -m 0644 ${S}/*.h ${D}${includedir}/
+    else
+        bbwarn "LZMA headers not found under ${S}"
+    fi
+}
+
 inherit autotools pkgconfig

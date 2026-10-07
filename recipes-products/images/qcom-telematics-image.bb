@@ -8,7 +8,6 @@ IMAGE_FEATURES += " \
          read-only-rootfs \
          ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'persist-volume', '', d)} \
          ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'modem-volume', '', d)} \
-         ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'cache-volume', '', d)} \
         "
 inherit core-image features_check extrausers image-adbd
 inherit python3native qramdisk dm-verity-initramfs-v4
@@ -32,7 +31,7 @@ CORE_IMAGE_BASE_INSTALL += " \
     packagegroup-qti-ss-mgr \
     packagegroup-qcom-securemsm \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', 'packagegroup-qti-data', '', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location packagegroup-qti-location-auto', '', d)} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qcom-audio', '', d)} \
     packagegroup-qcom-ppat \
     binder \
@@ -88,14 +87,17 @@ do_deploy_fixup[nostamp] = "1"
 
 do_deploy_fixup () {
     if [ "${EMMC_BOOT}" = "True" ]; then
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/sysfs.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.img
+        install -m 0644 ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/sysfs.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.img
+        install -m 0644 ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/sysfs.map ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/sysfs.map
         install -m 0644 ${BOOTIMGDEPLOYDIR}/qcom-telematics-image/boot.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/boot.img
         install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/vmlinux
         install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/abl.elf
         install -m 0644 ${DEPLOY_DIR_IMAGE}/userdata.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/userdata.img
         install -m 0644 ${DEPLOY_DIR_IMAGE}/userdata.map ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/userdata.map
         install -m 0644 ${DEPLOY_DIR_IMAGE}/persist.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/persist.img
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/cache.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/cache.img
+        if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/cache', 'true', 'false', d)}; then
+           install -m 0644 ${DEPLOY_DIR_IMAGE}/cache.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/cache.img
+        fi
         install -m 0644 ${DEPLOY_DIR_IMAGE}/systemrw.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/systemrw.img
         if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
             install -m 0644 ${DEPLOY_DIR_IMAGE}/isim.img ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/isim.img
@@ -111,8 +113,10 @@ do_deploy_fixup () {
 	install -m 0644  ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/abl.elf
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/systemrw.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/systemrw.ubifs
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/sysfs.squash ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/sysfs.squash
-	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/userfs.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/userfs.ubifs
-	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/cache.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/cache.ubifs
+	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/ubifs/userfs.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/userfs.ubifs
+        if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/cache', 'true', 'false', d)}; then
+	   install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/cache.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/cache.ubifs
+        fi
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/persist.ubifs ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/ubifs/persist.ubifs
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/sysfs-squashfs_ab.ubi ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/sysfs-squashfs_ab.ubi
 	install -m 0644  ${WORKDIR}/deploy-qcom-telematics-image-image-complete/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_ab.cfg ${DEPLOY_DIR_IMAGE}/qcom-telematics-image/squashfs/squashfs_ubinize_ab.cfg
@@ -122,7 +126,7 @@ do_deploy_fixup () {
     fi
 }
 
-ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition; "
+ROOTFS_POSTPROCESS_COMMAND += "add_target_and_symlink;update_usb_composition;gen_buildprop; "
 
 add_target_and_symlink() {
     echo "${MACHINE}" > ${IMAGE_ROOTFS}/target
@@ -143,7 +147,29 @@ ROOTFS_POSTPROCESS_COMMAND += "create_required_dir;"
 create_required_dir() {
     mkdir -p ${IMAGE_ROOTFS}/firmware
     mkdir -p ${IMAGE_ROOTFS}/data
-    mkdir -p ${IMAGE_ROOTFS}/isim
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', 'true', 'false', d)} ; then
+        mkdir -p ${IMAGE_ROOTFS}/isim
+    fi
 }
+gen_buildprop() {
+   echo ro.build.version.release=${BUILDNAME} >> ${IMAGE_ROOTFS}/build.prop
+   echo ro.product.name=${BASEMACHINE}-${DISTRO} >> ${IMAGE_ROOTFS}/build.prop
+}
+
+do_rootfs[depends] += "binutils-cross-${TARGET_ARCH}:do_populate_sysroot"
+
+strip_kernel_modules() {
+    strip_bin="${RECIPE_SYSROOT_NATIVE}/usr/bin/${TARGET_SYS}/${KERNEL_STRIP}"
+
+    if [ ! -x "${strip_bin}" ]; then
+        bbfatal "Strip executable not found: ${strip_bin}"
+    fi
+
+    find "${IMAGE_ROOTFS}" -name "*.ko" | while read -r ko; do
+        "${strip_bin}" --strip-debug "${ko}"
+    done
+}
+
+ROOTFS_POSTPROCESS_COMMAND += "strip_kernel_modules; "
 
 addtask do_deploy_fixup after do_makeboot after do_image_complete before do_build

@@ -1,0 +1,2 @@
+ACTION=="add", KERNEL=="android_mbim", RUN+="/bin/sh -c 'chown root.system /sys/kernel/config/usb_gadget/g*/UDC && chmod 664 /sys/kernel/config/usb_gadget/g*/UDC'"
+

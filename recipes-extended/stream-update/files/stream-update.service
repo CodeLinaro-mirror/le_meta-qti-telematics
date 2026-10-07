@@ -4,7 +4,7 @@
 [Unit]
 Description=stream update Service
 SourcePath=/usr/bin/update_engine_sideload
-After=multi-user.target init_post_boot.service telaf.service mrc-daemon.service
+After=multi-user.target init_post_boot.service mrc-daemon.service
 ConditionKernelCommandLine=systemd.setenv
 ConditionFileNotEmpty=/data/stream_update/properties.txt
 

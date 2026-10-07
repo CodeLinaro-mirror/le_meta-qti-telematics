@@ -19,6 +19,16 @@ ISIMIMAGE_UBIFS_TARGET ?= "isim.ubifs"
 ISIMIMAGE_UBI_TARGET ?= "isim.ubi"
 ISIM_UBINIZE_CFG ?= "${IMGDEPLOYDIR}/ubinize_isim.cfg"
 
+#Ensure SELinux file context variable is defined
+SELINUX_FILE_CONTEXTS ?= "${IMAGE_ROOTFS}/etc/selinux/mls/contexts/files/file_contexts"
+
+#These are needed for ubi
+IMAGE_ISIM_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', ' --selinux=${SELINUX_FILE_CONTEXTS} ', '', d)}"
+
+#These are needed for ext4
+SELINUX_IMG_S = "${@['-S ${SELINUX_FILE_CONTEXTS}', ''][d.getVar('SELINUX_FILE_CONTEXTS') == '']}"
+IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_S}', '', d)}"
+
 generate_dynamic_fsconfig() {
     ISIM_UID=$(grep "^isim:" ${IMAGE_ROOTFS}/etc/passwd | cut -d: -f3)
     ISIM_GID=$(grep "^isim:" ${IMAGE_ROOTFS}/etc/group  | cut -d: -f3)
@@ -66,7 +76,7 @@ vol_name=isim
 vol_size=${ISIM_VOLUME_SIZE}
 EOF
 
-        mkfs.ubifs -r ${IMAGE_ROOTFS}/${ISIM_DIR} \
+        mkfs.ubifs -r ${IMAGE_ROOTFS}/${ISIM_DIR} ${IMAGE_ISIM_UBIFS_SELINUX_OPTIONS} \
            -o ${UNPACKDIR}/${ISIMIMAGE_UBIFS_TARGET} \
            ${MKUBIFS_ARGS}
         ubinize -o ${IMGDEPLOYDIR}/${ISIMIMAGE_UBI_TARGET} \

@@ -20,7 +20,7 @@ DISTROOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-distro:"
 # dm-verity:       Support block integrity check on system image
 # selinux:         Use selinux for mandatory access control.
 
-DISTRO_FEATURES:append = " pam overlayfs acl xattr ptest security virtualization tpm usrmerge"
+DISTRO_FEATURES:append = " overlayfs acl xattr ptest security virtualization tpm usrmerge dm-verity"
 DISTRO_FEATURES += "selinux qti-ab-boot"
 
 ## QTI defined distro features ##
@@ -48,7 +48,7 @@ IMAGE_CLASSES += "features_check"
 DISTRO_FEATURES_FILTER_NATIVE += "selinux"
 
 # Set selinux in enforcing state by default
-DEFAULT_ENFORCING ?= "permissive"
+DEFAULT_ENFORCING ?= "enforcing"
 
 DISTRO_FEATURES_FILTER_NATIVESDK:append = " selinux"
 DISTRO_EXTRA_RDEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)}"

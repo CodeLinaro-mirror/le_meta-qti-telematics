@@ -16,4 +16,12 @@ S = "${UNPACKDIR}/OTA/streaming/external/libevent/"
 
 BBCLASSEXTEND = "native"
 
+CPPFLAGS:append = " -I${S}/include"
+CFLAGS:append = " -I${S}/include"
+
+do_install:append() {
+    install -d ${D}${includedir}/event2
+    install -m 0644 ${S}/include/event2/*.h ${D}${includedir}/event2/
+}
+
 inherit autotools pkgconfig

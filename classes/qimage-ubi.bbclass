@@ -10,7 +10,10 @@ inherit ${QIMGUBICLASSES}
 
 IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi modem-volume"
 
-CORE_IMAGE_EXTRA_INSTALL += "${MLIBPREFIX}systemd-machine-units-ubi"
+CORE_IMAGE_EXTRA_INSTALL += "\
+                            ${MLIBPREFIX}systemd-machine-units-ubi \
+                            ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'recovery-ab', '', d)} \
+"
 
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
 SYSTEMIMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'sysfs.ubifs', d)}"

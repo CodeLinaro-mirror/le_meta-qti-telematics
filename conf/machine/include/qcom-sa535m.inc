@@ -22,7 +22,7 @@ MACHINEOVERRIDES =. "qcom-${QCOM_SELECTED_BSP}-bsp:"
 
 # Additional Kernel cmdline parameters for debug builds
 SERIAL_CONSOLES = "115200;ttyMSM0"
-DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','earlycon=qcom_geni,0x00A84000 nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
+DBG_CMDLINE = "${@oe.utils.conditional('DEBUG_BUILD','1','nokaslr page_owner=on slub_debug=FZP,zs_handle,zspage;FZPU','systemd.show_status=0 systemd.log_level=0 systemd.journald.forward_to_console=0',d)}"
 
 PREFERRED_PROVIDER_virtual/refpolicy = "refpolicy-mls-auto"
 # Kernel provider
@@ -53,6 +53,11 @@ PREFERRED_PROVIDER_virtual/bootbins = ""
 
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 
+#Include tar.bz2 image artifact only for debug builds
+IMAGE_FSTYPES += "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '' , d)}"
+IMAGE_GEN_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', '1', '0', d)}"
+IMAGE_FSTYPES_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '', d)}"
+
 # MACHINE_FEATURES ##
 # qti-adsp:               Machine supports QTI adsp solution
 # qti-cdsp:               Machine supports QTI cdsp solution
@@ -73,13 +78,13 @@ MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 # qti-nad-telaf:          Machine supports telematics application framework
 # qti-nad-mrc             Machine supports mrcd feature
 # qti-nad-core            Machine supports all nad core features
+# qti-recovery            Machine supports a/b ota
 
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo" 
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery qti-stream-update"
 
 MACHINE_MNT_POINTS = " \
     /firmware \
     /data \
-    /cache \
     /persist \
     /systemrw \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-isim', '/isim', '', d)} \

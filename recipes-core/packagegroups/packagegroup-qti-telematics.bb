@@ -54,7 +54,6 @@ RDEPENDS:packagegroup-qti-telematics-sensors = "\
     "
 
 RDEPENDS:packagegroup-qti-telematics-utils = "\
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', '', 'qdloader', d)} \
     ${@oe.utils.conditional('CRONIE', 'True', 'cronie', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'devmem2 ', '', d)} \
     ${@oe.utils.conditional('DEBUG_BUILD', '1', 'leproperties', '', d)} \
@@ -71,6 +70,7 @@ RDEPENDS:packagegroup-qti-telematics-utils = "\
     logcat \
     logd \
     start-scripts-zram \
+    sysstat \
     "
 
 RDEPENDS:packagegroup-qti-telematics-vnw = "\

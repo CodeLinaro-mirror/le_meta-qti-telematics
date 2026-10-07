@@ -1,4 +1,4 @@
-DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native"
+DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native libsparse-native"
 DEPENDS += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'qti-recovery-image', '', d)}"
 DEPENDS += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', bb.utils.contains('MACHINE_FEATURES', 'qti-stream-update', 'payload-gen-native', '', d), '', d)}"
 
@@ -70,6 +70,9 @@ do_recovery_ubi() {
     #copy contents of recovery rootfs
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
         rm -rf ${RECOVERY_IMAGE_ROOTFS}/cache
+        if ${@bb.utils.contains('BASEMACHINE', 'sa535m', 'true', 'false', d)}; then
+            rm -rf ${RECOVERY_IMAGE_ROOTFS}/var/cache
+        fi
     fi
     cp -r ${RECOVERY_IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
 
@@ -89,7 +92,7 @@ do_recovery_ubi() {
     cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
 
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
-        cp -r ${IMAGE_ROOTFS_SQUASHFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
+        cp -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
         cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/applypatch ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
         cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
         if ${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'true', 'false', d)}; then
@@ -107,6 +110,7 @@ do_recovery_ubi() {
 
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
             squashfs2sparse ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
+            cp -rf ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.squash
         else
             img2simg ${DEPLOY_DIR_IMAGE}/${BASEMACHINE}-sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
         fi
@@ -192,6 +196,9 @@ do_recovery_ubi() {
 
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
       echo le_target_supports_nad=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
+    fi
+    if ${@bb.utils.contains('BASEMACHINE', 'sa535m', 'true', 'false', d)}; then
+      echo use_var_cache=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
     fi
 
     # copy contents of META folder

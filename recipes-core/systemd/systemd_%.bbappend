@@ -13,6 +13,8 @@ SRC_URI:append += " \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'file://mtd.rules', '',d)} \
     file://platform.rules \
     file://platform.conf \
+    file://set-usb-nodes.rules \
+    file://0001-systemd-mask-journald-messages-and-remove-rules-with.patch \
 "
 
 PACKAGECONFIG:remove = " \
@@ -20,9 +22,23 @@ PACKAGECONFIG:remove = " \
     binfmt \
     hibernate \
     kmod \
+    timesyncd \
+    logind \
+    networkd \
+    userdb \
+    randomseed \
 "
 
 FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
+
+MASKED_SYSTEMD_UNITS = " \
+    dev-hugepages.mount \
+"
+
+PERFORMANCE_MASKED_SYSTEMD_UNITS = " \
+    systemd-journald.service \
+    systemd-journal-flush.service \
+"
 
 do_configure:append() {
     # Disable autostart of systemd-network-generator.service
@@ -30,10 +46,25 @@ do_configure:append() {
 }
 
 do_install:append() {
+    install -d ${D}${sysconfdir}/systemd/system
+
+    for unit in ${MASKED_SYSTEMD_UNITS}; do
+        ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
+    done
+
+    if [ "${PERFORMANCE_BUILD}" = "1" ]; then
+        for unit in ${PERFORMANCE_MASKED_SYSTEMD_UNITS}; do
+            ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
+        done
+    fi
+}
+
+do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         install -m 0644 ${UNPACKDIR}/61-pps.rules ${D}${sysconfdir}/udev/rules.d/61-pps.rules
 
         install -m 0644 ${UNPACKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
+        install -m 0644 ${UNPACKDIR}/set-usb-nodes.rules ${D}${sysconfdir}/udev/rules.d/set-usb-nodes.rules
 
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
                 install -m 0644 ${UNPACKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
@@ -51,7 +82,6 @@ do_install:append() {
             install -m 0644 ${UNPACKDIR}/postmss.service ${D}${systemd_unitdir}/system/postmss.service
             ln -sf ${systemd_unitdir}/system/postmss.service \
                     ${D}${systemd_unitdir}/system/basic.target.wants/postmss.service
-
             rm -rf ${D}${systemd_unitdir}/system/adbd.service.d/adbd-gvm.conf
         fi
 
@@ -111,5 +141,6 @@ do_install:append() {
 }
 FILES:${PN} += "${sysconfdir}/udev/rules.d/61-pps.rules"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/platform.rules"
+FILES:${PN} += "${sysconfdir}/udev/rules.d/set-usb-nodes.rules"
 
 ERROR_QA:remove = "patch-status"
