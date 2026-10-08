@@ -361,11 +361,13 @@ CheckTmpDirectorySizeForFde () {
 
 FdeInitialize ()
 {
-    busybox insmod /lib/modules/smcinvoke.ko
+    busybox insmod /lib/modules/si_core_module.ko
+    busybox insmod /lib/modules/mem_object.ko
+    busybox insmod /lib/modules/qcom_smcinvoke.ko
     busybox insmod /lib/modules/dm-crypt.ko
 
-    if ! ${Bgrep} -wq "smcinvoke_dlkm" /proc/modules; then
-        LOGD "Error: Failed to load smcinvoke module"
+    if ! ${Bgrep} -wq "qcom_smcinvoke" /proc/modules; then
+        LOGD "Error: Failed to load qcom_smcinvoke module"
         return ${STATUS_ERR}
     fi
 
@@ -378,7 +380,7 @@ FdeInitialize ()
     busybox chmod -R 0660 /dev/dma_heap/qcom,qseecom
     busybox chmod o+rw /dev/smcinvoke
 
-    /usr/bin/qseecomd > /dev/kmsg &
+    /usr/bin/qtee_supplicant > /dev/kmsg &
 
     busybox mkdir -p /tmp
     busybox.suid mount -t tmpfs tmpfs /tmp

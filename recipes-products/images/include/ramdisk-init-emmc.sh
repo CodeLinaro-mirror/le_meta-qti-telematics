@@ -313,11 +313,13 @@ SwitchToSystem() {
 
 FdeInitialize ()
 {
-    ${Binsmod} /lib/modules/smcinvoke.ko
+    ${Binsmod} /lib/modules/si_core_module.ko
+    ${Binsmod} /lib/modules/mem_object.ko
+    ${Binsmod} /lib/modules/qcom_smcinvoke.ko
     ${Binsmod} /lib/modules/dm-crypt.ko
 
-    if ! ${Bgrep} -wq "smcinvoke_dlkm" /proc/modules; then
-        LOGD "Error: Failed to load smcinvoke module"
+    if ! ${Bgrep} -wq "qcom_smcinvoke" /proc/modules; then
+        LOGD "Failed to load qcom_smcinvoke module"
         return ${STATUS_ERR}
     fi
 
@@ -330,7 +332,7 @@ FdeInitialize ()
     ${Bchmod} -R 0660 /dev/dma_heap/qcom,qseecom
     ${Bchmod} o+rw /dev/smcinvoke
 
-    /usr/bin/qseecomd > /dev/kmsg &
+    /usr/bin/qtee_supplicant > /dev/kmsg &
 
     return ${STATUS_OK}
 }

@@ -214,6 +214,7 @@ fakeroot do_ramdisk_create() {
                 # Creating actual rootfs dir mountpoint for initramfs
                 mkdir -p ${RAMDISKDIR}/rootfs
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubiblock usr/sbin/
+                cp ${IMAGE_ROOTFS}/usr/sbin/ubiupdatevol usr/sbin/
                 if [ -L ${IMAGE_ROOTFS}/usr/sbin/ubiattach ]; then
                     cp ${IMAGE_ROOTFS}$(readlink ${IMAGE_ROOTFS}/usr/sbin/ubiattach) usr/sbin/ubiattach
                 else
@@ -291,6 +292,15 @@ fakeroot do_ramdisk_create() {
 
         fi
 
+        if ${@bb.utils.contains('DISTRO_FEATURES','usrmerge','true','false',d)}; then
+            cd ${RAMDISKDIR}
+            mv lib/* usr/lib/
+            mv bin/* usr/bin/
+            rm -rf lib bin
+            ln -s usr/lib lib
+            ln -s usr/bin bin
+        fi
+
         # Generate ramdisk image with fde dependencies
         if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-nad-fde', 'true', 'false', d)}; then
             # Copies FDE dependencies in fde ramdisk dir
@@ -299,7 +309,7 @@ fakeroot do_ramdisk_create() {
             cd ${RAMDISKDIRFDE}
             echo "nad_fde=1" >> etc/fde.env
             cp ${IMAGE_ROOTFS}/usr/bin/nad-fde-app usr/bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/qseecomd usr/bin/
+            cp ${IMAGE_ROOTFS}/usr/bin/qtee_supplicant usr/bin/qtee_supplicant
             cp ${IMAGE_ROOTFS}/usr/sbin/cryptsetup usr/sbin/
             cp ${IMAGE_ROOTFS}/lib/libgcc_s.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libnad-vb.so.1 lib/
@@ -310,7 +320,7 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/libnad_mtd_al.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.3 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libKeyMaster.so.0 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libqcbor.so.0 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libqcbor.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libcbor.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libcutils.so.0 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libutils.so.0 lib/
@@ -320,20 +330,21 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/libcryptsetup.so.12 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libdmabufheap.so.0 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libbase.so.0 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libion.so.0 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/librpmb.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libQseeComApi.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libdrmfs.so.1 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libxml2.so.2 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libGPreqcancel.so lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libGPreqcancel_svc.so.1 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libxml2.so.16 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libdrmtime.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libQseeComApi.so.1 lib/
-            cp ${IMAGE_ROOTFS}/etc/gpfspath_le_oem_config.xml etc/
-            cp ${IMAGE_ROOTFS}/usr/lib/modules/smcinvoke.ko lib/modules/
-            cp ${IMAGE_ROOTFS}/lib/modules/${KERNEL_VERSION}/dm-crypt.ko lib/modules/
+
+            cp ${IMAGE_ROOTFS}/etc/gpfspath_qclinux_oem_config.xml etc/
+
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/${KERNEL_VERSION}/kernel/drivers/firmware/qcom/si_core/si_core_xts/qcom_smcinvoke.ko lib/modules/qcom_smcinvoke.ko
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/${KERNEL_VERSION}/kernel/drivers/firmware/qcom/si_core/mem_object.ko lib/modules/mem_object.ko
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/${KERNEL_VERSION}/kernel/drivers/firmware/qcom/si_core/si_core_module.ko lib/modules/si_core_module.ko
+            cp ${IMAGE_ROOTFS}/lib/modules/${KERNEL_VERSION}/kernel/drivers/md/dm-crypt.ko lib/modules/
             if ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'false', 'true', d)}; then
-              cp ${IMAGE_ROOTFS}/lib/modules/${KERNEL_VERSION}/loop.ko lib/modules/
+              cp ${IMAGE_ROOTFS}/lib/modules/${KERNEL_VERSION}/kernel/drivers/block/loop.ko lib/modules/
             fi
 
             # gen_initramfs_list.sh expects to be run from kernel directory
@@ -343,14 +354,6 @@ fakeroot do_ramdisk_create() {
             # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
             bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd-fde -u 0 -g 0 ${RAMDISKDIRFDE}
             gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd-fde
-        fi
-
-        if ${@bb.utils.contains('DISTRO_FEATURES','usrmerge','true','false',d)}; then
-            mv lib/* usr/lib/
-            mv bin/* usr/bin/
-            rm -rf lib bin
-            ln -s usr/lib lib
-            ln -s usr/bin bin
         fi
 
         #gen_initramfs_list.sh expects to be run from kernel directory
