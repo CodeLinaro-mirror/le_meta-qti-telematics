@@ -94,6 +94,9 @@ ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM
 IMAGE_ROOTFS_SQUASHFS_UBI = "${WORKDIR}/rootfs-squashfs-ubi"
 IMAGE_ROOTFS_UBIFS_UBI = "${WORKDIR}/rootfs-ubifs-ubi"
 
+# The NAND image tasks build filesystem images from temporary roots. They are outside pseudo's default, include them to preserve the package-installed uid, gid, and mode in the images.
+PSEUDO_INCLUDE_PATHS:append = ",${IMAGE_ROOTFS_SQUASHFS_UBI},${IMAGE_ROOTFS_UBIFS_UBI},${SYSTEMRW_ROOTFS},${USER_IMAGE_ROOTFS},${CACHE_IMAGE_ROOTFS},${PERSIST_IMAGE_ROOTFS}"
+
 create_tele_systemrw[cleandirs] = "${SYSTEMRW_ROOTFS}"
 create_tele_systemrw[noexec] = "1"
 
