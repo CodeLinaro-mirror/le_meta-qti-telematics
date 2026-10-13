@@ -65,7 +65,6 @@ do_install:append() {
 
         install -m 0644 ${UNPACKDIR}/platform.rules ${D}${sysconfdir}/udev/rules.d/platform.rules
         install -m 0644 ${UNPACKDIR}/set-usb-nodes.rules ${D}${sysconfdir}/udev/rules.d/set-usb-nodes.rules
-
         if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
                 install -m 0644 ${UNPACKDIR}/mtd.rules -D ${D}${sysconfdir}/udev/rules.d/mtd.rules
         fi
@@ -144,3 +143,9 @@ FILES:${PN} += "${sysconfdir}/udev/rules.d/platform.rules"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/set-usb-nodes.rules"
 
 ERROR_QA:remove = "patch-status"
+
+# Disable update-alternatives management of /etc/resolv.conf.
+# /etc/resolv.conf is a direct symlink to /var/run/resolv.conf (tmpfs),
+# managed by the base-files bbappend and systemd-tmpfiles (platform.conf).
+ALTERNATIVE_LINK_NAME[resolv-conf] = ""
+ALTERNATIVE_TARGET[resolv-conf] = ""
