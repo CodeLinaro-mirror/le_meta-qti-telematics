@@ -33,9 +33,6 @@ FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
 
 MASKED_SYSTEMD_UNITS = " \
     dev-hugepages.mount \
-"
-
-PERFORMANCE_MASKED_SYSTEMD_UNITS = " \
     systemd-journald.service \
     systemd-journal-flush.service \
 "
@@ -52,11 +49,6 @@ do_install:append() {
         ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
     done
 
-    if [ "${PERFORMANCE_BUILD}" = "1" ]; then
-        for unit in ${PERFORMANCE_MASKED_SYSTEMD_UNITS}; do
-            ln -sfn /dev/null ${D}${sysconfdir}/systemd/system/$unit
-        done
-    fi
 }
 
 do_install:append() {
