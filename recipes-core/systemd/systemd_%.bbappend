@@ -28,6 +28,9 @@ PACKAGECONFIG:remove = " \
     networkd \
     userdb \
     randomseed \
+    resolved \
+    nss \
+    nss-resolve \
 "
 
 FILES:${PN} += "${sysconfdir}/initscripts ${sysconfdir}/initscripts/*"
