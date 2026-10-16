@@ -205,6 +205,7 @@ fakeroot do_ramdisk_create() {
                 chmod 744 csmrd-init
                 ln -s csmrd-init init
             elif ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
+                install -m 744 ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/ramdisk-eth.sh ramdisk-eth.sh
                 if ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'true', 'false', d)}; then
                     install -m 744 ${COREBASE}/../meta-qti-telematics/recipes-products/images/include/ramdisk-init-emmc.sh init
                 else
