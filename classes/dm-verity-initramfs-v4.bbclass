@@ -4,6 +4,7 @@
 # This file "dm-verity-initramfs-v4.bbclasss"
 # 1, Generate boot.img with initramfs.
 # 2, Enable dm-verity feature with avb for NAND.
+inherit ${QIMGEXTENSION}
 
 CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs dm-verity-none"
 
@@ -106,7 +107,7 @@ do_sign_system_squashfs () {
         --algorithm SHA256_RSA2048 \
         --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
         --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
-        --do_not_generate_fec --rollback_index 0
+        --do_not_generate_fec --rollback_index ${ANTIROLL_BACK_INDEX_VALUE_ROOTFS}
 }
 do_sign_system_squashfs[depends] += "avbtool-native:do_install"
 
@@ -121,6 +122,6 @@ do_sign_system_ext4 () {
         --algorithm SHA256_RSA2048 \
         --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
         --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
-        --do_not_generate_fec --rollback_index 0
+        --do_not_generate_fec --rollback_index ${ANTIROLL_BACK_INDEX_VALUE_ROOTFS}
 }
 do_sign_system_ext4[depends] += "avbtool-native:do_install"

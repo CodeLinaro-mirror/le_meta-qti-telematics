@@ -43,8 +43,8 @@ do_makepersist[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_makepersist() {
     make_ext4fs -B ${IMGDEPLOYDIR}/${PERSISTIMAGE_MAP_TARGET} \
                 -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
-                ${IMGDEPLOYDIR}/${PERSISTIMAGE_TARGET}
-#                ${IMAGE_ROOTFS}/persist
+                ${IMGDEPLOYDIR}/${PERSISTIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/persist
 }
 # It must be before do_makesystem to remove contents from /persist in rootfs
 addtask do_makepersist after do_image before do_makesystem

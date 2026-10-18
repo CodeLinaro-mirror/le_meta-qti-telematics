@@ -80,7 +80,7 @@ IMAGE_FSTYPES_DEBUGFS = "${@bb.utils.contains('DEBUG_BUILD', '1', 'tar.bz2', '',
 # qti-nad-core            Machine supports all nad core features
 # qti-recovery            Machine supports a/b ota
 
-MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery qti-stream-update"
+MACHINE_FEATURES += "qti-ab-boot qti-sensors qti-location qti-audio qti-data-modem dm-verity-initramfs-v4 qti-wlan qti-bluetooth qti-isim qti-nad-mrc qti-nad-core qti-recoveryinfo qti-recovery qti-stream-update qti-nad-fde"
 
 MACHINE_MNT_POINTS = " \
     /firmware \
@@ -94,6 +94,12 @@ EXTRA_USERS_PARAMS += "usermod -p \
     '\$6\$fixed\$ehhrBJycOdAtiIuyucGkTk3lphxtYcRODdJVNS8T1kdONi5tWAFnzMcfOXlfH42wBNE5wmTyiNEopIKxG0U5r/' \
     -d /home/root root \
 "
+# Append Anti Rollback Index and Assign default value
+ENABLE_ANTI_ROLLBACK = "0"
+# Below index used by BOOT & DTBO img
+ANTIROLL_BACK_INDEX_VALUE = "0"
+# Below index used by Rootfs Image
+ANTIROLL_BACK_INDEX_VALUE_ROOTFS = "0"
 
 BBMASK += " \
 meta-qti-data/recipes/dnsmasq/dnsmasq_2.90.bbappend \
