@@ -120,14 +120,13 @@ def get_prebuilt_paths(d):
     pbpaths = []
 
     srcdir = d.getVar('PREBUILT_SRC_DIR')
-    pkgpath = d.getVar("PREBUILT_PKG_PATH") or ""
     if srcdir:
-        pbpaths.append(os.path.join(srcdir, pkgpath) if pkgpath else srcdir)
+        pbpaths.append(srcdir)
 
     defaultsrc = d.getVar('USE_DEFAULT_PREBUILT_SRC_DIR')
     if defaultsrc == "1":
         dpbpath = (d.getVar("DEFAULT_PREBUILT_SRC_DIR") or "").split()
-        pbpaths += [os.path.join(p, pkgpath) if pkgpath else p for p in dpbpath]
+        pbpaths += dpbpath
 
     bb.debug(1,"Searching for prebuilts in: %s" % pbpaths)
 
